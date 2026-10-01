@@ -1,0 +1,6 @@
+ "After Power Loss" on your HP Z4 G4
+
+1. Reboot and press F10 repeatedly as the HP logo appears to open Computer Setup.
+2. Go to Advanced → Power-On Options.
+3. Set After Power Loss to Power On. The other choices are Power Off, the default, and Previous State.
+4. Press F10 (or Main → Save Changes and Exit) to save.
