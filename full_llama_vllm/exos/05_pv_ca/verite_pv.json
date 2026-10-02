@@ -1,0 +1,2449 @@
+[
+  {
+    "fichier": "pv_01.pdf",
+    "nb_pages": 7,
+    "nb_mots": 3418,
+    "organisation": "Brasserie du Val Mosan SA",
+    "forme": "SA",
+    "date_seance": "2025-07-14",
+    "lieu": "Profondeville",
+    "president": "Laurent Englebert",
+    "administrateurs_presents": [
+      "Laurent Englebert",
+      "Christophe Dethier",
+      "Marie-Hélène Materne",
+      "Sabine Lambert",
+      "Anne Lecomte",
+      "Sabine Remacle",
+      "Véronique Poncelet",
+      "Pascale Delvaux"
+    ],
+    "administrateurs_excuses": [],
+    "nb_administrateurs": 8,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Extension des locaux",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 320000
+      },
+      {
+        "point": 4,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 120000
+      },
+      {
+        "point": 5,
+        "intitule": "Bilan carbone et politique environnementale",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 6,
+        "intitule": "Comptes annuels 2024",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 7,
+        "intitule": "Proposition de nomination d'un administrateur",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 8,
+        "intitule": "Recrutement : une personne chargée de la communication",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 130000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Damien Mathy",
+        "action": "déposer la demande de permis",
+        "echeance": "2025-08-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Damien Mathy",
+        "action": "mettre en place la double authentification",
+        "echeance": "2025-09-30",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Damien Mathy",
+        "action": "lancer la procédure de recrutement",
+        "echeance": "2025-08-31",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2025-09-15",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": []
+  },
+  {
+    "fichier": "pv_02.pdf",
+    "nb_pages": 6,
+    "nb_mots": 3092,
+    "organisation": "Coopérative Énergie Hesbaye SC",
+    "forme": "SC",
+    "date_seance": "2026-06-04",
+    "lieu": "Hannut",
+    "president": "Pascale Grandjean",
+    "administrateurs_presents": [
+      "Pascale Grandjean",
+      "Stéphane Moureau",
+      "Aurélie Thiry",
+      "Laurent Simon",
+      "Nathalie Delhez",
+      "Caroline Wauters",
+      "Laurent Marchal"
+    ],
+    "administrateurs_excuses": [
+      "Catherine Goffin"
+    ],
+    "nb_administrateurs": 8,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Investissement : une installation photovoltaïque de deux mégawatts-crête",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 450000
+      },
+      {
+        "point": 4,
+        "intitule": "Comptes annuels 2025",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 1,
+        "abstention": 1,
+        "montant_eur": null
+      },
+      {
+        "point": 5,
+        "intitule": "Demande de subside régional",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 1,
+        "abstention": 1,
+        "montant_eur": 25000
+      },
+      {
+        "point": 6,
+        "intitule": "Proposition de nomination d'un administrateur",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 7,
+        "intitule": "Litige avec un fournisseur",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 110000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Grégoire Jacquet",
+        "action": "préparer le dossier de financement bancaire",
+        "echeance": "2026-07-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Grégoire Jacquet",
+        "action": "introduire le dossier de subside",
+        "echeance": "2026-07-30",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Sophie Poncelet",
+        "action": "mandater l'avocat pour une médiation",
+        "echeance": "2026-07-31",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2026-07-30",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": [
+      "montant_corrige"
+    ]
+  },
+  {
+    "fichier": "pv_03.pdf",
+    "nb_pages": 7,
+    "nb_mots": 3746,
+    "organisation": "Les Ateliers du Sart ASBL",
+    "forme": "ASBL",
+    "date_seance": "2025-12-08",
+    "lieu": "Jambes",
+    "president": "Martine Thiry",
+    "administrateurs_presents": [
+      "Martine Thiry",
+      "Aurélie Dubois",
+      "Céline Grandjean",
+      "Catherine Hardy",
+      "Luc Warnier",
+      "Philippe Renard"
+    ],
+    "administrateurs_excuses": [
+      "Jérôme Dethier"
+    ],
+    "nb_administrateurs": 7,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 45000
+      },
+      {
+        "point": 4,
+        "intitule": "Recrutement : deux techniciens de maintenance",
+        "statut": "retiré",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": 95000
+      },
+      {
+        "point": 5,
+        "intitule": "Convention de partenariat avec le groupement Condroz Développement",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 90000
+      },
+      {
+        "point": 6,
+        "intitule": "Demande de subside régional",
+        "statut": "rejeté",
+        "pour": 1,
+        "contre": 4,
+        "abstention": 1,
+        "montant_eur": 50000
+      },
+      {
+        "point": 7,
+        "intitule": "Comptes annuels 2024",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 8,
+        "intitule": "Investissement : la rénovation de l'atelier de menuiserie",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 85000
+      },
+      {
+        "point": 9,
+        "intitule": "Révision des tarifs",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Sabine Stassen",
+        "action": "mettre en place la double authentification",
+        "echeance": "2026-02-28",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Sabine Stassen",
+        "action": "signer la convention de partenariat",
+        "echeance": "2026-02-09",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Frédéric Moureau",
+        "action": "préparer le dossier de financement bancaire",
+        "echeance": "2026-01-31",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2026-02-09",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": [
+      "point_retire"
+    ]
+  },
+  {
+    "fichier": "pv_04.pdf",
+    "nb_pages": 9,
+    "nb_mots": 4641,
+    "organisation": "Logistique Sambre SA",
+    "forme": "SA",
+    "date_seance": "2025-06-26",
+    "lieu": "Charleroi",
+    "president": "Marc Lambert",
+    "administrateurs_presents": [
+      "Marc Lambert",
+      "Didier Jacquet",
+      "Pascale Grandjean",
+      "Grégoire Gérard",
+      "Thierry Dufour",
+      "Laurent Warnier",
+      "Véronique Lejeune"
+    ],
+    "administrateurs_excuses": [
+      "Stéphane Mathy",
+      "Sabine Henrard"
+    ],
+    "nb_administrateurs": 9,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Demande de subside régional",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 1,
+        "abstention": 0,
+        "montant_eur": 80000
+      },
+      {
+        "point": 4,
+        "intitule": "Proposition de nomination d'un administrateur",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 1,
+        "abstention": 1,
+        "montant_eur": null
+      },
+      {
+        "point": 5,
+        "intitule": "Budget 2026",
+        "statut": "rejeté",
+        "pour": 3,
+        "contre": 3,
+        "abstention": 1,
+        "montant_eur": 1450000
+      },
+      {
+        "point": 6,
+        "intitule": "Litige avec un fournisseur",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 110000
+      },
+      {
+        "point": 7,
+        "intitule": "Bilan carbone et politique environnementale",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 8,
+        "intitule": "Investissement : six camions électriques",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 1200000
+      },
+      {
+        "point": 9,
+        "intitule": "Extension des locaux",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 1,
+        "abstention": 0,
+        "montant_eur": 900000
+      },
+      {
+        "point": 10,
+        "intitule": "Comptes annuels 2024",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 11,
+        "intitule": "Révision des tarifs",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 12,
+        "intitule": "Recrutement : un contrôleur de gestion",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 1,
+        "abstention": 0,
+        "montant_eur": 72000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Catherine Collignon",
+        "action": "introduire le dossier de subside",
+        "echeance": "2025-09-30",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Géraldine Hubert",
+        "action": "mandater l'avocat pour une médiation",
+        "echeance": "2025-09-30",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Catherine Collignon",
+        "action": "préparer le dossier de financement bancaire",
+        "echeance": "2025-07-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Géraldine Hubert",
+        "action": "déposer la demande de permis",
+        "echeance": "2025-09-30",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Géraldine Hubert",
+        "action": "lancer la procédure de recrutement",
+        "echeance": "2025-07-31",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2025-07-31",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": []
+  },
+  {
+    "fichier": "pv_05.pdf",
+    "nb_pages": 5,
+    "nb_mots": 2422,
+    "organisation": "Clinique vétérinaire des Fagnes SRL",
+    "forme": "SRL",
+    "date_seance": "2026-01-12",
+    "lieu": "Malmedy",
+    "president": "Florence Fontaine",
+    "administrateurs_presents": [
+      "Florence Fontaine",
+      "Brigitte Henrard",
+      "Pierre-Yves Paquay",
+      "Céline Wilmet",
+      "Christophe Hardy",
+      "Laurent Mathy"
+    ],
+    "administrateurs_excuses": [
+      "Valérie Gilson"
+    ],
+    "nb_administrateurs": 7,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Convention de partenariat avec le groupement Condroz Développement",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 1,
+        "abstention": 0,
+        "montant_eur": 90000
+      },
+      {
+        "point": 4,
+        "intitule": "Budget 2026",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 3750000
+      },
+      {
+        "point": 5,
+        "intitule": "Sécurité informatique",
+        "statut": "reporté",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": 45000
+      },
+      {
+        "point": 6,
+        "intitule": "Révision des tarifs",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Céline Dethier",
+        "action": "signer la convention de partenariat",
+        "echeance": "2026-02-28",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Philippe Thiry",
+        "action": "transmettre le budget détaillé par service",
+        "echeance": "2026-03-31",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2026-03-09",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": [
+      "decision_revue"
+    ]
+  },
+  {
+    "fichier": "pv_06.pdf",
+    "nb_pages": 5,
+    "nb_mots": 2437,
+    "organisation": "Imprimerie Delhez & Fils SA",
+    "forme": "SA",
+    "date_seance": "2025-09-24",
+    "lieu": "Verviers",
+    "president": "Élise Warnier",
+    "administrateurs_presents": [
+      "Élise Warnier",
+      "Laurent Dethier",
+      "Pascal Delhez",
+      "Brigitte Gilson",
+      "Anne Paquay",
+      "Benoît Collard",
+      "Jean-Marc Mertens",
+      "Thierry Gérard"
+    ],
+    "administrateurs_excuses": [
+      "Thierry Stassen"
+    ],
+    "nb_administrateurs": 9,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Bilan carbone et politique environnementale",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 4,
+        "intitule": "Révision des tarifs",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 5,
+        "intitule": "Litige avec un fournisseur",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 240000
+      },
+      {
+        "point": 6,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 1,
+        "abstention": 0,
+        "montant_eur": 75000
+      },
+      {
+        "point": 7,
+        "intitule": "Investissement : une ligne de façonnage automatisée",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 140000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Isabelle Remacle",
+        "action": "mandater l'avocat pour une médiation",
+        "echeance": "2025-12-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Isabelle Remacle",
+        "action": "mettre en place la double authentification",
+        "echeance": "2025-10-29",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Aurélie Leroy",
+        "action": "préparer le dossier de financement bancaire",
+        "echeance": "2025-10-29",
+        "echeance_relative": true
+      }
+    ],
+    "prochaine_reunion": "2025-10-29",
+    "depart_en_cours_de_seance": "Laurent Dethier",
+    "conflit_interets": null,
+    "pieges": [
+      "depart_administrateur"
+    ]
+  },
+  {
+    "fichier": "pv_07.pdf",
+    "nb_pages": 9,
+    "nb_mots": 4638,
+    "organisation": "Ardenne Bois Construction SRL",
+    "forme": "SRL",
+    "date_seance": "2025-01-20",
+    "lieu": "Bastogne",
+    "president": "Grégoire Gilson",
+    "administrateurs_presents": [
+      "Grégoire Gilson",
+      "Christine Masson",
+      "Aurélie Delvaux",
+      "Martine Mathy",
+      "Sophie Remacle",
+      "Benoît Moureau",
+      "Caroline Warnier",
+      "Alain Paquay"
+    ],
+    "administrateurs_excuses": [
+      "Aurélie Lecomte"
+    ],
+    "nb_administrateurs": 9,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Comptes annuels 2024",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 4,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 28000
+      },
+      {
+        "point": 5,
+        "intitule": "Proposition de nomination d'un administrateur",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 6,
+        "intitule": "Demande de subside régional",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 25000
+      },
+      {
+        "point": 7,
+        "intitule": "Budget 2025",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 1,
+        "abstention": 1,
+        "montant_eur": 2300000
+      },
+      {
+        "point": 8,
+        "intitule": "Convention de partenariat avec l'intercommunale du bassin",
+        "statut": "reporté",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": 150000
+      },
+      {
+        "point": 9,
+        "intitule": "Investissement : une scie à commande numérique",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 1,
+        "abstention": 1,
+        "montant_eur": 260000
+      },
+      {
+        "point": 10,
+        "intitule": "Litige avec un fournisseur",
+        "statut": "reporté",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": 60000
+      },
+      {
+        "point": 11,
+        "intitule": "Recrutement : une personne chargée de la communication",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 95000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Grégoire Mertens",
+        "action": "mettre en place la double authentification",
+        "echeance": "2025-03-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Philippe Lejeune",
+        "action": "introduire le dossier de subside",
+        "echeance": "2025-03-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Philippe Lejeune",
+        "action": "transmettre le budget détaillé par service",
+        "echeance": "2025-02-28",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Philippe Lejeune",
+        "action": "préparer le dossier de financement bancaire",
+        "echeance": "2025-02-28",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Grégoire Mertens",
+        "action": "lancer la procédure de recrutement",
+        "echeance": "2025-03-24",
+        "echeance_relative": true
+      }
+    ],
+    "prochaine_reunion": "2025-03-24",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": []
+  },
+  {
+    "fichier": "pv_08.pdf",
+    "nb_pages": 5,
+    "nb_mots": 2383,
+    "organisation": "TechNamur Solutions SA",
+    "forme": "SA",
+    "date_seance": "2025-12-22",
+    "lieu": "Namur",
+    "president": "Nathalie Noël",
+    "administrateurs_presents": [
+      "Nathalie Noël",
+      "Isabelle Grandjean",
+      "Marc Paquay",
+      "Grégoire Stassen",
+      "Marc Renard",
+      "Alain Lecomte",
+      "Benoît Simon",
+      "Sophie Delvaux"
+    ],
+    "administrateurs_excuses": [
+      "Pierre-Yves Gérard"
+    ],
+    "nb_administrateurs": 9,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Extension des locaux",
+        "statut": "rejeté",
+        "pour": 1,
+        "contre": 6,
+        "abstention": 1,
+        "montant_eur": 1600000
+      },
+      {
+        "point": 4,
+        "intitule": "Révision des tarifs",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": null
+      },
+      {
+        "point": 5,
+        "intitule": "Comptes annuels 2024",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 6,
+        "intitule": "Convention de partenariat avec la société Hesbaye Conseil",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 40000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Valérie Poncelet",
+        "action": "signer la convention de partenariat",
+        "echeance": "2026-03-31",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2026-02-23",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": "Isabelle Grandjean",
+    "pieges": [
+      "conflit_interets"
+    ]
+  },
+  {
+    "fichier": "pv_09.pdf",
+    "nb_pages": 7,
+    "nb_mots": 3298,
+    "organisation": "Résidence Les Tilleuls ASBL",
+    "forme": "ASBL",
+    "date_seance": "2025-08-05",
+    "lieu": "Gembloux",
+    "president": "Sophie Grandjean",
+    "administrateurs_presents": [
+      "Sophie Grandjean",
+      "Élise Fontaine",
+      "Damien Englebert",
+      "Florence Jacquet",
+      "Jean-Marc Dethier",
+      "Christine Stassen",
+      "Valérie Goffin",
+      "Sophie Piette"
+    ],
+    "administrateurs_excuses": [
+      "Brigitte Masson"
+    ],
+    "nb_administrateurs": 9,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Demande de subside régional",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 25000
+      },
+      {
+        "point": 4,
+        "intitule": "Litige avec un fournisseur",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 60000
+      },
+      {
+        "point": 5,
+        "intitule": "Bilan carbone et politique environnementale",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 6,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 75000
+      },
+      {
+        "point": 7,
+        "intitule": "Révision des tarifs",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 8,
+        "intitule": "Extension des locaux",
+        "statut": "rejeté",
+        "pour": 1,
+        "contre": 6,
+        "abstention": 1,
+        "montant_eur": 900000
+      },
+      {
+        "point": 9,
+        "intitule": "Comptes annuels 2024",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Didier Hardy",
+        "action": "introduire le dossier de subside",
+        "echeance": "2025-09-30",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Michel Rondeau",
+        "action": "mandater l'avocat pour une médiation",
+        "echeance": "2025-08-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Michel Rondeau",
+        "action": "mettre en place la double authentification",
+        "echeance": "2025-08-31",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2025-09-16",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": [
+      "date_modifiee"
+    ]
+  },
+  {
+    "fichier": "pv_10.pdf",
+    "nb_pages": 8,
+    "nb_mots": 4241,
+    "organisation": "Autocars Englebert SA",
+    "forme": "SA",
+    "date_seance": "2025-10-20",
+    "lieu": "Marche-en-Famenne",
+    "president": "Stéphane Delvaux",
+    "administrateurs_presents": [
+      "Stéphane Delvaux",
+      "Benoît Paquay",
+      "Jérôme Lejeune",
+      "Pascal Lecomte",
+      "Vincent Moureau",
+      "Christine Henrard",
+      "Nicolas Degueldre"
+    ],
+    "administrateurs_excuses": [
+      "Élise Noël"
+    ],
+    "nb_administrateurs": 8,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Extension des locaux",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 540000
+      },
+      {
+        "point": 4,
+        "intitule": "Comptes annuels 2024",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 5,
+        "intitule": "Demande de subside régional",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 25000
+      },
+      {
+        "point": 6,
+        "intitule": "Recrutement : une personne chargée de la communication",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 95000
+      },
+      {
+        "point": 7,
+        "intitule": "Sécurité informatique",
+        "statut": "reporté",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": 28000
+      },
+      {
+        "point": 8,
+        "intitule": "Budget 2026",
+        "statut": "rejeté",
+        "pour": 1,
+        "contre": 5,
+        "abstention": 1,
+        "montant_eur": 3750000
+      },
+      {
+        "point": 9,
+        "intitule": "Révision des tarifs",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 10,
+        "intitule": "Bilan carbone et politique environnementale",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Caroline Leroy",
+        "action": "déposer la demande de permis",
+        "echeance": "2025-12-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Laurence Hardy",
+        "action": "introduire le dossier de subside",
+        "echeance": "2025-12-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Caroline Leroy",
+        "action": "lancer la procédure de recrutement",
+        "echeance": "2025-12-01",
+        "echeance_relative": true
+      }
+    ],
+    "prochaine_reunion": "2025-12-01",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": []
+  },
+  {
+    "fichier": "pv_11.pdf",
+    "nb_pages": 5,
+    "nb_mots": 2454,
+    "organisation": "Fromagerie du Plateau SC",
+    "forme": "SC",
+    "date_seance": "2025-03-31",
+    "lieu": "Battice",
+    "president": "Véronique Leroy",
+    "administrateurs_presents": [
+      "Véronique Leroy",
+      "Martine Fontaine",
+      "Benoît Pirard",
+      "Jean-Marc Bastin",
+      "Thierry Goffin"
+    ],
+    "administrateurs_excuses": [
+      "Jérôme Warnier"
+    ],
+    "nb_administrateurs": 6,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Demande de subside régional",
+        "statut": "approuvé",
+        "pour": 4,
+        "contre": 1,
+        "abstention": 0,
+        "montant_eur": 50000
+      },
+      {
+        "point": 4,
+        "intitule": "Budget 2025",
+        "statut": "rejeté",
+        "pour": 2,
+        "contre": 3,
+        "abstention": 0,
+        "montant_eur": 5200000
+      },
+      {
+        "point": 5,
+        "intitule": "Révision des tarifs",
+        "statut": "reporté",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 6,
+        "intitule": "Litige avec un fournisseur",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 240000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Pascal Mertens",
+        "action": "introduire le dossier de subside",
+        "echeance": "2025-05-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Marc Collard",
+        "action": "mandater l'avocat pour une médiation",
+        "echeance": "2025-04-30",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2025-05-12",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": [
+      "decision_revue",
+      "date_modifiee"
+    ]
+  },
+  {
+    "fichier": "pv_12.pdf",
+    "nb_pages": 9,
+    "nb_mots": 4506,
+    "organisation": "Centre culturel de la Mehaigne ASBL",
+    "forme": "ASBL",
+    "date_seance": "2026-07-07",
+    "lieu": "Éghezée",
+    "president": "Benoît Dufour",
+    "administrateurs_presents": [
+      "Benoît Dufour",
+      "Marc Wilmet",
+      "Sophie Wauters",
+      "Anne Delvaux",
+      "Céline Mathy"
+    ],
+    "administrateurs_excuses": [
+      "Jean-Marc Noël"
+    ],
+    "nb_administrateurs": 6,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Comptes annuels 2025",
+        "statut": "approuvé",
+        "pour": 4,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": null
+      },
+      {
+        "point": 4,
+        "intitule": "Investissement : la rénovation de la salle de spectacle",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 260000
+      },
+      {
+        "point": 5,
+        "intitule": "Demande de subside régional",
+        "statut": "approuvé",
+        "pour": 4,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 25000
+      },
+      {
+        "point": 6,
+        "intitule": "Bilan carbone et politique environnementale",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 7,
+        "intitule": "Litige avec un fournisseur",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 60000
+      },
+      {
+        "point": 8,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 4,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 75000
+      },
+      {
+        "point": 9,
+        "intitule": "Budget 2027",
+        "statut": "approuvé",
+        "pour": 3,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 8900000
+      },
+      {
+        "point": 10,
+        "intitule": "Convention de partenariat avec le groupement Condroz Développement",
+        "statut": "approuvé",
+        "pour": 2,
+        "contre": 1,
+        "abstention": 1,
+        "montant_eur": 40000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Isabelle Remacle",
+        "action": "préparer le dossier de financement bancaire",
+        "echeance": "2026-08-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Isabelle Remacle",
+        "action": "introduire le dossier de subside",
+        "echeance": "2026-07-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Damien Fontaine",
+        "action": "mandater l'avocat pour une médiation",
+        "echeance": "2026-09-29",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Damien Fontaine",
+        "action": "mettre en place la double authentification",
+        "echeance": "2026-09-29",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Isabelle Remacle",
+        "action": "transmettre le budget détaillé par service",
+        "echeance": "2026-09-30",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Damien Fontaine",
+        "action": "signer la convention de partenariat",
+        "echeance": "2026-07-31",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2026-09-29",
+    "depart_en_cours_de_seance": "Marc Wilmet",
+    "conflit_interets": null,
+    "pieges": [
+      "montant_corrige",
+      "depart_administrateur"
+    ]
+  },
+  {
+    "fichier": "pv_13.pdf",
+    "nb_pages": 6,
+    "nb_mots": 2798,
+    "organisation": "Agricoop Condroz SC",
+    "forme": "SC",
+    "date_seance": "2025-09-08",
+    "lieu": "Ciney",
+    "president": "Laurence Lejeune",
+    "administrateurs_presents": [
+      "Laurence Lejeune",
+      "Grégoire Henrard",
+      "Céline Lambert",
+      "Florence Grandjean",
+      "Anne Hardy"
+    ],
+    "administrateurs_excuses": [
+      "Nathalie Lecomte"
+    ],
+    "nb_administrateurs": 6,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Révision des tarifs",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 4,
+        "intitule": "Investissement : un hangar de stockage de mille mètres carrés",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 1850000
+      },
+      {
+        "point": 5,
+        "intitule": "Convention de partenariat avec l'intercommunale du bassin",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 40000
+      },
+      {
+        "point": 6,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 4,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 120000
+      },
+      {
+        "point": 7,
+        "intitule": "Extension des locaux",
+        "statut": "approuvé",
+        "pour": 4,
+        "contre": 1,
+        "abstention": 0,
+        "montant_eur": 540000
+      },
+      {
+        "point": 8,
+        "intitule": "Budget 2026",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 5200000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Catherine Marchal",
+        "action": "préparer le dossier de financement bancaire",
+        "echeance": "2025-10-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Damien Moureau",
+        "action": "signer la convention de partenariat",
+        "echeance": "2025-11-30",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Damien Moureau",
+        "action": "mettre en place la double authentification",
+        "echeance": "2025-11-30",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Damien Moureau",
+        "action": "déposer la demande de permis",
+        "echeance": "2025-10-20",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Catherine Marchal",
+        "action": "transmettre le budget détaillé par service",
+        "echeance": "2025-10-31",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2025-10-20",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": []
+  },
+  {
+    "fichier": "pv_14.pdf",
+    "nb_pages": 5,
+    "nb_mots": 2313,
+    "organisation": "Menuiserie Paquay SRL",
+    "forme": "SRL",
+    "date_seance": "2025-05-26",
+    "lieu": "Huy",
+    "president": "Aurélie Mertens",
+    "administrateurs_presents": [
+      "Aurélie Mertens",
+      "Céline Paquay",
+      "Valérie Marchal",
+      "Marie-Hélène Lemaire",
+      "Jean-Marc Remacle",
+      "Thierry Lecomte",
+      "Martine Poncelet"
+    ],
+    "administrateurs_excuses": [
+      "Nicolas Thiry"
+    ],
+    "nb_administrateurs": 8,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Extension des locaux",
+        "statut": "retiré",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": 540000
+      },
+      {
+        "point": 4,
+        "intitule": "Bilan carbone et politique environnementale",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 5,
+        "intitule": "Comptes annuels 2024",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 6,
+        "intitule": "Convention de partenariat avec l'intercommunale du bassin",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 40000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Grégoire Delvaux",
+        "action": "signer la convention de partenariat",
+        "echeance": "2025-06-30",
+        "echeance_relative": true
+      }
+    ],
+    "prochaine_reunion": "2025-06-30",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": "Marie-Hélène Lemaire",
+    "pieges": [
+      "conflit_interets",
+      "point_retire"
+    ]
+  },
+  {
+    "fichier": "pv_15.pdf",
+    "nb_pages": 5,
+    "nb_mots": 2586,
+    "organisation": "Mobilité Douce Wallonie ASBL",
+    "forme": "ASBL",
+    "date_seance": "2026-01-01",
+    "lieu": "Wavre",
+    "president": "Florence Pirard",
+    "administrateurs_presents": [
+      "Florence Pirard",
+      "Anne Closset",
+      "Nicolas Dubois",
+      "Philippe Hubert",
+      "Delphine Dufour",
+      "Grégoire Remacle"
+    ],
+    "administrateurs_excuses": [
+      "Sabine Collard"
+    ],
+    "nb_administrateurs": 7,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Budget 2026",
+        "statut": "rejeté",
+        "pour": 1,
+        "contre": 5,
+        "abstention": 0,
+        "montant_eur": 2300000
+      },
+      {
+        "point": 4,
+        "intitule": "Convention de partenariat avec la coopérative Terres Vives",
+        "statut": "rejeté",
+        "pour": 1,
+        "contre": 4,
+        "abstention": 1,
+        "montant_eur": 40000
+      },
+      {
+        "point": 5,
+        "intitule": "Recrutement : un contrôleur de gestion",
+        "statut": "reporté",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": 58000
+      },
+      {
+        "point": 6,
+        "intitule": "Investissement : un minibus adapté aux personnes à mobilité réduite",
+        "statut": "reporté",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": 1200000
+      }
+    ],
+    "actions": [],
+    "prochaine_reunion": "2026-02-12",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": [
+      "decision_revue"
+    ]
+  },
+  {
+    "fichier": "pv_16.pdf",
+    "nb_pages": 8,
+    "nb_mots": 3984,
+    "organisation": "Laboratoires Remacle SA",
+    "forme": "SA",
+    "date_seance": "2025-10-20",
+    "lieu": "Louvain-la-Neuve",
+    "president": "Grégoire Englebert",
+    "administrateurs_presents": [
+      "Grégoire Englebert",
+      "Pascal Materne",
+      "Anne Gilson",
+      "Nicolas Dethier",
+      "Florence Masson",
+      "Véronique Stassen",
+      "Stéphane Marchal"
+    ],
+    "administrateurs_excuses": [],
+    "nb_administrateurs": 7,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 120000
+      },
+      {
+        "point": 4,
+        "intitule": "Extension des locaux",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 900000
+      },
+      {
+        "point": 5,
+        "intitule": "Litige avec un fournisseur",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 1,
+        "abstention": 0,
+        "montant_eur": 60000
+      },
+      {
+        "point": 6,
+        "intitule": "Bilan carbone et politique environnementale",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 7,
+        "intitule": "Convention de partenariat avec le groupement Condroz Développement",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 150000
+      },
+      {
+        "point": 8,
+        "intitule": "Comptes annuels 2024",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 9,
+        "intitule": "Investissement : la migration vers un nouvel ERP",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 140000
+      },
+      {
+        "point": 10,
+        "intitule": "Recrutement : un contrôleur de gestion",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 58000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Luc Bastin",
+        "action": "mettre en place la double authentification",
+        "echeance": "2025-12-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Luc Bastin",
+        "action": "déposer la demande de permis",
+        "echeance": "2025-12-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Luc Bastin",
+        "action": "mandater l'avocat pour une médiation",
+        "echeance": "2025-11-30",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Luc Bastin",
+        "action": "signer la convention de partenariat",
+        "echeance": "2025-12-15",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Laurent Piette",
+        "action": "préparer le dossier de financement bancaire",
+        "echeance": "2025-12-15",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Luc Bastin",
+        "action": "lancer la procédure de recrutement",
+        "echeance": "2025-12-31",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2025-12-15",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": []
+  },
+  {
+    "fichier": "pv_17.pdf",
+    "nb_pages": 8,
+    "nb_mots": 4002,
+    "organisation": "Brasserie des Trois Vallées SRL",
+    "forme": "SRL",
+    "date_seance": "2026-01-19",
+    "lieu": "Dinant",
+    "president": "Damien Degueldre",
+    "administrateurs_presents": [
+      "Damien Degueldre",
+      "Stéphane Lejeune",
+      "Xavier Bastin",
+      "Grégoire Gilson",
+      "Damien Collignon",
+      "Christophe Lambert",
+      "Jérôme Noël",
+      "Stéphane Leroy",
+      "Didier Delhez"
+    ],
+    "administrateurs_excuses": [],
+    "nb_administrateurs": 9,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 9,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 9,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 45000
+      },
+      {
+        "point": 4,
+        "intitule": "Recrutement : un conseiller en prévention",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 72000
+      },
+      {
+        "point": 5,
+        "intitule": "Comptes annuels 2025",
+        "statut": "approuvé",
+        "pour": 9,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 6,
+        "intitule": "Demande de subside régional",
+        "statut": "approuvé",
+        "pour": 9,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 50000
+      },
+      {
+        "point": 7,
+        "intitule": "Proposition de nomination d'un administrateur",
+        "statut": "approuvé",
+        "pour": 9,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 8,
+        "intitule": "Investissement : une nouvelle ligne d'embouteillage",
+        "statut": "rejeté",
+        "pour": 1,
+        "contre": 7,
+        "abstention": 0,
+        "montant_eur": 720000
+      },
+      {
+        "point": 9,
+        "intitule": "Extension des locaux",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 1,
+        "abstention": 1,
+        "montant_eur": 320000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Michel Baudouin",
+        "action": "mettre en place la double authentification",
+        "echeance": "2026-02-23",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Michel Baudouin",
+        "action": "lancer la procédure de recrutement",
+        "echeance": "2026-03-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Valérie Paquay",
+        "action": "introduire le dossier de subside",
+        "echeance": "2026-02-23",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Michel Baudouin",
+        "action": "déposer la demande de permis",
+        "echeance": "2026-02-23",
+        "echeance_relative": true
+      }
+    ],
+    "prochaine_reunion": "2026-02-23",
+    "depart_en_cours_de_seance": "Stéphane Lejeune",
+    "conflit_interets": null,
+    "pieges": [
+      "depart_administrateur",
+      "date_modifiee"
+    ]
+  },
+  {
+    "fichier": "pv_18.pdf",
+    "nb_pages": 5,
+    "nb_mots": 2365,
+    "organisation": "Transports Grandjean SA",
+    "forme": "SA",
+    "date_seance": "2025-12-15",
+    "lieu": "Liège",
+    "president": "Vincent Marchal",
+    "administrateurs_presents": [
+      "Vincent Marchal",
+      "Brigitte Leroy",
+      "Luc Dubois",
+      "Grégoire Delvaux",
+      "Véronique Materne",
+      "Caroline Delhez",
+      "Céline Englebert"
+    ],
+    "administrateurs_excuses": [
+      "Benoît Poncelet"
+    ],
+    "nb_administrateurs": 8,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Comptes annuels 2024",
+        "statut": "approuvé",
+        "pour": 6,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": null
+      },
+      {
+        "point": 4,
+        "intitule": "Budget 2026",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 1450000
+      },
+      {
+        "point": 5,
+        "intitule": "Investissement : un nouveau logiciel de gestion d'entrepôt",
+        "statut": "rejeté",
+        "pour": 2,
+        "contre": 5,
+        "abstention": 0,
+        "montant_eur": 380000
+      },
+      {
+        "point": 6,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 75000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Marc Mathy",
+        "action": "transmettre le budget détaillé par service",
+        "echeance": "2026-01-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Michel Hubert",
+        "action": "mettre en place la double authentification",
+        "echeance": "2026-02-28",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2026-03-09",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": null,
+    "pieges": [
+      "montant_corrige"
+    ]
+  },
+  {
+    "fichier": "pv_19.pdf",
+    "nb_pages": 6,
+    "nb_mots": 2906,
+    "organisation": "Maison médicale du Houyoux ASBL",
+    "forme": "ASBL",
+    "date_seance": "2026-06-04",
+    "lieu": "Namur",
+    "president": "Marie-Hélène Leroy",
+    "administrateurs_presents": [
+      "Marie-Hélène Leroy",
+      "Caroline Wauters",
+      "Michel Thiry",
+      "Benoît Goffin",
+      "Frédéric Dubois",
+      "Luc Warnier",
+      "Aurélie Marchal",
+      "Martine Wilmet",
+      "Delphine Collard"
+    ],
+    "administrateurs_excuses": [],
+    "nb_administrateurs": 9,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 9,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Recrutement : une personne chargée de la communication",
+        "statut": "approuvé",
+        "pour": 9,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 95000
+      },
+      {
+        "point": 4,
+        "intitule": "Bilan carbone et politique environnementale",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 5,
+        "intitule": "Comptes annuels 2025",
+        "statut": "reporté",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 6,
+        "intitule": "Budget 2027",
+        "statut": "approuvé",
+        "pour": 7,
+        "contre": 1,
+        "abstention": 1,
+        "montant_eur": 8900000
+      },
+      {
+        "point": 7,
+        "intitule": "Convention de partenariat avec la coopérative Terres Vives",
+        "statut": "approuvé",
+        "pour": 8,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 150000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Stéphane Henrard",
+        "action": "lancer la procédure de recrutement",
+        "echeance": "2026-07-30",
+        "echeance_relative": true
+      },
+      {
+        "responsable": "Céline Fontaine",
+        "action": "transmettre le budget détaillé par service",
+        "echeance": "2026-08-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Stéphane Henrard",
+        "action": "signer la convention de partenariat",
+        "echeance": "2026-06-30",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2026-07-30",
+    "depart_en_cours_de_seance": null,
+    "conflit_interets": "Aurélie Marchal",
+    "pieges": [
+      "conflit_interets",
+      "decision_revue"
+    ]
+  },
+  {
+    "fichier": "pv_20.pdf",
+    "nb_pages": 5,
+    "nb_mots": 2358,
+    "organisation": "Imprimerie Moureau SRL",
+    "forme": "SRL",
+    "date_seance": "2026-04-27",
+    "lieu": "Mons",
+    "president": "Delphine Degueldre",
+    "administrateurs_presents": [
+      "Delphine Degueldre",
+      "Luc Baudouin",
+      "Stéphane Mertens",
+      "Céline Lejeune",
+      "Thierry Lecomte"
+    ],
+    "administrateurs_excuses": [
+      "Martine Collard"
+    ],
+    "nb_administrateurs": 6,
+    "decisions": [
+      {
+        "point": 1,
+        "intitule": "Approbation du procès-verbal de la séance précédente",
+        "statut": "approuvé",
+        "pour": 5,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": null
+      },
+      {
+        "point": 2,
+        "intitule": "Rapport de la direction",
+        "statut": "information",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": null
+      },
+      {
+        "point": 3,
+        "intitule": "Proposition de nomination d'un administrateur",
+        "statut": "approuvé",
+        "pour": 3,
+        "contre": 1,
+        "abstention": 1,
+        "montant_eur": null
+      },
+      {
+        "point": 4,
+        "intitule": "Sécurité informatique",
+        "statut": "approuvé",
+        "pour": 4,
+        "contre": 0,
+        "abstention": 1,
+        "montant_eur": 28000
+      },
+      {
+        "point": 5,
+        "intitule": "Demande de subside régional",
+        "statut": "retiré",
+        "pour": null,
+        "contre": null,
+        "abstention": null,
+        "montant_eur": 50000
+      },
+      {
+        "point": 6,
+        "intitule": "Extension des locaux",
+        "statut": "approuvé",
+        "pour": 4,
+        "contre": 0,
+        "abstention": 0,
+        "montant_eur": 320000
+      }
+    ],
+    "actions": [
+      {
+        "responsable": "Sophie Lemaire",
+        "action": "mettre en place la double authentification",
+        "echeance": "2026-05-31",
+        "echeance_relative": false
+      },
+      {
+        "responsable": "Sophie Lemaire",
+        "action": "déposer la demande de permis",
+        "echeance": "2026-06-30",
+        "echeance_relative": false
+      }
+    ],
+    "prochaine_reunion": "2026-06-08",
+    "depart_en_cours_de_seance": "Stéphane Mertens",
+    "conflit_interets": null,
+    "pieges": [
+      "point_retire",
+      "depart_administrateur"
+    ]
+  }
+]

@@ -1,0 +1,1496 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le trajet des poids</title>
+<meta name="description" content="Visualiser sur un GPU NVIDIA pourquoi le prefill est limité par le calcul, le decoding par la bande passante mémoire, et quand le speculative decoding aide ou nuit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #edf0f4;
+  --surface: #fbfcfd;
+  --surface-2: #f2f4f8;
+  --surface-3: #e2e7ee;
+  --ink: #111726;
+  --ink-2: #434d63;
+  --muted: #5f6980;
+  --line: #dce1e9;
+  --line-2: #c3cad6;
+  --mem: #2a78d6;
+  --mem-strong: #1c5cab;
+  --comp: #eb6834;
+  --comp-strong: #b4461a;
+  --draft: #4a3aa7;
+  --ghost: #d2d8e2;
+  --shadow: 0 1px 2px rgb(17 23 38 / .05), 0 8px 24px rgb(17 23 38 / .05);
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "JetBrains Mono", "Cascadia Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0b0f16;
+    --surface: #131923;
+    --surface-2: #19202b;
+    --surface-3: #262e3b;
+    --ink: #edf1f7;
+    --ink-2: #b4bdcc;
+    --muted: #8e97aa;
+    --line: #242c39;
+    --line-2: #364052;
+    --mem: #3987e5;
+    --mem-strong: #86b6ef;
+    --comp: #e56a36;
+    --comp-strong: #f0925f;
+    --draft: #9085e9;
+    --ghost: #2e3747;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0f16;
+  --surface: #131923;
+  --surface-2: #19202b;
+  --surface-3: #262e3b;
+  --ink: #edf1f7;
+  --ink-2: #b4bdcc;
+  --muted: #8e97aa;
+  --line: #242c39;
+  --line-2: #364052;
+  --mem: #3987e5;
+  --mem-strong: #86b6ef;
+  --comp: #e56a36;
+  --comp-strong: #f0925f;
+  --draft: #9085e9;
+  --ghost: #2e3747;
+  --shadow: none;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.55 var(--f-body); padding-inline: 16px; -webkit-font-smoothing: antialiased; }
+[hidden] { display: none !important; }
+h1, h2, h3, h4 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+p { margin: 0; }
+code { font-family: var(--f-mono); font-size: .9em; }
+a { color: var(--mem-strong); }
+:focus-visible { outline: 2px solid var(--mem); outline-offset: 2px; border-radius: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  margin-inline: -16px; padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px 18px; flex-wrap: wrap;
+  background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { font: 800 17px/1 var(--f-display); color: var(--ink); text-decoration: none; letter-spacing: -.01em; }
+.nav { display: flex; gap: 4px 14px; flex-wrap: wrap; margin-right: auto; }
+.nav a { color: var(--ink-2); text-decoration: none; font-size: 14px; }
+.nav a:hover { color: var(--ink); text-decoration: underline; }
+.gpu-pick { display: inline-flex; align-items: center; gap: 8px; font: 700 12px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+.page { max-width: 1320px; margin-inline: auto; padding-block: 8px 56px; }
+.hero { padding-block: 52px 12px; }
+.eyebrow { font: 500 12px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+.hero h1 { font-size: clamp(2.6rem, 6.5vw, 4.8rem); font-weight: 800; letter-spacing: -.035em; line-height: .98; }
+.hero h1 .arrow-h { color: var(--mem); }
+.lead { font-size: 1.16rem; max-width: 42em; color: var(--ink-2); margin-top: 22px; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 30px; max-width: 64rem; }
+.stat { display: grid; gap: 6px; align-content: start; padding: 16px 18px; border-left: 3px solid var(--line-2); }
+.stat-v { font: 800 clamp(2rem, 4vw, 2.8rem)/1 var(--f-display); letter-spacing: -.02em; }
+.stat-v.mem { color: var(--mem-strong); }
+.stat-v.comp { color: var(--comp-strong); }
+.stat-l { font-size: 14.5px; color: var(--ink-2); }
+
+.section { padding-block: 48px 8px; }
+.section-head { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 10px 14px; margin-bottom: 22px; }
+.section-head > p { grid-column: 1 / -1; }
+.step { flex: none; width: 32px; height: 32px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--ink); color: var(--bg); font: 700 15px/1 var(--f-mono); }
+.section-head h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); font-weight: 800; letter-spacing: -.025em; }
+.section-intro { max-width: 46em; color: var(--ink-2); }
+.two { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 32px; align-items: start; }
+.prose { display: grid; gap: 14px; max-width: 40em; }
+.prose strong { font-weight: 700; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); min-width: 0; }
+.card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 14px; }
+.card-head h3 { font-size: 1.14rem; font-weight: 800; letter-spacing: -.01em; }
+.card-sub { flex-basis: 100%; color: var(--muted); font-size: 14px; max-width: 64em; }
+
+.btn { font: 700 14px/1.1 var(--f-body); color: var(--ink); padding: 9px 14px; border-radius: 9px; cursor: pointer; background: var(--surface); border: 1px solid var(--line-2); }
+.btn:hover { background: var(--surface-2); border-color: var(--muted); }
+.btn.primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.btn.small { font-size: 13px; padding: 7px 11px; }
+.btn.ghost { background: transparent; }
+.select { font: 400 14px/1.2 var(--f-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line-2); border-radius: 9px; padding: 7px 9px; }
+.select.small { font-size: 13px; padding: 6px 8px; text-transform: none; letter-spacing: 0; }
+.seg-ctl { display: inline-flex; flex-wrap: wrap; padding: 3px; gap: 3px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; }
+.seg-ctl button { font: 700 13px/1 var(--f-body); color: var(--ink-2); background: transparent; border: 0; border-radius: 7px; padding: 9px 12px; cursor: pointer; }
+.seg-ctl button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--line-2); }
+
+input[type=range] { --c: var(--mem); --fill: 50%; -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 0; background: transparent; cursor: pointer; }
+input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(to right, var(--c) 0 var(--fill), var(--surface-3) var(--fill) 100%); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -6px; border-radius: 50%; background: var(--surface); border: 2.5px solid var(--c); box-shadow: 0 1px 3px rgb(0 0 0 / .2); }
+input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--surface-3); }
+input[type=range]::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--c); }
+input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--surface); border: 2.5px solid var(--c); }
+input[type=range].draft { --c: var(--draft); }
+.ctl { display: grid; gap: 2px; min-width: 190px; flex: 1; }
+.ctl-top { display: flex; align-items: baseline; gap: 8px; font-size: 13.5px; }
+.ctl-top label { font-weight: 700; }
+.ctl-top output { margin-left: auto; font: 700 14px/1 var(--f-mono); font-variant-numeric: tabular-nums; }
+.ctl-hint { font-size: 12.5px; color: var(--muted); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
+.sw.mem { background: var(--mem); }
+.sw.comp { background: var(--comp); }
+.sw.draft { background: var(--draft); }
+.sw.ghost { background: var(--ghost); }
+
+/* ── Section 1 : échelle mémoire ── */
+.ladder { display: grid; gap: 6px; }
+.lad-row { display: grid; grid-template-columns: 22px minmax(120px, 170px) minmax(0, 1fr) minmax(130px, 170px); gap: 12px; align-items: center; }
+.lad-head { font: 500 10.5px/1 var(--f-mono); color: var(--muted); height: 30px; }
+.lad-scale { position: relative; height: 100%; }
+.lad-scale span { position: absolute; bottom: 4px; transform: translateX(-50%); white-space: nowrap; }
+.lad-scale b { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; font-weight: 700; color: var(--ink-2); }
+.rungs { position: relative; display: grid; gap: 6px; }
+.rung { min-height: 58px; padding-block: 6px; border-top: 1px solid var(--line); }
+.rung:first-child { border-top: 0; }
+.rung-name { display: grid; gap: 1px; }
+.rung-name b { font: 700 14.5px/1.2 var(--f-body); }
+.rung-name span { font-size: 12.5px; color: var(--muted); }
+.rung-track { position: relative; height: 22px; background: linear-gradient(var(--surface-2), var(--surface-2)) no-repeat 0 50% / 100% 22px; border-radius: 4px; }
+.rung-bar { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; background: var(--mem); opacity: .85; }
+.rung-bar-v { position: absolute; top: 50%; right: 6px; transform: translateY(-50%); font: 700 11px/1 var(--f-mono); color: #ffffff; white-space: nowrap; }
+.rung.tc .rung-track { background: none; height: auto; }
+.rung.tc .tc-note { font-size: 13px; color: var(--ink-2); }
+.lad-mark { position: absolute; top: -6px; bottom: -6px; width: 2px; background: var(--ink); opacity: .55; }
+.rung-stats { display: grid; gap: 1px; font: 500 12px/1.35 var(--f-mono); color: var(--ink-2); }
+.rung-stats span:last-child { color: var(--muted); }
+.tile { position: absolute; left: 4px; width: 14px; height: 14px; border-radius: 3px; background: var(--mem); transform: translateY(-50%); animation: climb 6s cubic-bezier(.4, 0, .2, 1) infinite; }
+@keyframes climb {
+  0%, 10% { top: 90%; background: var(--mem); opacity: 1; }
+  24%, 32% { top: 70%; }
+  46%, 54% { top: 50%; }
+  68%, 76% { top: 30%; background: var(--mem); }
+  88% { top: 10%; background: var(--comp); opacity: 1; }
+  100% { top: 10%; background: var(--comp); opacity: 0; }
+}
+.ladder-note { margin-top: 14px; font-size: 14px; color: var(--ink-2); }
+.ladder-note b { color: var(--ink); }
+
+/* ── Section 2 : simulateur ── */
+.phases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+.phase { padding: 16px 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); display: grid; gap: 8px; align-content: start; }
+.phase h3 { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+.phase h3 .pill { font: 700 11px/1 var(--f-mono); padding: 4px 8px; border-radius: 99px; letter-spacing: .02em; }
+.pill.comp { background: color-mix(in srgb, var(--comp) 18%, transparent); color: var(--comp-strong); }
+.pill.mem { background: color-mix(in srgb, var(--mem) 18%, transparent); color: var(--mem-strong); }
+.pill.draft { background: color-mix(in srgb, var(--draft) 18%, transparent); color: var(--draft); }
+.phase p { font-size: 15px; color: var(--ink-2); }
+.sim-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 14px; }
+.sim-opts { display: flex; flex-wrap: wrap; gap: 12px 20px; flex: 1; min-width: 220px; }
+.sim-play { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; }
+.sim-play label { font-size: 13px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.sim-status { font-size: 14.5px; color: var(--ink-2); min-height: 1.6em; margin-bottom: 8px; }
+.sim-status b { color: var(--ink); }
+.sim-status .clock { font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.scene-wrap { overflow-x: auto; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }
+#scene { display: block; }
+.sim-legend { margin-top: 10px; }
+.gantt-wrap { margin-top: 14px; }
+#gantt { display: block; width: 100%; height: 96px; }
+.gauges { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) repeat(3, minmax(0, 1fr)); gap: 12px 18px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.gauge, .kpi { display: grid; gap: 6px; align-content: start; }
+.g-lab, .kpi span { font-size: 12.5px; color: var(--muted); }
+.g-row { display: flex; align-items: center; gap: 10px; }
+.g-bar { flex: 1; height: 10px; border-radius: 5px; background: var(--surface-3); overflow: hidden; }
+.g-bar i { display: block; height: 100%; min-width: 3px; border-radius: 5px; background: var(--comp); transition: width .4s; }
+.g-bar.mem i { background: var(--mem); }
+.g-val { font: 700 15px/1 var(--f-mono); font-variant-numeric: tabular-nums; min-width: 58px; text-align: right; }
+.kpi b { font: 700 16px/1.2 var(--f-mono); }
+.kpi b.comp { color: var(--comp-strong); }
+.kpi b.mem { color: var(--mem-strong); }
+.sim-out { display: flex; flex-wrap: wrap; gap: 5px 4px; align-items: center; margin-top: 14px; min-height: 36px; padding: 10px 12px; background: var(--surface-2); border-radius: 10px; font: 500 14px/1.2 var(--f-mono); }
+.chip { padding: 3px 6px; border-radius: 5px; border: 1px solid transparent; background: color-mix(in srgb, var(--mem) 16%, var(--surface)); }
+.chip.prompt { background: transparent; border: 1px dashed var(--line-2); color: var(--muted); font-size: 12.5px; }
+.chip.first { background: var(--comp); color: #111726; font-weight: 700; }
+.chip.prop { background: transparent; border: 1.5px solid var(--draft); color: var(--draft); }
+.chip.acc { background: color-mix(in srgb, var(--draft) 20%, var(--surface)); border: 1.5px solid var(--draft); color: var(--ink); }
+.chip.rej { background: transparent; border: 1.5px dashed var(--muted); color: var(--muted); text-decoration: line-through; }
+.chip.fix, .chip.bonus { box-shadow: inset 0 0 0 2px var(--mem); background: color-mix(in srgb, var(--mem) 24%, var(--surface)); }
+.sim-explain { margin-top: 14px; font-size: 15px; color: var(--ink-2); max-width: 70em; }
+.sim-explain b { color: var(--ink); }
+.cmp-wrap { overflow-x: auto; margin-top: 16px; }
+table.cmp { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+.cmp th { text-align: left; font: 500 12px/1.3 var(--f-body); color: var(--muted); padding: 0 12px 8px 0; border-bottom: 1px solid var(--line-2); }
+.cmp td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.cmp td:first-child { font-weight: 700; }
+.cmp td.num { font-family: var(--f-mono); font-size: 13.5px; }
+.tag { display: inline-block; font: 700 11.5px/1 var(--f-mono); padding: 4px 8px; border-radius: 99px; }
+.tag.comp { background: color-mix(in srgb, var(--comp) 18%, transparent); color: var(--comp-strong); }
+.tag.mem { background: color-mix(in srgb, var(--mem) 18%, transparent); color: var(--mem-strong); }
+
+/* ── Graphiques SVG ── */
+.chart { display: block; width: 100%; height: auto; overflow: visible; }
+.chart .grid line { stroke: var(--line); stroke-width: 1; }
+.chart .axis text, .chart text.ax { fill: var(--muted); font: 500 11px var(--f-mono); }
+.chart text.lab { fill: var(--ink-2); font: 700 11.5px var(--f-mono); }
+.chart text.big { fill: var(--ink); font: 700 12.5px var(--f-body); }
+.chart .band-mem { fill: color-mix(in srgb, var(--mem) 9%, transparent); }
+.chart .band-comp { fill: color-mix(in srgb, var(--comp) 10%, transparent); }
+.chart .roof { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; }
+.chart .ridge { stroke: var(--ink-2); stroke-width: 1; }
+.chart .pt { stroke: var(--surface); stroke-width: 2; }
+.chart .pt.mem { fill: var(--mem); }
+.chart .pt.comp { fill: var(--comp); }
+.chart .halo { fill: none; stroke-width: 2; }
+.chart .halo.mem { stroke: var(--mem); }
+.chart .halo.comp { stroke: var(--comp); }
+.chart .l-norm { fill: none; stroke: var(--mem); stroke-width: 2.5; stroke-linejoin: round; }
+.chart .l-spec { fill: none; stroke: var(--draft); stroke-width: 2.5; stroke-linejoin: round; }
+.chart .cur { stroke: var(--ink); stroke-width: 1.5; }
+.chart .cross { stroke: var(--muted); stroke-width: 1; }
+.chart .sat { fill: color-mix(in srgb, var(--comp) 10%, transparent); }
+.chart .blk-mem { fill: var(--mem); }
+.chart .blk-draft { fill: var(--draft); }
+.chart text.in { fill: #ffffff; font: 700 11px var(--f-mono); }
+.roof-read { margin-top: 10px; font-size: 15px; color: var(--ink-2); min-height: 3em; }
+.roof-read b { color: var(--ink); }
+.roof-ctl { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; margin-top: 12px; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.layer-bars { display: grid; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.lb-row { display: grid; grid-template-columns: minmax(150px, 220px) minmax(0, 1fr) 90px; gap: 12px; align-items: center; font-size: 13.5px; }
+.lb-track { height: 14px; background: var(--surface-2); border-radius: 4px; }
+.lb-track i { display: block; height: 100%; border-radius: 0 4px 4px 0; transition: width .25s; min-width: 2px; }
+.lb-track.mem i { background: var(--mem); }
+.lb-track.comp i { background: var(--comp); }
+.lb-row .v { font: 700 13px var(--f-mono); text-align: right; }
+
+.spec-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 32px; align-items: start; }
+.ctl-row { display: flex; flex-wrap: wrap; gap: 14px 24px; margin-bottom: 14px; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 18px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.tl-note { margin-top: 6px; font-size: 14px; color: var(--ink-2); }
+.tl-note b { color: var(--ink); }
+.kbars { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; align-items: end; height: 130px; margin-top: 8px; position: relative; }
+.kbar { display: grid; grid-template-rows: auto 1fr auto; height: 100%; align-items: end; text-align: center; gap: 4px; }
+.kbar i { display: block; width: 100%; border-radius: 4px 4px 0 0; background: color-mix(in srgb, var(--draft) 45%, var(--surface-3)); transition: height .25s; }
+.kbar.on i { background: var(--draft); }
+.kbar b { font: 700 11.5px/1 var(--f-mono); }
+.kbar span { font: 500 11px/1 var(--f-mono); color: var(--muted); }
+.sub-h { font: 700 12px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 20px; }
+
+.users-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 8px; }
+.users-charts h4 { font: 700 14px/1.3 var(--f-body); margin-bottom: 4px; }
+.verdict { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 15px; }
+.verdict.good { background: color-mix(in srgb, var(--draft) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--draft) 40%, transparent); }
+.verdict.bad { background: color-mix(in srgb, var(--comp) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--comp) 45%, transparent); }
+.nuance { margin-top: 18px; padding: 14px 16px; border: 1px dashed var(--line-2); border-radius: 12px; font-size: 14.5px; color: var(--ink-2); display: grid; gap: 6px; }
+.nuance b { color: var(--ink); }
+
+.foot { max-width: 1320px; margin: 0 auto; padding-block: 24px 40px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--muted); display: grid; gap: 6px; }
+.tip { position: fixed; z-index: 60; max-width: 320px; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--line-2); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.45; box-shadow: 0 10px 30px rgb(0 0 0 / .18); }
+.tip b { font-family: var(--f-mono); }
+.tip .kv { display: grid; grid-template-columns: 1fr auto; gap: 2px 14px; margin-top: 4px; }
+.tip .kv span:nth-child(even) { font-family: var(--f-mono); text-align: right; }
+
+@media (max-width: 1000px) {
+  .two, .spec-grid { grid-template-columns: minmax(0, 1fr); }
+  .gauges { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .stats, .phases, .users-charts { grid-template-columns: minmax(0, 1fr); }
+  .lad-row { grid-template-columns: 22px minmax(0, 1fr) minmax(0, 1fr); }
+  .lad-row > :nth-child(3) { grid-column: 2 / -1; grid-row: 2; }
+  .lad-head > :nth-child(2), .lad-head > :nth-child(4) { display: none; }
+  .lb-row { grid-template-columns: minmax(0, 1fr) 80px; }
+  .lb-row .lb-track { grid-column: 1 / -1; grid-row: 2; }
+  .hero { padding-top: 36px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0s !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#top">Le trajet des poids</a>
+  <nav class="nav" aria-label="Sections">
+    <a href="#memoire">1 · Où vivent les poids</a>
+    <a href="#simulateur">2 · Prefill et decoding</a>
+    <a href="#roofline">3 · Calcul ou mémoire</a>
+    <a href="#speculative">4 · Speculative decoding</a>
+    <a href="#utilisateurs">5 · Beaucoup d'utilisateurs</a>
+  </nav>
+  <label class="gpu-pick" for="gpuSel">GPU
+    <select id="gpuSel" class="select small">
+      <option value="h100">NVIDIA H100 SXM</option>
+      <option value="h200">NVIDIA H200 SXM</option>
+      <option value="a100">NVIDIA A100 SXM 80 Go</option>
+      <option value="rtx4090">NVIDIA GeForce RTX 4090</option>
+    </select>
+  </label>
+  <button class="btn small ghost" id="themeBtn" type="button">Thème : auto</button>
+</header>
+
+<main class="page" id="top">
+
+  <section class="hero">
+    <p class="eyebrow">Formation LLM · inférence sur GPU</p>
+    <h1>Le trajet des poids</h1>
+    <p class="lead">Pour produire un token, chaque poids du modèle doit quitter la VRAM et monter jusqu'aux Tensor Cores. Ce trajet coûte souvent plus cher que le calcul lui-même. Toute la différence entre prefill et decoding vient de là.</p>
+    <div class="stats">
+      <div class="stat"><span class="stat-v mem" id="stBytes"></span><span class="stat-l">de poids à lire pour chaque token généré par Llama 3.1 8B en BF16</span></div>
+      <div class="stat"><span class="stat-v" id="stTime"></span><span class="stat-l" id="stTimeSub"></span></div>
+      <div class="stat"><span class="stat-v comp" id="stUtil"></span><span class="stat-l">des Tensor Cores utilisés pendant ce temps : le GPU attend la mémoire</span></div>
+    </div>
+  </section>
+
+  <!-- ─────────────── 1. Où vivent les poids ─────────────── -->
+  <section class="section" id="memoire">
+    <div class="section-head"><span class="step">1</span><h2>Où vivent les poids</h2></div>
+    <div class="two">
+      <div class="prose">
+        <p id="memP1"></p>
+        <p>Les <strong>Tensor Cores</strong>, eux, ne calculent que sur des données déjà montées tout près d'eux : dans les registres ou, depuis l'architecture Hopper, directement dans la mémoire partagée du SM. Entre la VRAM et les registres, chaque niveau est plus petit et plus rapide que le précédent.</p>
+        <p id="memP3"></p>
+        <p>Une tuile montée jusqu'aux Tensor Cores sert à <strong>tous les tokens présents</strong> à ce moment-là, puis laisse sa place à la suivante. Toute la suite de la page tient dans cette question : combien de tokens profitent de chaque tuile chargée ?</p>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3 id="ladderTitle"></h3>
+          <p class="card-sub">Capacité totale de chaque niveau, en échelle logarithmique. Les deux traits verticaux marquent la taille d'une couche de Llama 3.1 8B et celle du modèle entier.</p>
+        </div>
+        <div class="ladder" id="ladder"></div>
+        <p class="ladder-note" id="ladderNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── 2. Prefill et decoding ─────────────── -->
+  <section class="section" id="simulateur">
+    <div class="section-head">
+      <span class="step">2</span><h2>Prefill et decoding</h2>
+      <p class="section-intro">Une requête se déroule en deux phases. Elles font exactement le même calcul par token, mais pas avec le même nombre de tokens à la fois.</p>
+    </div>
+    <div class="phases">
+      <div class="phase">
+        <h3>Prefill <span class="pill comp">limité par le calcul</span></h3>
+        <p>Traite le prompt. Tous ses tokens sont connus d'avance : ils traversent le modèle ensemble, couche par couche, et remplissent le KV cache. Chaque tuile de poids chargée sert à tous les tokens du prompt. La phase se termine par le premier token de la réponse : sa durée donne le <strong>TTFT</strong> (time to first token). Dans <code>llama-bench</code>, c'est la mesure <code>pp512</code>.</p>
+      </div>
+      <div class="phase">
+        <h3>Decoding <span class="pill mem">limité par la mémoire</span></h3>
+        <p>Génère la réponse un token à la fois : chaque token dépend du précédent, impossible de les calculer ensemble. Pour chacun, il faut relire tous les poids du modèle… pour un seul token. La durée par token donne le <strong>TPOT</strong> (time per output token). Dans <code>llama-bench</code>, c'est la mesure <code>tg128</code>.</p>
+      </div>
+    </div>
+
+    <article class="card">
+      <div class="sim-bar">
+        <div class="seg-ctl" role="group" aria-label="Phase simulée">
+          <button type="button" data-mode="prefill" aria-pressed="true">Prefill</button>
+          <button type="button" data-mode="decode" aria-pressed="false">Decoding</button>
+          <button type="button" data-mode="spec" aria-pressed="false">Speculative decoding</button>
+        </div>
+        <div class="sim-opts">
+          <div class="ctl" id="optPrompt">
+            <div class="ctl-top"><label for="promptLen">Longueur du prompt</label><output id="promptLenOut" for="promptLen"></output></div>
+            <input type="range" id="promptLen" min="0" max="8" step="1" value="5">
+          </div>
+          <div class="ctl" id="optK" hidden>
+            <div class="ctl-top"><label for="simK">Propositions par cycle <code>k</code></label><output data-out="k"></output></div>
+            <input type="range" id="simK" class="draft" data-bind="k" min="1" max="8" step="1">
+          </div>
+          <div class="ctl" id="optA" hidden>
+            <div class="ctl-top"><label for="simA">Taux d'acceptation <code>α</code></label><output data-out="alpha"></output></div>
+            <input type="range" id="simA" class="draft" data-bind="alpha" min="0.3" max="0.95" step="0.05">
+          </div>
+        </div>
+        <div class="sim-play">
+          <button class="btn small" id="simPlay" type="button">Pause</button>
+          <button class="btn small ghost" id="simRestart" type="button">Recommencer</button>
+          <label for="simSpeed">Vitesse
+            <select id="simSpeed" class="select small">
+              <option value="0.4">lente</option>
+              <option value="1" selected>normale</option>
+              <option value="3">rapide</option>
+              <option value="10">très rapide</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <p class="sim-status" id="simStatus" aria-live="off"></p>
+      <div class="scene-wrap" id="sceneWrap"><canvas id="scene" role="img" aria-label="Schéma animé du GPU : VRAM avec les couches du modèle, bus mémoire, cache L2, grille des SM et tokens traités"></canvas></div>
+      <div class="legend sim-legend">
+        <span><span class="sw mem"></span>tuiles de poids en transit sur le bus mémoire</span>
+        <span><span class="sw comp"></span>SM dont les Tensor Cores calculent</span>
+        <span id="lgDraft" hidden><span class="sw draft"></span>modèle brouillon (Llama 3.2 1B)</span>
+        <span id="slowNote"></span>
+      </div>
+      <div class="gantt-wrap"><canvas id="gantt" role="img" aria-label="Chronogramme de la passe : temps d'occupation du bus mémoire et des Tensor Cores, couche par couche"></canvas></div>
+      <div class="gauges">
+        <div class="gauge"><span class="g-lab" id="gLabTc">Tensor Cores occupés (moyenne de la passe)</span><div class="g-row"><span class="g-bar"><i id="gTcBar"></i></span><span class="g-val" id="gTc"></span></div></div>
+        <div class="gauge"><span class="g-lab">Bus mémoire occupé</span><div class="g-row"><span class="g-bar mem"><i id="gBusBar"></i></span><span class="g-val" id="gBus"></span></div></div>
+        <div class="kpi"><span>Goulot</span><b id="gBound"></b></div>
+        <div class="kpi"><span id="gDurLab">Durée de la passe</span><b id="gDur"></b></div>
+        <div class="kpi"><span id="gRateLab">Débit</span><b id="gRate"></b></div>
+      </div>
+      <div class="sim-out" id="simOut" aria-label="Tokens produits"></div>
+      <p class="sim-explain" id="simExplain"></p>
+    </article>
+
+    <article class="card" style="margin-top:16px">
+      <div class="card-head">
+        <h3>Les trois phases en chiffres</h3>
+        <p class="card-sub" id="cmpSub"></p>
+      </div>
+      <div class="cmp-wrap">
+        <table class="cmp">
+          <thead><tr><th>Phase</th><th>Tokens par lecture des poids</th><th>Durée d'une passe</th><th>Débit</th><th>Tensor Cores occupés</th><th>Goulot</th></tr></thead>
+          <tbody id="cmpBody"></tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+
+  <!-- ─────────────── 3. Roofline ─────────────── -->
+  <section class="section" id="roofline">
+    <div class="section-head"><span class="step">3</span><h2>Calcul ou mémoire : l'intensité arithmétique</h2></div>
+    <div class="two">
+      <div class="prose">
+        <p>Pour savoir ce qui limite une passe, on compare deux durées : <strong>lire les poids</strong> (octets ÷ bande passante) et <strong>calculer</strong> (FLOP ÷ puissance de calcul). Le GPU fait les deux en parallèle : c'est la plus longue qui compte.</p>
+        <p>Le rapport entre les deux s'appelle l'<strong>intensité arithmétique</strong>, en FLOP par octet lu. En BF16, un poids pèse 2 octets et sert à 2 FLOP par token (une multiplication, une addition). L'intensité vaut donc à peu près le nombre de tokens qui profitent de chaque lecture des poids.</p>
+        <p id="ridgeP"></p>
+        <p>C'est aussi pour cela que la quantification accélère le decoding : un poids en 4 bits pèse quatre fois moins lourd, donc quatre fois moins d'octets à faire monter pour le même calcul.</p>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3>Le roofline du GPU</h3>
+          <p class="card-sub">Puissance de calcul atteignable selon l'intensité arithmétique (échelles logarithmiques). Le toit monte avec la bande passante, puis plafonne à la puissance de crête.</p>
+        </div>
+        <svg class="chart" id="roofSvg" viewBox="0 0 640 360" role="img" aria-label="Roofline : puissance atteignable en fonction de l'intensité arithmétique"></svg>
+        <div class="roof-ctl">
+          <div class="ctl">
+            <div class="ctl-top"><label for="aiRange">Tokens par lecture des poids</label><output id="aiOut" for="aiRange"></output></div>
+            <input type="range" id="aiRange" min="0" max="1000" step="1" value="0">
+          </div>
+          <div class="presets" id="aiPresets"></div>
+        </div>
+        <p class="roof-read" id="roofRead" aria-live="polite"></p>
+        <div class="layer-bars" id="layerBars"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── 4. Speculative decoding ─────────────── -->
+  <section class="section" id="speculative">
+    <div class="section-head"><span class="step">4</span><h2>Speculative decoding</h2></div>
+    <div class="spec-grid">
+      <div class="prose">
+        <p>En decoding, les Tensor Cores attendent plus de 99 % du temps. Le speculative decoding exploite ce calcul inutilisé.</p>
+        <p>Un petit <strong>modèle brouillon</strong> (ici Llama 3.2 1B, 2,5 Go) propose <code>k</code> tokens, un par un. Il va vite, car il a six fois moins de poids à lire. Le gros modèle <strong>vérifie</strong> ensuite les <code>k</code> propositions en une seule passe, comme un mini-prefill : il lit ses poids une fois pour <code>k + 1</code> positions. Il garde les propositions jusqu'à la première qu'il refuse, et place son propre token à cet endroit.</p>
+        <p>La vérification coûte à peine plus qu'un decoding normal, puisque la lecture des poids domine. Chaque cycle rapporte pourtant plusieurs tokens. Et le texte produit suit exactement la distribution du gros modèle : la règle d'acceptation (rejection sampling) le garantit.</p>
+        <p>Le taux d'acceptation <code>α</code> dépend de la ressemblance entre les deux modèles et du texte : élevé sur du code ou du texte prévisible, plus bas sur du texte créatif. Dans llama-server : <code>--model-draft petit.gguf --draft-max 8</code>.</p>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3>Un cycle, puis un autre</h3>
+          <p class="card-sub">Trois cycles de speculative decoding comparés au decoding normal, sur le même axe de temps, pour un seul utilisateur.</p>
+        </div>
+        <div class="ctl-row">
+          <div class="ctl">
+            <div class="ctl-top"><label for="specK">Propositions par cycle <code>k</code></label><output data-out="k"></output></div>
+            <input type="range" id="specK" class="draft" data-bind="k" min="1" max="8" step="1">
+          </div>
+          <div class="ctl">
+            <div class="ctl-top"><label for="specA">Taux d'acceptation <code>α</code></label><output data-out="alpha"></output></div>
+            <input type="range" id="specA" class="draft" data-bind="alpha" min="0.3" max="0.95" step="0.05">
+          </div>
+        </div>
+        <svg class="chart" id="specTl" viewBox="0 0 760 150" role="img" aria-label="Chronologie : decoding normal et cycles de speculative decoding"></svg>
+        <p class="tl-note" id="tlNote"></p>
+        <div class="kpis">
+          <div class="kpi"><span>Tokens par cycle (espérance)</span><b id="kE"></b></div>
+          <div class="kpi"><span>Durée d'un cycle</span><b id="kCycle"></b></div>
+          <div class="kpi"><span>Débit</span><b id="kRate"></b></div>
+          <div class="kpi"><span>Tensor Cores occupés</span><b id="kTc"></b></div>
+        </div>
+        <p class="sub-h">Accélération selon k</p>
+        <div class="kbars" id="kBars"></div>
+        <p class="tl-note" id="kNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── 5. Beaucoup d'utilisateurs ─────────────── -->
+  <section class="section" id="utilisateurs">
+    <div class="section-head"><span class="step">5</span><h2>Et avec beaucoup d'utilisateurs ?</h2></div>
+    <div class="spec-grid">
+      <div class="prose">
+        <p>Un serveur de production (vLLM, TensorRT-LLM, llama-server avec <code>--parallel</code>) regroupe les requêtes de ses utilisateurs dans un même batch. Chaque lecture des poids sert alors au token de chacun : avec B utilisateurs en decoding, l'intensité arithmétique vaut environ B. Le batch fait pour le decoding ce que la longueur du prompt fait pour le prefill.</p>
+        <p id="usersP2"></p>
+        <p>Or le speculative decoding ne crée pas de puissance : il utilise celle qui dort. Sur un GPU saturé, ses coûts deviennent réels. Le brouillon calcule et lit ses poids, et le gros modèle vérifie <code>k</code> tokens par utilisateur dont une partie sera jetée. Ce calcul prend la place de tokens utiles : le débit total baisse. C'est pour cela que les serveurs le réservent aux périodes de faible charge, ou le coupent au-delà d'une certaine taille de batch.</p>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3>Débit selon le nombre d'utilisateurs</h3>
+          <p class="card-sub" id="usersSub"></p>
+        </div>
+        <div class="ctl-row">
+          <div class="ctl">
+            <div class="ctl-top"><label for="usersRange">Utilisateurs simultanés</label><output id="usersOut" for="usersRange"></output></div>
+            <input type="range" id="usersRange" min="0" max="1000" step="1">
+          </div>
+          <div class="ctl">
+            <div class="ctl-top"><label for="usersK"><code>k</code></label><output data-out="k"></output></div>
+            <input type="range" id="usersK" class="draft" data-bind="k" min="1" max="8" step="1">
+          </div>
+          <div class="ctl">
+            <div class="ctl-top"><label for="usersA"><code>α</code></label><output data-out="alpha"></output></div>
+            <input type="range" id="usersA" class="draft" data-bind="alpha" min="0.3" max="0.95" step="0.05">
+          </div>
+        </div>
+        <div class="legend">
+          <span><span class="sw mem"></span>decoding normal</span>
+          <span><span class="sw draft"></span>speculative decoding</span>
+          <span><span class="sw" style="background:color-mix(in srgb, var(--comp) 22%, transparent)"></span>calcul saturé (decoding normal)</span>
+        </div>
+        <div class="users-charts">
+          <div><h4>Débit total du serveur (tokens/s)</h4><svg class="chart" id="chTotal" viewBox="0 0 420 270" role="img" aria-label="Débit total en fonction du nombre d'utilisateurs"></svg></div>
+          <div><h4>Vitesse vue par chaque utilisateur (tokens/s)</h4><svg class="chart" id="chUser" viewBox="0 0 420 270" role="img" aria-label="Vitesse par utilisateur en fonction du nombre d'utilisateurs"></svg></div>
+        </div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+    </div>
+    <div class="nuance">
+      <p><b>Ce que ce modèle simplifie.</b> Il ne compte que les poids, qui dominent tant que les contextes restent courts. L'attention relit aussi le KV cache de chaque utilisateur : 128 Ko par token de contexte pour Llama 3.1 8B, soit environ 128 Mo pour une conversation de 1 000 tokens. Avec beaucoup d'utilisateurs et de longs contextes, ces lectures pèsent autant que les poids : le decoding reste limité par la mémoire plus longtemps, et le speculative decoding peut alors rester rentable à plus forte charge (travaux de type MagicDec, 2024).</p>
+      <p>Le KV cache occupe aussi la VRAM et plafonne le nombre d'utilisateurs simultanés. Le brouillon y prend sa part, avec son propre KV cache. Enfin, les chiffres sont des maximums théoriques : en pratique, on atteint 60 à 85 % de la bande passante et du calcul de crête.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>Chiffres GPU : fiches techniques NVIDIA (H100, H200, A100) et livre blanc Ada Lovelace (RTX 4090). Valeurs de crête, BF16 dense, sans sparsité. Latences : ordres de grandeur issus de microbenchmarks publiés. Modèles : architectures de Llama 3.1 8B et Llama 3.2 1B (Meta).</p>
+  <p>Page autonome : HTML, CSS et JavaScript dans un seul fichier, sans bibliothèque. Première partie du cours : <a href="roulette-des-tokens.html">La roulette des tokens</a>.</p>
+</footer>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+
+<script>
+'use strict';
+
+// ─── 1. Données de référence ─────────────────────────────────────
+// Valeurs constructeur NVIDIA : bande passante mémoire, puissance BF16 dense (sans sparsité).
+
+const GPUS = {
+  h100: { name: 'H100 SXM', arch: 'Hopper', mem: 'HBM3', memGB: 80, bw: 3.35e12, flops: 989e12, l2MB: 50, sms: 132, l1KB: 256, rfKB: 256, tc: 528 },
+  h200: { name: 'H200 SXM', arch: 'Hopper', mem: 'HBM3e', memGB: 141, bw: 4.8e12, flops: 989e12, l2MB: 50, sms: 132, l1KB: 256, rfKB: 256, tc: 528 },
+  a100: { name: 'A100 SXM 80 Go', arch: 'Ampere', mem: 'HBM2e', memGB: 80, bw: 2.039e12, flops: 312e12, l2MB: 40, sms: 108, l1KB: 192, rfKB: 256, tc: 432 },
+  rtx4090: { name: 'RTX 4090', arch: 'Ada Lovelace', mem: 'GDDR6X', memGB: 24, bw: 1.008e12, flops: 165.2e12, l2MB: 72, sms: 128, l1KB: 128, rfKB: 256, tc: 512 },
+};
+
+// Paramètres par bloc : une couche = attention (q, k, v, o) + MLP (gate, up, down).
+const MODELS = {
+  target: { name: 'Llama 3.1 8B', layers: 32, layerParams: 218.1e6, headParams: 525.3e6, embedParams: 525.3e6 },
+  draft: { name: 'Llama 3.2 1B', layers: 16, layerParams: 60.8e6, headParams: 262.7e6, embedParams: 0 },  // embeddings partagés avec lm_head
+};
+const BPP = 2;  // octets par paramètre en BF16
+
+function blocksOf(m) {
+  const out = [];
+  for (let i = 0; i < m.layers; i++) out.push({ params: m.layerParams, head: false });
+  out.push({ params: m.headParams, head: true });
+  return out;
+}
+const storedBytes = m => (m.layers * m.layerParams + m.headParams + m.embedParams) * BPP;
+const readBytes = m => (m.layers * m.layerParams + m.headParams) * BPP;
+const tokenFlops = m => 2 * (m.layers * m.layerParams + m.headParams);
+
+// ─── 2. Modèle de performance (roofline) ─────────────────────────
+// Pour chaque bloc : lire ses poids (octets ÷ bande passante) et calculer
+// (2 FLOP par paramètre et par token ÷ puissance). Les deux se recouvrent :
+// le bloc dure le plus long des deux. Temps en millisecondes.
+
+function passCost(gpu, m, n, headN) {
+  const per = blocksOf(m).map(b => {
+    const nn = b.head ? headN : n;
+    const mem = b.params * BPP / gpu.bw * 1e3;
+    const comp = 2 * b.params * nn / gpu.flops * 1e3;
+    return { m: mem, c: comp, t: Math.max(mem, comp), head: b.head };
+  });
+  const sum = k => per.reduce((s, b) => s + b[k], 0);
+  return { per, t: sum('t'), tm: sum('m'), tc: sum('c') };
+}
+// Prefill : tous les tokens du prompt ensemble ; seul le dernier a besoin de logits (lm_head).
+function prefillStats(gpu, n) {
+  const p = passCost(gpu, MODELS.target, n, 1);
+  return { ...p, n, tps: n / p.t * 1e3, tcU: p.tc / p.t, busU: p.tm / p.t };
+}
+function decodeStats(gpu, B = 1) {
+  const p = passCost(gpu, MODELS.target, B, B);
+  return { ...p, B, tps: B / p.t * 1e3, perUser: 1e3 / p.t, tcU: p.tc / p.t, busU: p.tm / p.t };
+}
+// Nombre moyen de tokens produits par cycle (Leviathan et al., 2023).
+const expectedTokens = (k, a) => (a >= 1 ? k + 1 : (1 - Math.pow(a, k + 1)) / (1 - a));
+function specStats(gpu, B, k, a) {
+  const d = passCost(gpu, MODELS.draft, B, B);
+  const v = passCost(gpu, MODELS.target, B * (k + 1), B * (k + 1));
+  const cycle = k * d.t + v.t;
+  const E = expectedTokens(k, a);
+  const useful = B * E * tokenFlops(MODELS.target) / gpu.flops * 1e3;
+  return {
+    d, v, cycle, E, B, k,
+    tps: B * E / cycle * 1e3, perUser: E / cycle * 1e3,
+    tcU: (k * d.tc + v.tc) / cycle, usefulU: useful / cycle, busU: (k * d.tm + v.tm) / cycle,
+  };
+}
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// ─── 3. Interface ────────────────────────────────────────────────
+
+const $ = (s, root = document) => root.querySelector(s);
+const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const NS = 'http://www.w3.org/2000/svg';
+function svg(tag, attrs = {}, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]); }
+
+const fr = (x, d = 0) => Number(x).toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
+function fmtMs(ms) {
+  if (ms >= 100) return fr(ms, 0) + ' ms';
+  if (ms >= 10) return fr(ms, 1) + ' ms';
+  if (ms >= 1) return fr(ms, 2) + ' ms';
+  if (ms >= 0.01) return fr(ms, 3) + ' ms';
+  return fr(ms * 1000, 2) + ' µs';
+}
+function fmtBytes(b) {
+  if (b >= 1e9) return fr(b / 1e9, b >= 1e10 ? 1 : 2) + ' Go';
+  if (b >= 1e6) return fr(b / 1e6, 0) + ' Mo';
+  return fr(b / 1e3, 0) + ' Ko';
+}
+function fmtFlop(f) {
+  if (f >= 1e12) return fr(f / 1e12, 2) + ' TFLOP';
+  if (f >= 1e9) return fr(f / 1e9, 2) + ' GFLOP';
+  return fr(f / 1e6, 1) + ' MFLOP';
+}
+function fmtPct(u) {
+  const p = u * 100;
+  return fr(p, p >= 10 ? 0 : p >= 1 ? 1 : 2) + ' %';
+}
+const fmtTps = v => fr(v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v));
+const boundOf = (tc, tm) => (tc > tm ? 'calcul' : 'mémoire');
+
+const S = { gpu: 'h100', k: 4, alpha: 0.7, users: 64, ai: 1 };
+const G = () => GPUS[S.gpu];
+
+// ── Infobulle ──
+const tip = $('#tip');
+function showTip(html, x, y) {
+  tip.innerHTML = html;
+  tip.hidden = false;
+  const b = tip.getBoundingClientRect();
+  let left = x + 14, top = y + 16;
+  if (left + b.width > innerWidth - 8) left = x - b.width - 14;
+  if (top + b.height > innerHeight - 8) top = y - b.height - 14;
+  tip.style.left = Math.max(8, left) + 'px';
+  tip.style.top = Math.max(8, top) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+
+// ── En-tête : chiffres clés ──
+function renderHero() {
+  const g = G(), d = decodeStats(g);
+  $('#stBytes').textContent = fr(readBytes(MODELS.target) / 1e9, 1) + ' Go';
+  $('#stTime').textContent = fmtMs(d.t);
+  $('#stTimeSub').textContent = `au minimum par token sur un ${g.name}, soit ${fmtTps(d.tps)} tokens/s au mieux`;
+  $('#stUtil').textContent = fmtPct(d.tcU);
+}
+
+// ── Section 1 : hiérarchie mémoire ──
+const LAD_MIN = 6, LAD_MAX = 11.4;   // log10 des octets : 1 Mo → 250 Go
+const ladX = b => ((Math.log10(b) - LAD_MIN) / (LAD_MAX - LAD_MIN)) * 100;
+function renderMemory() {
+  const g = G(), t = MODELS.target;
+  const layerB = t.layerParams * BPP, modelB = storedBytes(t);
+  const rf = g.rfKB * 1024 * g.sms, l1 = g.l1KB * 1024 * g.sms, l2 = g.l2MB * 1e6, vram = g.memGB * 1e9;
+  const onChip = rf + l1 + l2;
+  $('#ladderTitle').textContent = `Hiérarchie mémoire d'un ${g.name}`;
+  $('#memP1').innerHTML = `Les poids du modèle sont stockés dans la <strong>VRAM</strong> du GPU : sur un ${esc(g.name)}, ${g.memGB} Go de mémoire ${g.mem} ${g.mem.startsWith('HBM') ? 'empilée juste à côté de la puce' : 'soudée autour de la puce'}. Llama 3.1 8B en BF16 y occupe ${fmtBytes(modelBytes())} : 32 couches de ${fmtBytes(layerB)}, plus les embeddings et la tête de sortie (<code>lm_head</code>).`;
+  $('#memP3').innerHTML = `Aucune mémoire de la puce ne peut garder le modèle. Registres, L1 et L2 réunis font environ ${fmtBytes(onChip)}, moins qu'une seule couche. À chaque passage dans le modèle, les poids refont donc tout le trajet, découpés en tuiles : VRAM → L2 → mémoire partagée → registres → Tensor Cores.`;
+  function modelBytes() { return modelB; }
+
+  const rungs = [
+    { cls: 'tc', name: 'Tensor Cores', role: 'font le calcul', stats: [`${g.tc} unités, 4 par SM`, `${fr(g.flops / 1e12)} TFLOPS en BF16`] },
+    { name: 'Registres', role: 'opérandes du calcul', cap: rf, stats: [`${g.rfKB} Ko par SM`, 'accès en ~1 cycle'] },
+    { name: 'L1 / mémoire partagée', role: 'tuiles en cours', cap: l1, stats: [`${g.l1KB} Ko par SM`, '~30 cycles'] },
+    { name: 'Cache L2', role: 'partagé par tous les SM', cap: l2, stats: [`${g.l2MB} Mo`, '~250 cycles'] },
+    { name: `VRAM (${g.mem})`, role: 'où vivent les poids', cap: vram, stats: [`${g.memGB} Go · ${fr(g.bw / 1e12, 2)} To/s`, '~500 cycles et plus'] },
+  ];
+  const ticks = [[1e6, '1 Mo'], [1e7, '10 Mo'], [1e8, '100 Mo'], [1e9, '1 Go'], [1e10, '10 Go'], [1e11, '100 Go']];
+  const marks = [[layerB, '1 couche'], [modelB, 'modèle']];
+  const markHtml = marks.map(([b]) => `<i class="lad-mark" style="left:${ladX(b).toFixed(2)}%"></i>`).join('');
+  $('#ladder').innerHTML = `
+    <div class="lad-row lad-head"><span></span><span></span>
+      <div class="lad-scale">${ticks.map(([b, l]) => `<span style="left:${ladX(b).toFixed(2)}%">${l}</span>`).join('')}${marks.map(([b, l]) => `<b style="left:${ladX(b).toFixed(2)}%">${l}</b>`).join('')}</div><span></span></div>
+    <div class="rungs">
+      <span class="tile" aria-hidden="true"></span>
+      ${rungs.map(r => `<div class="lad-row rung ${r.cls || ''}">
+        <span></span>
+        <div class="rung-name"><b>${esc(r.name)}</b><span>${esc(r.role)}</span></div>
+        <div class="rung-track">${r.cap
+          ? `<span class="rung-bar" style="width:${ladX(r.cap).toFixed(2)}%"><span class="rung-bar-v">${fmtBytes(r.cap)}</span></span>`
+          : '<span class="tc-note">ne lisent que les registres et la mémoire partagée</span>'}${r.cap ? markHtml : ''}</div>
+        <div class="rung-stats"><span>${esc(r.stats[0])}</span><span>${esc(r.stats[1])}</span></div>
+      </div>`).join('')}
+    </div>`;
+  $('#ladderNote').innerHTML = `Une couche pèse <b>${fmtBytes(layerB)}</b>, soit ${fr(layerB / l2, 0)} fois le cache L2 et ${fr(layerB / (g.l1KB * 1024), 0)} fois la mémoire L1 d'un SM. Le carré qui monte, c'est une tuile de poids : elle ne sert qu'une fois arrivée en haut.`;
+}
+
+// ── Section 2 : simulateur ──
+const PROMPT_LENS = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096];
+const TEXT = 'le canapé du salon , près de la fenêtre . Il regarde les oiseaux du jardin et attend le retour de ses maîtres pour réclamer à manger .'.split(' ');
+const WRONG = ['lit', 'dans', 'un', 'mange', 'toit', 'la', 'porte', 'vers', 'sous', 'tapis'];
+const PIPE_MS = 900, FAN_MS = 380, PARTICLE_RATE = 70;
+const SIM = {
+  mode: 'prefill', promptIdx: 5, speed: 1, playing: !reduceMotion.matches, visible: true,
+  pass: null, t: 0, hold: 0, after: null, cycle: null, out: [], textIdx: 0, rng: mulberry32(3),
+  timeline: [], tlOffset: 0, particles: [], spawnAcc: 0, pulse: 0, lastBlock: -1, uc: 0, bu: 0, lastTs: 0,
+};
+const promptLen = () => PROMPT_LENS[SIM.promptIdx];
+const simRate = () => decodeStats(G()).t / 4000 * SIM.speed;   // ms simulées par ms réelle (un decoding ≈ 4 s)
+
+function makePass(kind) {
+  const g = G();
+  let model = MODELS.target, n = 1, headN = 1;
+  if (kind === 'prefill') n = promptLen();
+  else if (kind === 'draft') model = MODELS.draft;
+  else if (kind === 'verify') { n = S.k + 1; headN = S.k + 1; }
+  const cost = passCost(g, model, n, headN);
+  let acc = 0;
+  const ends = cost.per.map(b => (acc += b.t));
+  return { kind, model, n, headN, cost, ends };
+}
+function curBlock() {
+  const p = SIM.pass;
+  const i = p.ends.findIndex(e => e > SIM.t);
+  return i < 0 ? p.ends.length - 1 : i;
+}
+function startSim() {
+  SIM.out = []; SIM.textIdx = 0; SIM.rng = mulberry32(3);
+  SIM.hold = 0; SIM.after = null; SIM.cycle = null; SIM.particles = []; SIM.spawnAcc = 0;
+  if (SIM.mode === 'spec') beginCycle();
+  else setPass(makePass(SIM.mode === 'prefill' ? 'prefill' : 'decode'), true);
+  renderSimInfo();
+  renderOut();
+}
+function setPass(p, newTimeline) {
+  if (newTimeline) { SIM.timeline = [p]; SIM.tlOffset = 0; }
+  SIM.pass = p; SIM.t = 0; SIM.lastBlock = -1;
+}
+function beginCycle() {
+  let a = 0;
+  while (a < S.k && SIM.rng() < S.alpha) a++;
+  SIM.cycle = { k: S.k, a, i: 0, start: SIM.out.length };
+  const draft = makePass('draft'), verify = makePass('verify');
+  SIM.timeline = [...Array(S.k).fill(draft), verify];
+  SIM.tlOffset = 0;
+  setPass(draft, false);
+}
+const nextText = () => TEXT[SIM.textIdx++ % TEXT.length];
+function endPass() {
+  const p = SIM.pass;
+  if (p.kind === 'prefill') {
+    SIM.out = [{ text: TEXT[0], cls: 'first' }];
+    SIM.hold = 2400; SIM.after = 'restart';
+  } else if (p.kind === 'decode') {
+    SIM.out.push({ text: nextText(), cls: 'ok' });
+    SIM.hold = 200; SIM.after = 'decode';
+  } else if (p.kind === 'draft') {
+    const c = SIM.cycle;
+    const text = c.i < c.a ? TEXT[(SIM.textIdx + c.i) % TEXT.length] : WRONG[(SIM.textIdx + c.i) % WRONG.length];
+    SIM.out.push({ text, cls: 'prop' });
+    SIM.tlOffset += p.cost.t;
+    c.i++;
+    setPass(c.i < c.k ? SIM.timeline[c.i] : SIM.timeline[c.k], false);
+    renderOut();
+    return;
+  } else if (p.kind === 'verify') {
+    const c = SIM.cycle;
+    for (let i = 0; i < c.k; i++) SIM.out[c.start + i].cls = i < c.a ? 'acc' : 'rej';
+    SIM.textIdx += c.a;
+    SIM.out.push({ text: nextText(), cls: c.a === c.k ? 'bonus' : 'fix' });
+    SIM.hold = 1500; SIM.after = 'cycle';
+  }
+  renderOut();
+}
+function afterHold() {
+  if (SIM.after === 'restart') { startSim(); return; }
+  if (SIM.after === 'decode') {
+    if (SIM.out.length > 34) SIM.out.splice(0, 12);
+    setPass(makePass('decode'), true);
+  } else if (SIM.after === 'cycle') {
+    SIM.out = SIM.out.filter(t => t.cls !== 'rej').map(t => (t.cls === 'prop' ? t : { ...t, cls: 'ok' }));
+    if (SIM.out.length > 34) SIM.out.splice(0, 12);
+    beginCycle();
+  }
+  renderOut();
+}
+function advance(dt) {
+  if (SIM.hold > 0) {
+    SIM.hold -= dt;
+    if (SIM.hold <= 0) afterHold();
+    return;
+  }
+  SIM.t += dt * simRate();
+  const bi = curBlock();
+  if (bi !== SIM.lastBlock) { SIM.pulse = 1; SIM.lastBlock = bi; }
+  const blk = SIM.pass.cost.per[bi];
+  SIM.spawnAcc += dt / 1000 * PARTICLE_RATE * (blk.m / blk.t);
+  while (SIM.spawnAcc >= 1) { spawnParticle(); SIM.spawnAcc -= 1; }
+  if (SIM.t >= SIM.pass.cost.t) endPass();
+}
+
+// Dessin de la scène (canvas)
+const scene = { L: null, cells: [] };
+const C = {};
+function hexRgb(h) { const n = parseInt(h.replace('#', ''), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+function mix(a, b, t) {
+  const A = C.rgb[a], B = C.rgb[b];
+  t = Math.max(0, Math.min(1, t));
+  return `rgb(${Math.round(A[0] + (B[0] - A[0]) * t)},${Math.round(A[1] + (B[1] - A[1]) * t)},${Math.round(A[2] + (B[2] - A[2]) * t)})`;
+}
+function readColors() {
+  const cs = getComputedStyle(document.documentElement);
+  C.rgb = {};
+  for (const k of ['surface', 'surface-2', 'surface-3', 'line', 'line-2', 'ink', 'ink-2', 'muted', 'mem', 'comp', 'draft', 'ghost']) {
+    C[k] = cs.getPropertyValue('--' + k).trim();
+    C.rgb[k] = hexRgb(C[k]);
+  }
+  C.mono = cs.getPropertyValue('--f-mono').trim();
+  C.body = cs.getPropertyValue('--f-body').trim();
+}
+function layoutScene() {
+  const wrap = $('#sceneWrap'), cv = $('#scene');
+  const W = Math.max(wrap.clientWidth - 2, 920), H = 380, dpr = window.devicePixelRatio || 1;
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  const extra = W - 920;
+  const hbm = { x: 12, y: 12, w: 220, h: H - 24 };
+  const pipeLen = 150 + extra * 0.55;
+  const l2 = { x: hbm.x + hbm.w + pipeLen, w: 66, h: 130 };
+  l2.y = H / 2 - l2.h / 2 + 8;
+  const sm = { x: l2.x + l2.w + 48, w: 240 + Math.min(extra * 0.3, 140), h: 300 };
+  sm.y = H / 2 - sm.h / 2 + 4;
+  const tok = { x: sm.x + sm.w + 28, y: 12, h: H - 24 };
+  tok.w = W - 12 - tok.x;
+  const pipe = { x0: hbm.x + hbm.w, x1: l2.x, y: l2.y + l2.h / 2, th: 28 };
+  scene.L = { W, H, dpr, hbm, l2, sm, tok, pipe };
+  const n = G().sms;
+  const gw = sm.w - 24, gh = sm.h - 70;
+  const cols = Math.ceil(Math.sqrt(n * gw / gh)), rows = Math.ceil(n / cols), gap = 3;
+  const s = Math.min((gw - gap * (cols - 1)) / cols, (gh - gap * (rows - 1)) / rows);
+  const ox = sm.x + (sm.w - (cols * s + (cols - 1) * gap)) / 2;
+  const oy = sm.y + 34 + (gh - (rows * s + (rows - 1) * gap)) / 2;
+  const rnd = mulberry32(11);
+  scene.cells = Array.from({ length: n }, (_, i) => ({
+    x: ox + (i % cols) * (s + gap), y: oy + Math.floor(i / cols) * (s + gap), s, ph: rnd() * 6.28, flash: 0,
+  }));
+  SIM.particles = [];
+}
+function spawnParticle() {
+  const L = scene.L;
+  if (!L || !scene.cells.length) return;
+  SIM.particles.push({
+    t: 0, y0: L.pipe.y + (Math.random() - 0.5) * (L.pipe.th - 10),
+    cell: scene.cells[Math.floor(Math.random() * scene.cells.length)],
+    draft: SIM.pass.model === MODELS.draft,
+  });
+}
+function rr(g, x, y, w, h, r) {
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.arcTo(x + w, y, x + w, y + h, r);
+  g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r);
+  g.arcTo(x, y, x + w, y, r);
+  g.closePath();
+}
+function panel(g, b, title, sub) {
+  rr(g, b.x, b.y, b.w, b.h, 10);
+  g.fillStyle = C.surface; g.fill();
+  g.strokeStyle = C['line-2']; g.lineWidth = 1; g.stroke();
+  g.fillStyle = C.ink; g.font = `700 12px ${C.mono}`; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  g.fillText(title, b.x + 12, b.y + 20);
+  if (sub) { g.fillStyle = C.muted; g.font = `500 11px ${C.mono}`; g.fillText(sub, b.x + 12, b.y + 35); }
+}
+function drawSlabs(g, a, n, active, color, label) {
+  const sh = (a.h - (n - 1)) / n;
+  for (let i = 0; i < n; i++) {
+    let fill = C.ghost;
+    if (i === active) fill = C[color];
+    else if (active >= 0 && i < active) fill = mix('ghost', color, 0.35);
+    g.fillStyle = fill;
+    g.fillRect(a.x, a.y + i * (sh + 1), a.w, sh);
+  }
+  g.fillStyle = C.muted; g.font = `500 10.5px ${C.mono}`; g.textAlign = 'left';
+  g.fillText(label, a.x, a.y - 7);
+}
+function drawScene(dt, ts) {
+  const L = scene.L;
+  if (!L || !SIM.pass) return;
+  const cv = $('#scene'), g = cv.getContext('2d'), gpu = G();
+  g.setTransform(L.dpr, 0, 0, L.dpr, 0, 0);
+  g.clearRect(0, 0, L.W, L.H);
+  const pass = SIM.pass, bi = curBlock(), blk = pass.cost.per[bi];
+  const idle = SIM.hold > 0 || !SIM.playing;
+  const busU = SIM.hold > 0 ? 0 : blk.m / blk.t, tcU = SIM.hold > 0 ? 0 : blk.c / blk.t;
+  const k = Math.min(1, dt / 140);
+  SIM.uc += (tcU - SIM.uc) * k;
+  SIM.bu += (busU - SIM.bu) * k;
+  const spec = SIM.mode === 'spec';
+  const isDraft = pass.model === MODELS.draft;
+
+  // VRAM et couches
+  const H = L.hbm;
+  panel(g, H, `VRAM · ${gpu.mem} · ${gpu.memGB} Go`, 'les poids sont stockés ici');
+  const top = H.y + 66, slabH = H.h - 66 - 62;
+  const tArea = { x: H.x + 12, y: top, w: spec ? 112 : H.w - 24, h: slabH };
+  drawSlabs(g, tArea, 33, !isDraft && SIM.hold <= 0 ? bi : -1, 'mem', spec ? '8B (cible)' : '8B · 32 couches + lm_head');
+  if (spec) {
+    const dArea = { x: tArea.x + tArea.w + 12, y: top, w: H.w - 24 - tArea.w - 12, h: slabH * 0.52 };
+    drawSlabs(g, dArea, 17, isDraft && SIM.hold <= 0 ? bi : -1, 'draft', '1B brouillon');
+  }
+  const used = storedBytes(MODELS.target) + (spec ? storedBytes(MODELS.draft) : 0);
+  const cy = H.y + H.h - 40;
+  g.fillStyle = C.muted; g.font = `500 10.5px ${C.mono}`; g.textAlign = 'left';
+  g.fillText(`occupé : ${fmtBytes(used)} sur ${gpu.memGB} Go`, H.x + 12, cy);
+  rr(g, H.x + 12, cy + 8, H.w - 24, 8, 4); g.fillStyle = C['surface-3']; g.fill();
+  rr(g, H.x + 12, cy + 8, Math.max(8, (H.w - 24) * used / (gpu.memGB * 1e9)), 8, 4); g.fillStyle = C['ink-2']; g.fill();
+
+  // Bus mémoire
+  const P = L.pipe;
+  rr(g, P.x0 - 4, P.y - P.th / 2, P.x1 - P.x0 + 8, P.th, P.th / 2);
+  g.fillStyle = C['surface-2']; g.fill();
+  g.strokeStyle = C['line-2']; g.stroke();
+  g.fillStyle = C.ink; g.font = `700 12px ${C.mono}`; g.textAlign = 'center';
+  g.fillText(`bus mémoire · ${fr(gpu.bw / 1e12, 2)} To/s`, (P.x0 + P.x1) / 2, P.y - P.th / 2 - 12);
+  g.fillStyle = C.muted; g.font = `500 11px ${C.mono}`;
+  g.fillText(idle ? 'en pause' : `occupé à ${fmtPct(SIM.bu)}`, (P.x0 + P.x1) / 2, P.y + P.th / 2 + 20);
+
+  // L2
+  const L2 = L.l2;
+  rr(g, L2.x, L2.y, L2.w, L2.h, 8);
+  g.fillStyle = C.surface; g.fill(); g.strokeStyle = C['line-2']; g.stroke();
+  g.fillStyle = C.ink; g.font = `700 13px ${C.mono}`; g.textAlign = 'center';
+  g.fillText('L2', L2.x + L2.w / 2, L2.y + L2.h / 2 - 4);
+  g.fillStyle = C.muted; g.font = `500 11px ${C.mono}`;
+  g.fillText(`${gpu.l2MB} Mo`, L2.x + L2.w / 2, L2.y + L2.h / 2 + 13);
+
+  // SM
+  const SM = L.sm;
+  panel(g, SM, `${gpu.sms} SM · ${gpu.tc} Tensor Cores`);
+  const tau = 60 + 900 * SIM.uc;
+  for (const c of scene.cells) {
+    c.flash *= Math.exp(-dt / tau);
+    const lvl = Math.max(SIM.uc * (0.8 + 0.2 * Math.sin(ts / 200 + c.ph)), c.flash * 0.85);
+    g.fillStyle = mix('surface-3', 'comp', lvl);
+    g.fillRect(c.x, c.y, c.s, c.s);
+  }
+  g.fillStyle = C.muted; g.font = `500 11px ${C.mono}`; g.textAlign = 'left';
+  g.fillText(idle ? 'en pause' : `Tensor Cores occupés à ${fmtPct(SIM.uc)}`, SM.x + 12, SM.y + SM.h - 12);
+
+  // Tokens de la passe
+  const T = L.tok;
+  const labels = {
+    prefill: [`${fr(pass.n)} tokens`, 'traversent la couche ensemble'],
+    decode: ['1 token', 'un seul, à chaque passe'],
+    draft: ['1 token', 'proposé par le brouillon'],
+    verify: [`${pass.n} positions`, 'vérifiées en une passe'],
+  }[pass.kind];
+  panel(g, T, 'tokens de la passe');
+  SIM.pulse *= Math.exp(-dt / 260);
+  const n = pass.kind === 'prefill' && bi === pass.cost.per.length - 1 ? 1 : pass.n;
+  const shown = Math.min(n, 96);
+  const cols = shown === 1 ? 1 : shown <= 16 ? 4 : 12;
+  const gx = shown === 1 ? 0 : 3;
+  const sz = shown === 1 ? 34 : Math.min(shown <= 16 ? 22 : 13, (T.w - 24 - (cols - 1) * gx) / cols);
+  const gridW = cols * sz + (cols - 1) * gx;
+  const ox = T.x + (T.w - gridW) / 2, oy = T.y + 48;
+  for (let i = 0; i < shown; i++) {
+    const x = ox + (i % cols) * (sz + gx), y = oy + Math.floor(i / cols) * (sz + gx);
+    const role = pass.kind === 'draft' || (pass.kind === 'verify' && i > 0) ? 'draft' : 'mem';
+    g.fillStyle = SIM.hold > 0 ? C.ghost : mix('ghost', role, 0.55 + 0.45 * SIM.pulse);
+    rr(g, x, y, sz, sz, Math.min(4, sz / 3)); g.fill();
+  }
+  const rowsUsed = Math.ceil(shown / cols);
+  const ty = oy + rowsUsed * (sz + gx) + 22;
+  g.textAlign = 'center';
+  g.fillStyle = C.ink; g.font = `700 13px ${C.mono}`;
+  g.fillText(pass.kind === 'prefill' && n === 1 ? '1 token' : labels[0], T.x + T.w / 2, ty);
+  g.fillStyle = C.muted; g.font = `500 11px ${C.body}`;
+  g.fillText(pass.kind === 'prefill' && n === 1 ? 'seul le dernier a besoin de logits' : labels[1], T.x + T.w / 2, ty + 17);
+  if (n > 96) g.fillText(`1 case ≈ ${fr(n / 96)} tokens`, T.x + T.w / 2, ty + 33);
+
+  // Particules : tuiles de poids VRAM → L2 → SM
+  const l2c = { x: L2.x + L2.w / 2, y: L2.y + L2.h / 2 };
+  for (const p of SIM.particles) {
+    let x, y;
+    if (p.t < PIPE_MS) {
+      const u = p.t / PIPE_MS;
+      x = P.x0 - 6 + (l2c.x - P.x0 + 6) * u;
+      y = p.y0 + (l2c.y - p.y0) * Math.max(0, (u - 0.8) / 0.2);
+    } else {
+      const u = Math.min(1, (p.t - PIPE_MS) / FAN_MS), e = u * u * (3 - 2 * u);
+      x = l2c.x + (p.cell.x + p.cell.s / 2 - l2c.x) * e;
+      y = l2c.y + (p.cell.y + p.cell.s / 2 - l2c.y) * e;
+    }
+    g.fillStyle = p.draft ? C.draft : C.mem;
+    g.fillRect(x - 3, y - 3, 6, 6);
+  }
+}
+function updateParticles(dt) {
+  for (const p of SIM.particles) {
+    p.t += dt;
+    if (p.t >= PIPE_MS + FAN_MS) { p.done = true; p.cell.flash = 1; }
+  }
+  SIM.particles = SIM.particles.filter(p => !p.done);
+}
+
+// Chronogramme : occupation du bus et des Tensor Cores, bloc par bloc.
+function drawGantt() {
+  const cv = $('#gantt');
+  const W = cv.clientWidth, H = 96, dpr = window.devicePixelRatio || 1;
+  if (!W || !SIM.pass) return;
+  if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const g = cv.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, W, H);
+  const lab = W < 520 ? 76 : 150, x0 = lab, x1 = W - 8;
+  const total = SIM.timeline.reduce((s, p) => s + p.cost.t, 0);
+  const X = t => x0 + (t / total) * (x1 - x0);
+  const rows = [{ y: 10, key: 'm', label: W < 520 ? 'mémoire' : 'bus mémoire' }, { y: 42, key: 'c', label: W < 520 ? 'calcul' : 'Tensor Cores' }];
+  g.font = `500 11px ${C.mono}`; g.textBaseline = 'middle'; g.textAlign = 'left';
+  for (const r of rows) {
+    g.fillStyle = C.muted; g.fillText(r.label, 0, r.y + 11);
+    g.fillStyle = C['surface-2']; g.fillRect(x0, r.y, x1 - x0, 22);
+  }
+  let t0 = 0;
+  for (const p of SIM.timeline) {
+    const draft = p.model === MODELS.draft;
+    for (const b of p.cost.per) {
+      const a = X(t0), w = X(t0 + b.t) - a, gap = w > 3 ? 1 : 0;
+      g.fillStyle = draft ? C.draft : C.mem;
+      g.fillRect(a, rows[0].y, Math.max(0.5, (w - gap) * (b.m / b.t)), 22);
+      g.fillStyle = C.comp;
+      g.fillRect(a, rows[1].y, Math.max(0.5, (w - gap) * (b.c / b.t)), 22);
+      t0 += b.t;
+    }
+  }
+  const now = SIM.hold > 0 ? total : SIM.tlOffset + SIM.t;
+  const xx = Math.round(X(Math.min(now, total))) + 0.5;
+  g.strokeStyle = C.ink; g.lineWidth = 1.5;
+  g.beginPath(); g.moveTo(xx, 4); g.lineTo(xx, 70); g.stroke();
+  g.fillStyle = C.muted; g.textAlign = 'left'; g.fillText('0', x0, 84);
+  g.textAlign = 'right'; g.fillText(fmtMs(total), x1, 84);
+}
+
+// Textes, jauges et tableau du simulateur
+function simSummary() {
+  const g = G();
+  if (SIM.mode === 'prefill') {
+    const s = prefillStats(g, promptLen());
+    return { tc: s.tcU, bus: s.busU, bound: boundOf(s.tc, s.tm), durLab: 'Durée du prefill (TTFT)', dur: fmtMs(s.t), rateLab: 'Débit de prompt', rate: `${fmtTps(s.tps)} tok/s` };
+  }
+  if (SIM.mode === 'decode') {
+    const s = decodeStats(g);
+    return { tc: s.tcU, bus: s.busU, bound: boundOf(s.tc, s.tm), durLab: 'Durée par token (TPOT)', dur: fmtMs(s.t), rateLab: 'Débit', rate: `${fmtTps(s.tps)} tok/s` };
+  }
+  const s = specStats(g, 1, S.k, S.alpha), dec = decodeStats(g);
+  return { tc: s.tcU, bus: s.busU, bound: boundOf(s.v.tc, s.v.tm), durLab: 'Durée d\'un cycle', dur: fmtMs(s.cycle), rateLab: 'Débit (vs decoding)', rate: `${fmtTps(s.tps)} tok/s (×${fr(s.tps / dec.tps, 2)})` };
+}
+function renderSimInfo() {
+  const g = G(), t = MODELS.target;
+  const m = simSummary();
+  $('#gTc').textContent = fmtPct(m.tc); $('#gTcBar').style.width = (m.tc * 100).toFixed(2) + '%';
+  $('#gBus').textContent = fmtPct(m.bus); $('#gBusBar').style.width = (m.bus * 100).toFixed(2) + '%';
+  $('#gLabTc').textContent = SIM.mode === 'spec' ? 'Tensor Cores occupés (moyenne du cycle)' : 'Tensor Cores occupés (moyenne de la passe)';
+  const bEl = $('#gBound');
+  bEl.textContent = m.bound; bEl.className = m.bound === 'calcul' ? 'comp' : 'mem';
+  $('#gDurLab').textContent = m.durLab; $('#gDur').textContent = m.dur;
+  $('#gRateLab').textContent = m.rateLab; $('#gRate').textContent = m.rate;
+  $('#optPrompt').hidden = SIM.mode !== 'prefill';
+  $('#optK').hidden = $('#optA').hidden = SIM.mode !== 'spec';
+  $('#lgDraft').hidden = SIM.mode !== 'spec';
+  $('#promptLenOut').textContent = `${fr(promptLen())} tokens`;
+  const slow = 4000 / decodeStats(g).t / SIM.speed;
+  $('#slowNote').textContent = `Temps ralenti environ ${fr(slow)} fois. Chiffres théoriques ${g.name}.`;
+
+  const layerB = t.layerParams * BPP;
+  const mLayer = layerB / g.bw * 1e3;
+  if (SIM.mode === 'prefill') {
+    const n = promptLen(), c = 2 * t.layerParams * n / g.flops * 1e3;
+    $('#simExplain').innerHTML = `Chaque couche lit ses <b>${fmtBytes(layerB)}</b> de poids une seule fois (${fmtMs(mLayer)}), puis les applique aux <b>${fr(n)} tokens</b> du prompt : ${fmtFlop(2 * t.layerParams * n)} de calcul (${fmtMs(c)}). ` +
+      (c > mLayer
+        ? 'Le calcul dure plus longtemps que la lecture : les Tensor Cores tournent en continu et le bus attend. <b>Le prefill est limité par le calcul.</b>'
+        : `Avec un prompt aussi court, la lecture reste plus longue que le calcul : même le prefill est limité par la mémoire. Il faut plus de ${fr(Math.ceil(g.flops / g.bw))} tokens pour que le calcul prenne le dessus.`);
+  } else if (SIM.mode === 'decode') {
+    const c = 2 * t.layerParams / g.flops * 1e3;
+    $('#simExplain').innerHTML = `Chaque couche lit les mêmes <b>${fmtBytes(layerB)}</b> de poids (${fmtMs(mLayer)}) pour <b>un seul token</b> : ${fmtFlop(2 * t.layerParams)} de calcul, soit ${fmtMs(c)}. Les Tensor Cores finissent en un éclair puis attendent la tuile suivante, ${fr((1 - c / mLayer) * 100, 1)} % du temps. <b>Le decoding est limité par la bande passante mémoire.</b> Pour aller plus vite, il faut moins d'octets à lire (quantification) ou une mémoire plus rapide, pas plus de calcul.`;
+  } else {
+    const s = specStats(g, 1, S.k, S.alpha), dec = decodeStats(g);
+    $('#simExplain').innerHTML = `Le brouillon (${MODELS.draft.name}, ${fmtBytes(readBytes(MODELS.draft))} à lire) propose un token en ${fmtMs(s.d.t)}. Le gros modèle vérifie ensuite les ${S.k} propositions en une passe de <b>${fmtMs(s.v.t)}</b>, à peine plus qu'un decoding normal (${fmtMs(dec.t)}) : il traite ${S.k + 1} positions pour le prix d'une lecture des poids. Avec α = ${fr(S.alpha, 2)}, il garde en moyenne <b>${fr(s.E, 2)} tokens par cycle</b>. Les Tensor Cores passent de ${fmtPct(dec.tcU)} à ${fmtPct(s.tcU)} d'occupation : la vérification reste limitée par la mémoire, mais on récupère un peu du calcul qui dormait.`;
+  }
+  renderCmp();
+}
+function renderCmp() {
+  const g = G(), n = promptLen();
+  const p = prefillStats(g, n), d = decodeStats(g), s = specStats(g, 1, S.k, S.alpha);
+  const tag = b => `<span class="tag ${b === 'calcul' ? 'comp' : 'mem'}">${b}</span>`;
+  $('#cmpSub').textContent = `${g.name}, Llama 3.1 8B en BF16, un seul utilisateur. Prompt de ${fr(n)} tokens, speculative decoding avec k = ${S.k} et α = ${fr(S.alpha, 2)}.`;
+  $('#cmpBody').innerHTML = `
+    <tr><td>Prefill</td><td class="num">${fr(n)}</td><td class="num">${fmtMs(p.t)}</td><td class="num">${fmtTps(p.tps)} tokens de prompt/s</td><td class="num">${fmtPct(p.tcU)}</td><td>${tag(boundOf(p.tc, p.tm))}</td></tr>
+    <tr><td>Decoding</td><td class="num">1</td><td class="num">${fmtMs(d.t)}</td><td class="num">${fmtTps(d.tps)} tokens/s</td><td class="num">${fmtPct(d.tcU)}</td><td>${tag(boundOf(d.tc, d.tm))}</td></tr>
+    <tr><td>Speculative</td><td class="num">${S.k + 1} (vérification)</td><td class="num">${fmtMs(s.cycle)} par cycle</td><td class="num">${fmtTps(s.tps)} tokens/s (×${fr(s.tps / d.tps, 2)})</td><td class="num">${fmtPct(s.tcU)}</td><td>${tag(boundOf(s.v.tc, s.v.tm))}</td></tr>`;
+}
+function renderOut() {
+  const pre = SIM.mode === 'prefill' ? `<span class="chip prompt">prompt : ${fr(promptLen())} tokens</span>` : '<span class="chip prompt">prompt déjà traité (prefill)</span>';
+  $('#simOut').innerHTML = pre + SIM.out.map(t => `<span class="chip ${t.cls}">${esc(t.text)}</span>`).join('');
+}
+function updateStatus() {
+  const p = SIM.pass;
+  if (!p) return;
+  const bi = curBlock(), nb = p.cost.per.length;
+  const blk = bi === nb - 1 ? 'lm_head' : `couche ${bi + 1} / ${nb - 1}`;
+  const clock = `<span class="clock">· ${fmtMs(SIM.tlOffset + SIM.t)} simulées</span>`;
+  let s;
+  if (SIM.hold > 0) {
+    if (p.kind === 'prefill') s = `<b>Premier token prêt</b> après ${fmtMs(p.cost.t)} : c'est le TTFT. Les ${fr(p.n)} tokens du prompt sont maintenant dans le KV cache.`;
+    else if (p.kind === 'verify') { const c = SIM.cycle; s = `<b>Vérification terminée</b> : ${c.a} proposition${c.a > 1 ? 's' : ''} gardée${c.a > 1 ? 's' : ''} sur ${c.k}, plus le token du gros modèle, soit ${c.a + 1} token${c.a > 0 ? 's' : ''} pour ce cycle.`; }
+    else s = `<b>Token produit</b> en ${fmtMs(p.cost.t)}. On recommence une passe complète pour le suivant.`;
+  } else if (p.kind === 'prefill') s = `<b>Prefill</b> · ${blk} · ${bi === nb - 1 ? 'seul le dernier token a besoin de logits' : `les ${fr(p.n)} tokens du prompt traversent la couche ensemble`} ${clock}`;
+  else if (p.kind === 'decode') s = `<b>Decoding</b> · ${blk} · un seul token pour toute la lecture des poids ${clock}`;
+  else if (p.kind === 'draft') s = `<b>Brouillon</b> · proposition ${SIM.cycle.i + 1} / ${SIM.cycle.k} · ${blk} ${clock}`;
+  else s = `<b>Vérification</b> par le gros modèle · ${p.n} positions en une passe · ${blk} ${clock}`;
+  $('#simStatus').innerHTML = s;
+}
+let lastStatus = 0;
+function frame(ts) {
+  const dt = SIM.lastTs ? Math.min(ts - SIM.lastTs, 50) : 16;
+  SIM.lastTs = ts;
+  if (SIM.visible && !document.hidden) {
+    if (SIM.playing) { advance(dt); updateParticles(dt); }
+    drawScene(SIM.playing ? dt : 0, ts);
+    drawGantt();
+    if (ts - lastStatus > 100) { updateStatus(); lastStatus = ts; }
+  }
+  requestAnimationFrame(frame);
+}
+
+// ── Section 3 : roofline ──
+const AI_MAX = 4096;
+const aiFromRange = v => Math.max(1, Math.round(Math.pow(AI_MAX, v / 1000)));
+const rangeFromAi = ai => Math.round(Math.log(ai) / Math.log(AI_MAX) * 1000);
+function presetsAI() {
+  return [
+    { ai: 1, label: 'decoding', name: 'Decoding, 1 utilisateur' },
+    { ai: S.k + 1, label: `speculative k = ${S.k}`, name: `Vérification speculative (k + 1 = ${S.k + 1})` },
+    { ai: 64, label: '64 utilisateurs', name: 'Decoding, batch de 64 utilisateurs' },
+    { ai: 512, label: 'prefill 512', name: 'Prefill de 512 tokens' },
+  ];
+}
+function renderRoofline() {
+  const g = G(), el = $('#roofSvg');
+  el.replaceChildren();
+  const W = 640, H = 360, m = { l: 60, r: 16, t: 26, b: 46 };
+  const peak = g.flops / 1e12, bwT = g.bw / 1e12, ridge = peak / bwT;
+  const xMin = Math.log10(0.5), xMax = Math.log10(8000), yMin = Math.log10(0.5), yMax = Math.log10(peak * 2.2);
+  const X = ai => m.l + (Math.log10(ai) - xMin) / (xMax - xMin) * (W - m.l - m.r);
+  const Y = tf => m.t + (1 - (Math.log10(tf) - yMin) / (yMax - yMin)) * (H - m.t - m.b);
+  const perf = ai => Math.min(peak, bwT * ai);
+  el.append(svg('rect', { class: 'band-mem', x: m.l, y: m.t, width: X(ridge) - m.l, height: H - m.t - m.b }));
+  el.append(svg('rect', { class: 'band-comp', x: X(ridge), y: m.t, width: W - m.r - X(ridge), height: H - m.t - m.b }));
+  const grid = svg('g', { class: 'grid' }), axis = svg('g', { class: 'axis' });
+  for (const v of [1, 10, 100, 1000]) {
+    grid.append(svg('line', { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b }));
+    axis.append(svg('text', { x: X(v), y: H - m.b + 16, 'text-anchor': 'middle' }, fr(v)));
+  }
+  for (const v of [1, 10, 100, 1000]) {
+    if (Math.log10(v) > yMax) continue;
+    grid.append(svg('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v) }));
+    axis.append(svg('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' }, fr(v)));
+  }
+  axis.append(svg('text', { x: (m.l + W - m.r) / 2, y: H - 8, 'text-anchor': 'middle' }, 'intensité arithmétique (FLOP par octet lu) ≈ tokens par lecture des poids'));
+  axis.append(svg('text', { x: 14, y: (m.t + H - m.b) / 2, 'text-anchor': 'middle', transform: `rotate(-90 14 ${(m.t + H - m.b) / 2})` }, 'TFLOPS atteignables'));
+  el.append(grid, axis);
+  el.append(svg('text', { class: 'lab', x: m.l + 8, y: m.t + 16 }, 'limité par la mémoire'));
+  el.append(svg('text', { class: 'lab', x: W - m.r - 8, y: H - m.b - 26, 'text-anchor': 'end' }, 'limité par le calcul'));
+  const pts = [[0.5, perf(0.5)], [ridge, peak], [8000, peak]].map(([a, p]) => `${X(a).toFixed(1)},${Y(p).toFixed(1)}`).join(' ');
+  el.append(svg('polyline', { class: 'roof', points: pts }));
+  el.append(svg('line', { class: 'ridge', x1: X(ridge), x2: X(ridge), y1: Y(peak) + 6, y2: H - m.b }));
+  el.append(svg('text', { class: 'ax', x: X(ridge) + 6, y: H - m.b - 8 }, `équilibre ≈ ${fr(ridge)}`));
+  el.append(svg('text', { class: 'ax', x: W - m.r - 8, y: Y(peak) - 8, 'text-anchor': 'end' }, `crête : ${fr(peak)} TFLOPS`));
+  const angle = -Math.atan2(Y(perf(1)) - Y(perf(10)), X(10) - X(1)) * 180 / Math.PI;
+  el.append(svg('text', { class: 'ax', x: X(9), y: Y(perf(9)) + 18, transform: `rotate(${angle} ${X(9)} ${Y(perf(9)) + 18})` }, `pente = ${fr(bwT, 2)} To/s`));
+
+  presetsAI().forEach(p => {
+    const cls = p.ai < ridge ? 'mem' : 'comp';
+    const c = svg('circle', { class: `pt ${cls}`, cx: X(p.ai), cy: Y(perf(p.ai)), r: 5 });
+    c.addEventListener('pointerenter', e => showTip(`<b>${esc(p.name)}</b><div class="kv"><span>intensité</span><span>${fr(p.ai)} FLOP/o</span><span>atteignable</span><span>${fr(perf(p.ai), perf(p.ai) < 10 ? 1 : 0)} TFLOPS</span><span>part de la crête</span><span>${fmtPct(perf(p.ai) / peak)}</span></div>`, e.clientX, e.clientY));
+    c.addEventListener('pointerleave', hideTip);
+    el.append(c);
+    // Sur la pente, étiquette en haut à gauche du point (zone libre) ; sur le plateau, en dessous.
+    el.append(p.ai >= ridge
+      ? svg('text', { class: 'ax', x: X(p.ai) + 8, y: Y(perf(p.ai)) + 20 }, p.label)
+      : svg('text', { class: 'ax', x: X(p.ai) - 10, y: Y(perf(p.ai)) - 8, 'text-anchor': 'end' }, p.label));
+  });
+  const ai = S.ai, cls = ai < ridge ? 'mem' : 'comp';
+  el.append(svg('circle', { class: `halo ${cls}`, cx: X(ai), cy: Y(perf(ai)), r: 12 }));
+  el.append(svg('circle', { class: `pt ${cls}`, cx: X(ai), cy: Y(perf(ai)), r: 7 }));
+
+  $('#aiOut').textContent = `${fr(ai)} token${ai > 1 ? 's' : ''}`;
+  const rangeEl = $('#aiRange');
+  rangeEl.style.setProperty('--fill', (rangeEl.value / 10) + '%');
+  rangeEl.style.setProperty('--c', ai < ridge ? 'var(--mem)' : 'var(--comp)');
+  $('#roofRead').innerHTML = ai < ridge
+    ? `Avec <b>${fr(ai)} token${ai > 1 ? 's' : ''}</b> par lecture des poids, le GPU atteint au mieux ${fr(perf(ai), perf(ai) < 10 ? 1 : 0)} TFLOPS sur ${fr(peak)}, soit <b>${fmtPct(perf(ai) / peak)}</b> de sa puissance : il attend la mémoire. Il faudrait ${fr(Math.ceil(ridge))} tokens par lecture pour l'occuper à plein.`
+    : `Avec <b>${fr(ai)} tokens</b> par lecture des poids, le GPU tourne à sa puissance de crête (${fr(peak)} TFLOPS) : <b>limité par le calcul</b>. Ajouter des tokens allonge maintenant la passe, la mémoire attend.`;
+
+  const t = MODELS.target, mT = t.layerParams * BPP / g.bw * 1e3, cT = 2 * t.layerParams * ai / g.flops * 1e3, mx = Math.max(mT, cT);
+  $('#layerBars').innerHTML = `
+    <div class="lb-row"><span>Lire une couche (${fmtBytes(t.layerParams * BPP)})</span><span class="lb-track mem"><i style="width:${(mT / mx * 100).toFixed(1)}%"></i></span><span class="v">${fmtMs(mT)}</span></div>
+    <div class="lb-row"><span>Calculer pour ${fr(ai)} token${ai > 1 ? 's' : ''}</span><span class="lb-track comp"><i style="width:${(cT / mx * 100).toFixed(1)}%"></i></span><span class="v">${fmtMs(cT)}</span></div>`;
+  $('#ridgeP').innerHTML = `Le <strong>point d'équilibre</strong> d'un GPU, c'est sa puissance divisée par sa bande passante : ${fr(peak)} TFLOPS ÷ ${fr(bwT, 2)} To/s ≈ <strong>${fr(ridge)} FLOP/octet</strong> sur un ${esc(g.name)}. En dessous, le GPU attend la mémoire (memory-bound). Au-dessus, il attend le calcul (compute-bound). Ce graphique en toit (roofline) résume toute la page.`;
+  $('#aiPresets').innerHTML = presetsAI().map(p => `<button class="btn small" type="button" data-ai="${p.ai}">${esc(p.label)}</button>`).join('');
+}
+
+// ── Section 4 : speculative decoding ──
+function renderSpec() {
+  const g = G(), dec = decodeStats(g), sp = specStats(g, 1, S.k, S.alpha);
+  const el = $('#specTl');
+  el.replaceChildren();
+  const W = 760, m = { l: 150, r: 12 };
+  const span = sp.cycle * 3;
+  const X = t => m.l + t / span * (W - m.l - m.r);
+  const rows = [{ y: 18, label: 'Decoding normal' }, { y: 70, label: `Speculative (k = ${S.k})` }];
+  rows.forEach(r => el.append(svg('text', { class: 'big', x: 0, y: r.y + 22 }, r.label)));
+  for (let t = 0, i = 0; t < span - 1e-9; t += dec.t, i++) {
+    const w = Math.min(dec.t, span - t);
+    el.append(svg('rect', { class: 'blk-mem', x: X(t), y: rows[0].y, width: Math.max(1, X(t + w) - X(t) - 2), height: 34, rx: 4 }));
+    if (X(t + w) - X(t) > 28 && w === dec.t) el.append(svg('text', { class: 'in', x: X(t) + (X(t + w) - X(t)) / 2 - 1, y: rows[0].y + 22, 'text-anchor': 'middle' }, '+1'));
+  }
+  for (let c = 0; c < 3; c++) {
+    let t = c * sp.cycle;
+    for (let i = 0; i < S.k; i++) {
+      el.append(svg('rect', { class: 'blk-draft', x: X(t), y: rows[1].y, width: Math.max(1, X(t + sp.d.t) - X(t) - 1.5), height: 34, rx: 3 }));
+      t += sp.d.t;
+    }
+    el.append(svg('rect', { class: 'blk-mem', x: X(t), y: rows[1].y, width: X(t + sp.v.t) - X(t) - 2, height: 34, rx: 4 }));
+    el.append(svg('text', { class: 'in', x: X(t) + (X(t + sp.v.t) - X(t)) / 2, y: rows[1].y + 22, 'text-anchor': 'middle' }, `+${fr(sp.E, 1)}`));
+  }
+  const step = [1, 2, 5, 10, 20, 50].find(s => span / s <= 8);
+  for (let t = 0; t <= span + 1e-9; t += step) {
+    el.append(svg('line', { x1: X(t), x2: X(t), y1: 112, y2: 117, stroke: 'currentColor', class: 'cross' }));
+    el.append(svg('text', { class: 'ax', x: X(t), y: 132, 'text-anchor': 'middle' }, `${fr(t)} ms`));
+  }
+  $('#tlNote').innerHTML = `En ${fmtMs(span)} : <b>${fr(span / dec.t, 1)} tokens</b> en decoding normal, <b>${fr(3 * sp.E, 1)} tokens</b> avec le speculative decoding. Violet : les ${S.k} propositions du brouillon. Bleu : les passes du gros modèle.`;
+  $('#kE').textContent = fr(sp.E, 2);
+  $('#kCycle').textContent = fmtMs(sp.cycle);
+  $('#kRate').textContent = `${fmtTps(sp.tps)} tok/s (×${fr(sp.tps / dec.tps, 2)})`;
+  $('#kTc').textContent = `${fmtPct(dec.tcU)} → ${fmtPct(sp.tcU)}`;
+
+  const speeds = Array.from({ length: 8 }, (_, i) => specStats(g, 1, i + 1, S.alpha).tps / dec.tps);
+  const top = Math.max(...speeds, 1.2) * 1.1;
+  const best = speeds.indexOf(Math.max(...speeds)) + 1;
+  $('#kBars').innerHTML = speeds.map((s, i) => `<div class="kbar${i + 1 === S.k ? ' on' : ''}"><b>×${fr(s, 1)}</b><i style="height:${(s / top * 100).toFixed(1)}%"></i><span>k=${i + 1}</span></div>`).join('');
+  $('#kNote').innerHTML = `Avec α = ${fr(S.alpha, 2)}, le meilleur choix est <b>k = ${best}</b>. Trop de propositions, et le brouillon travaille pour rien : plus on s'éloigne, plus il a de chances de s'être trompé.`;
+}
+
+// ── Section 5 : beaucoup d'utilisateurs ──
+const U_MAX = 512;
+const usersFromRange = v => Math.max(1, Math.round(Math.pow(U_MAX, v / 1000)));
+const rangeFromUsers = u => Math.round(Math.log(u) / Math.log(U_MAX) * 1000);
+function crossover(g) {
+  for (let b = 1; b <= U_MAX; b++) if (specStats(g, b, S.k, S.alpha).tps < decodeStats(g, b).tps) return b;
+  return null;
+}
+function lineChart(el, key, yLabel) {
+  const g = G();
+  el.replaceChildren();
+  const W = 420, H = 270, m = { l: 56, r: 12, t: 12, b: 38 };
+  const Bs = [];
+  for (let i = 0; i <= 140; i++) Bs.push(Math.pow(U_MAX, i / 140));
+  const nv = Bs.map(b => decodeStats(g, b)[key]), sv = Bs.map(b => specStats(g, b, S.k, S.alpha)[key]);
+  const yMaxRaw = Math.max(...nv, ...sv) * 1.08;
+  const mag = Math.pow(10, Math.floor(Math.log10(yMaxRaw / 4)));
+  const stepY = [1, 2, 2.5, 5, 10].map(x => x * mag).find(s => yMaxRaw / s <= 5);
+  const yMax = Math.ceil(yMaxRaw / stepY) * stepY;
+  const X = b => m.l + Math.log(b) / Math.log(U_MAX) * (W - m.l - m.r);
+  const Y = v => m.t + (1 - v / yMax) * (H - m.t - m.b);
+  const ridgeB = g.flops / g.bw;
+  if (ridgeB < U_MAX) el.append(svg('rect', { class: 'sat', x: X(ridgeB), y: m.t, width: W - m.r - X(ridgeB), height: H - m.t - m.b }));
+  const grid = svg('g', { class: 'grid' }), axis = svg('g', { class: 'axis' });
+  for (let v = 0; v <= yMax + 1e-9; v += stepY) {
+    grid.append(svg('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v) }));
+    axis.append(svg('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' }, v >= 1000 ? `${fr(v / 1000, v % 1000 ? 1 : 0)} k` : fr(v)));
+  }
+  for (const b of [1, 4, 16, 64, 256]) axis.append(svg('text', { x: X(b), y: H - m.b + 16, 'text-anchor': 'middle' }, fr(b)));
+  axis.append(svg('text', { x: (m.l + W - m.r) / 2, y: H - 4, 'text-anchor': 'middle' }, 'utilisateurs simultanés'));
+  el.append(grid, axis);
+  const line = vals => Bs.map((b, i) => `${X(b).toFixed(1)},${Y(vals[i]).toFixed(1)}`).join(' ');
+  el.append(svg('polyline', { class: 'l-norm', points: line(nv) }));
+  el.append(svg('polyline', { class: 'l-spec', points: line(sv) }));
+  const xb = crossover(g);
+  if (xb) {
+    el.append(svg('line', { class: 'cross', x1: X(xb), x2: X(xb), y1: m.t, y2: H - m.b }));
+    el.append(svg('text', { class: 'ax', x: X(xb) + 4, y: m.t + 12 }, `croisement ≈ ${fr(xb)}`));
+  }
+  const u = S.users;
+  el.append(svg('line', { class: 'cur', x1: X(u), x2: X(u), y1: m.t, y2: H - m.b }));
+  const dn = decodeStats(g, u)[key], ds = specStats(g, u, S.k, S.alpha)[key];
+  el.append(svg('circle', { class: 'pt mem', cx: X(u), cy: Y(dn), r: 5 }));
+  el.append(svg('circle', { class: 'pt comp', cx: X(u), cy: Y(ds), r: 5, style: 'fill:var(--draft)' }));
+
+  const hov = svg('g');
+  const cl = svg('line', { class: 'cross', y1: m.t, y2: H - m.b, visibility: 'hidden' });
+  hov.append(cl);
+  el.append(hov);
+  const hit = svg('rect', { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: 'transparent' });
+  hit.addEventListener('pointermove', e => {
+    const r = el.getBoundingClientRect();
+    const sx = (e.clientX - r.left) / r.width * W;
+    const b = Math.max(1, Math.min(U_MAX, Math.round(Math.pow(U_MAX, (sx - m.l) / (W - m.l - m.r)))));
+    cl.setAttribute('x1', X(b)); cl.setAttribute('x2', X(b)); cl.setAttribute('visibility', 'visible');
+    const a = decodeStats(g, b)[key], s = specStats(g, b, S.k, S.alpha)[key];
+    showTip(`<b>${fr(b)} utilisateur${b > 1 ? 's' : ''}</b><div class="kv"><span>decoding normal</span><span>${fmtTps(a)} tok/s</span><span>speculative</span><span>${fmtTps(s)} tok/s</span><span>rapport</span><span>×${fr(s / a, 2)}</span></div>`, e.clientX, e.clientY);
+  });
+  hit.addEventListener('pointerleave', () => { cl.setAttribute('visibility', 'hidden'); hideTip(); });
+  el.append(hit);
+  void yLabel;
+}
+function renderUsers() {
+  const g = G(), u = S.users;
+  const ridgeB = g.flops / g.bw;
+  $('#usersOut').textContent = fr(u);
+  const r = $('#usersRange');
+  r.value = rangeFromUsers(u);
+  r.style.setProperty('--fill', (r.value / 10) + '%');
+  $('#usersSub').textContent = `${g.name}, Llama 3.1 8B en BF16, brouillon Llama 3.2 1B. Survolez les courbes pour lire les valeurs.`;
+  $('#usersP2').innerHTML = `Au-delà du point d'équilibre (environ <strong>${fr(ridgeB)} utilisateurs</strong> sur un ${esc(g.name)}), le decoding devient lui aussi limité par le calcul. Et le serveur glisse les prefills des nouveaux arrivants dans les mêmes passes (batching continu) : ils consomment le calcul laissé libre. Un GPU chargé n'a plus de calcul qui dort, que ce soit en prefill ou en decoding.`;
+  lineChart($('#chTotal'), 'tps');
+  lineChart($('#chUser'), 'perUser');
+  const dn = decodeStats(g, u), sp = specStats(g, u, S.k, S.alpha);
+  const ratio = sp.tps / dn.tps;
+  const v = $('#verdict');
+  v.className = 'verdict ' + (ratio >= 1 ? 'good' : 'bad');
+  v.innerHTML = `Avec <b>${fr(u)} utilisateur${u > 1 ? 's' : ''}</b> : decoding normal ${fmtTps(dn.tps)} tokens/s au total, Tensor Cores occupés à ${fmtPct(dn.tcU)}. ` +
+    `Speculative : ${fmtTps(sp.tps)} tokens/s, Tensor Cores à ${fmtPct(sp.tcU)} dont seulement ${fmtPct(sp.usefulU)} pour des tokens gardés. ` +
+    (ratio >= 1
+      ? `<b>Le speculative decoding accélère (×${fr(ratio, 2)})</b> : il reste du calcul inutilisé à récupérer.`
+      : `<b>Le speculative decoding ralentit (×${fr(ratio, 2)})</b> : le calcul est déjà occupé, le travail du brouillon et les tokens rejetés prennent la place de tokens utiles.`);
+}
+
+// ── Liaison des contrôles ──
+function syncBound() {
+  $$('[data-bind="k"]').forEach(i => { i.value = S.k; i.style.setProperty('--fill', ((S.k - 1) / 7 * 100) + '%'); });
+  $$('[data-bind="alpha"]').forEach(i => { i.value = S.alpha; i.style.setProperty('--fill', ((S.alpha - 0.3) / 0.65 * 100) + '%'); });
+  $$('[data-out="k"]').forEach(o => { o.textContent = S.k; });
+  $$('[data-out="alpha"]').forEach(o => { o.textContent = fr(S.alpha, 2); });
+}
+function renderAll() {
+  readColors();
+  renderHero();
+  renderMemory();
+  renderRoofline();
+  renderSpec();
+  renderUsers();
+  renderSimInfo();
+  syncBound();
+}
+const THEME_LABEL = { auto: 'Thème : auto', light: 'Thème : clair', dark: 'Thème : sombre' };
+function setTheme(mode) {
+  if (mode === 'auto') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = mode;
+  $('#themeBtn').textContent = THEME_LABEL[mode];
+  try { localStorage.setItem('trajet-theme', mode); } catch (e) { /* stockage indisponible */ }
+  readColors();
+}
+
+function init() {
+  let theme = 'auto';
+  try { theme = localStorage.getItem('trajet-theme') || 'auto'; } catch (e) { /* stockage indisponible */ }
+  setTheme(theme);
+  $('#themeBtn').addEventListener('click', () => {
+    const cur = document.documentElement.dataset.theme || 'auto';
+    setTheme({ auto: 'light', light: 'dark', dark: 'auto' }[cur]);
+  });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColors);
+
+  $('#gpuSel').addEventListener('change', e => { S.gpu = e.target.value; renderAll(); layoutScene(); startSim(); });
+  $$('[data-mode]').forEach(b => b.addEventListener('click', () => {
+    SIM.mode = b.dataset.mode;
+    $$('[data-mode]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    startSim();
+  }));
+  const pl = $('#promptLen');
+  const paintPl = () => pl.style.setProperty('--fill', (SIM.promptIdx / 8 * 100) + '%');
+  pl.addEventListener('input', () => { SIM.promptIdx = +pl.value; paintPl(); if (SIM.mode === 'prefill') startSim(); else renderSimInfo(); });
+  paintPl();
+  $('#simPlay').addEventListener('click', () => { SIM.playing = !SIM.playing; $('#simPlay').textContent = SIM.playing ? 'Pause' : 'Lecture'; });
+  $('#simPlay').textContent = SIM.playing ? 'Pause' : 'Lecture';
+  $('#simRestart').addEventListener('click', startSim);
+  $('#simSpeed').addEventListener('change', e => { SIM.speed = +e.target.value; renderSimInfo(); });
+
+  $$('[data-bind]').forEach(i => i.addEventListener('input', () => {
+    S[i.dataset.bind] = +i.value;
+    syncBound();
+    renderSpec();
+    renderUsers();
+    renderRoofline();
+    renderSimInfo();
+    if (SIM.mode === 'spec') startSim();
+  }));
+  $('#aiRange').addEventListener('input', e => { S.ai = aiFromRange(+e.target.value); renderRoofline(); });
+  $('#aiPresets').addEventListener('click', e => {
+    const b = e.target.closest('[data-ai]');
+    if (!b) return;
+    S.ai = +b.dataset.ai;
+    $('#aiRange').value = rangeFromAi(S.ai);
+    renderRoofline();
+  });
+  $('#usersRange').addEventListener('input', e => { S.users = usersFromRange(+e.target.value); renderUsers(); });
+
+  renderAll();
+  layoutScene();
+  startSim();
+  new ResizeObserver(() => { layoutScene(); }).observe($('#sceneWrap'));
+  new IntersectionObserver(entries => { SIM.visible = entries[0].isIntersecting; }).observe($('#sceneWrap'));
+  if (document.fonts) document.fonts.ready.then(() => { readColors(); });
+  requestAnimationFrame(frame);
+}
+init();
+</script>
+</body>
+</html>

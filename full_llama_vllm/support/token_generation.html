@@ -1,0 +1,2253 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>La roulette des tokens</title>
+<meta name="description" content="Labo interactif pour voir comment les paramètres d'échantillonnage d'un LLM (temperature, top_k, top_p, min_p, pénalités, DRY, seed…) transforment les logits et la génération.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #edf0f4;
+  --surface: #fbfcfd;
+  --surface-2: #f2f4f8;
+  --surface-3: #e2e7ee;
+  --ink: #111726;
+  --ink-2: #434d63;
+  --muted: #5f6980;
+  --line: #dce1e9;
+  --line-2: #c3cad6;
+  --accent: #2a78d6;
+  --accent-strong: #1c5cab;
+  --seg: #2a6cc0;
+  --seg-ink: #ffffff;
+  --pick: #eb6834;
+  --pick-ink: #111726;
+  --pen: #4a3aa7;
+  --pen-wash: #ebe8f7;
+  --ghost: #d2d8e2;
+  --elim: #9aa2b3;
+  --shadow: 0 1px 2px rgb(17 23 38 / .05), 0 8px 24px rgb(17 23 38 / .05);
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "JetBrains Mono", "Cascadia Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0b0f16;
+    --surface: #131923;
+    --surface-2: #19202b;
+    --surface-3: #262e3b;
+    --ink: #edf1f7;
+    --ink-2: #b4bdcc;
+    --muted: #8e97aa;
+    --line: #242c39;
+    --line-2: #364052;
+    --accent: #3987e5;
+    --accent-strong: #86b6ef;
+    --seg: #2d6fc2;
+    --seg-ink: #ffffff;
+    --pick: #e56a36;
+    --pick-ink: #111726;
+    --pen: #9085e9;
+    --pen-wash: #262142;
+    --ghost: #2e3747;
+    --elim: #5f6a7e;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0f16;
+  --surface: #131923;
+  --surface-2: #19202b;
+  --surface-3: #262e3b;
+  --ink: #edf1f7;
+  --ink-2: #b4bdcc;
+  --muted: #8e97aa;
+  --line: #242c39;
+  --line-2: #364052;
+  --accent: #3987e5;
+  --accent-strong: #86b6ef;
+  --seg: #2d6fc2;
+  --seg-ink: #ffffff;
+  --pick: #e56a36;
+  --pick-ink: #111726;
+  --pen: #9085e9;
+  --pen-wash: #262142;
+  --ghost: #2e3747;
+  --elim: #5f6a7e;
+  --shadow: none;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.55 var(--f-body);
+  padding-inline: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+[hidden] { display: none !important; }
+h1, h2, h3, h4 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+p { margin: 0; }
+code, .mono { font-family: var(--f-mono); font-size: .9em; }
+a { color: var(--accent-strong); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ── Barre du haut ── */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  margin-inline: -16px; padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px 20px; flex-wrap: wrap;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { font: 800 17px/1 var(--f-display); color: var(--ink); text-decoration: none; letter-spacing: -.01em; }
+.nav { display: flex; gap: 4px 16px; flex-wrap: wrap; margin-right: auto; }
+.nav a { color: var(--ink-2); text-decoration: none; font-size: 14px; }
+.nav a:hover { color: var(--ink); text-decoration: underline; }
+
+.page { max-width: 1500px; margin-inline: auto; padding-block: 8px 56px; }
+
+/* ── En-tête ── */
+.hero { padding-block: 52px 16px; max-width: 64rem; }
+.eyebrow { font: 500 12px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+.hero h1 { font-size: clamp(2.6rem, 6.5vw, 4.8rem); font-weight: 800; letter-spacing: -.035em; line-height: .98; }
+.h1-tok {
+  position: relative; display: inline-block; padding: 0 .16em .05em; border-radius: .14em;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.h1-tok small {
+  position: absolute; right: .25em; top: -1.5em;
+  font: 500 13px/1 var(--f-mono); letter-spacing: 0; color: var(--accent-strong);
+}
+.lead { font-size: 1.16rem; max-width: 40em; color: var(--ink-2); margin-top: 22px; }
+
+/* ── Sections ── */
+.section { padding-block: 44px 8px; }
+.section-head { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 10px 14px; margin-bottom: 22px; }
+.section-head > p { grid-column: 1 / -1; }
+.step {
+  flex: none; width: 32px; height: 32px; border-radius: 50%;
+  display: inline-grid; place-items: center;
+  background: var(--ink); color: var(--bg); font: 700 15px/1 var(--f-mono);
+}
+.section-head h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); font-weight: 800; letter-spacing: -.025em; }
+.section-intro { flex-basis: 100%; max-width: 46em; color: var(--ink-2); }
+
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px; box-shadow: var(--shadow); min-width: 0;
+}
+.card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 14px; }
+.card-head h3 { font-size: 1.14rem; font-weight: 800; letter-spacing: -.01em; }
+.card-sub { flex-basis: 100%; color: var(--muted); font-size: 14px; max-width: 62em; }
+
+/* ── Boutons et champs ── */
+.btn {
+  font: 700 14px/1.1 var(--f-body); color: var(--ink);
+  padding: 9px 14px; border-radius: 9px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line-2);
+  transition: background .15s, border-color .15s;
+}
+.btn:hover { background: var(--surface-2); border-color: var(--muted); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.btn.primary:hover { background: var(--ink-2); }
+.btn.small { font-size: 13px; padding: 7px 11px; }
+.btn.ghost { background: transparent; }
+.btn.block { width: 100%; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.text-in, .select {
+  font: 400 15px/1.2 var(--f-body); color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line-2); border-radius: 9px;
+  padding: 9px 11px; min-width: 0;
+}
+.text-in.mono { font-family: var(--f-mono); font-size: 13.5px; }
+.select.small { padding: 6px 8px; font-size: 13px; }
+.text-in:focus, .select:focus { outline: 2px solid var(--accent); outline-offset: 0; }
+.text-in.invalid { border-color: var(--pick); }
+
+.seg-ctl { display: inline-flex; padding: 3px; gap: 3px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; }
+.seg-ctl button {
+  font: 700 13px/1 var(--f-body); color: var(--ink-2); background: transparent;
+  border: 0; border-radius: 7px; padding: 8px 11px; cursor: pointer;
+}
+.seg-ctl button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--line-2); }
+.seg-ctl.small button { padding: 6px 9px; font-size: 12.5px; }
+
+/* ── Curseurs ── */
+input[type=range] {
+  --c: var(--accent); --fill: 50%;
+  -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 2px 0 0; background: transparent; cursor: pointer;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 3px;
+  background: linear-gradient(to right, var(--c) 0 var(--fill), var(--surface-3) var(--fill) 100%);
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; margin-top: -6px; border-radius: 50%;
+  background: var(--surface); border: 2.5px solid var(--c); box-shadow: 0 1px 3px rgb(0 0 0 / .2);
+}
+input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--surface-3); }
+input[type=range]::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--c); }
+input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--surface); border: 2.5px solid var(--c); }
+
+/* ── Section 1 : softmax ── */
+.smx-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 32px; align-items: start; }
+.prose { display: grid; gap: 14px; max-width: 40em; }
+.prose strong { font-weight: 700; }
+.formula {
+  display: inline-flex; align-items: center; gap: 10px; justify-self: start;
+  font: 500 1.2rem/1.2 var(--f-mono); padding: 14px 20px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+}
+.frac { display: inline-flex; flex-direction: column; align-items: center; }
+.frac > span:first-child { border-bottom: 2px solid currentColor; padding: 0 6px 4px; }
+.frac > span:last-child { padding-top: 4px; }
+.formula sup, .formula sub { font-size: .66em; }
+.smx-table { display: grid; gap: 2px; }
+.smx-row { display: grid; grid-template-columns: 70px minmax(80px, 1fr) 50px 52px 64px minmax(90px, 1.1fr); gap: 10px; align-items: center; min-height: 40px; }
+.smx-row.head { min-height: 0; font: 500 11.5px/1.2 var(--f-mono); color: var(--muted); padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+.smx-tok { font: 700 14px var(--f-mono); }
+.smx-num { font: 500 13px var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-2); }
+.smx-num.strong { color: var(--ink); font-weight: 700; }
+.smx-p { display: flex; align-items: center; gap: 8px; }
+.smx-bar { height: 14px; border-radius: 0 4px 4px 0; background: var(--accent); transition: width .18s; min-width: 1px; }
+.smx-p .smx-num { min-width: 48px; }
+.smx-foot { display: grid; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.smx-note { font-size: 14px; color: var(--ink-2); min-height: 2.8em; }
+.smx-note b { color: var(--ink); }
+
+/* ── Section 2 : labo ── */
+.model-note {
+  flex-basis: 100%; max-width: 62em; font-size: 14px; color: var(--ink-2);
+  padding: 10px 14px; border: 1px dashed var(--line-2); border-radius: 10px;
+}
+.banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap;
+  margin-bottom: 14px; padding: 10px 14px; border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  font-size: 14.5px;
+}
+.lab { display: grid; grid-template-columns: 318px minmax(0, 1fr); gap: 16px; align-items: start; }
+.lab-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.lab-col { display: grid; gap: 16px; align-content: start; min-width: 0; }
+@media (min-width: 1380px) {
+  .lab-main { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .span { grid-column: 1 / -1; }
+}
+
+/* Paramètres */
+.params {
+  padding: 0; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 64px);
+  max-height: calc(100vh - 80px); overflow: auto; overscroll-behavior: contain;
+}
+.p-group { padding: 14px 16px; border-top: 1px solid var(--line); display: grid; gap: 14px; }
+.p-group:first-child { border-top: 0; }
+.p-group > h3 {
+  font: 700 11.5px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2);
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+}
+.p-group > h3 small { font: 400 12px/1 var(--f-body); letter-spacing: 0; text-transform: none; color: var(--muted); }
+.slot { display: grid; gap: 14px; }
+.ctl { display: grid; gap: 2px; }
+.ctl-top { display: flex; align-items: center; gap: 8px; }
+.ctl-top label code { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.ctl-top output { margin-left: auto; font: 700 14px/1 var(--f-mono); font-variant-numeric: tabular-nums; }
+.off-pill {
+  display: none; font: 500 10.5px/1 var(--f-mono); color: var(--muted);
+  border: 1px solid var(--line-2); border-radius: 99px; padding: 3px 7px;
+}
+.ctl.is-off .off-pill { display: inline-block; }
+.ctl.is-off output { color: var(--muted); }
+.ctl.is-off input[type=range] { --c: var(--elim); }
+.ctl-hint { font-size: 12.5px; line-height: 1.4; color: var(--muted); margin-top: 3px; }
+.ctl-hint a { color: var(--muted); }
+.ctl .text-in { width: 100%; margin-top: 6px; }
+.ctl-err { font-size: 12.5px; color: var(--pick); font-weight: 700; }
+.check { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 4px 8px; cursor: pointer; }
+.check input { width: 17px; height: 17px; accent-color: var(--accent); margin: 0; }
+.check code { font-size: 13.5px; font-weight: 700; }
+.check span { grid-column: 2 / -1; font-size: 12.5px; color: var(--muted); }
+.tags {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px;
+  padding: 6px; border: 1px solid var(--line-2); border-radius: 9px; background: var(--surface);
+}
+.tags:focus-within { outline: 2px solid var(--accent); }
+.tag-chip {
+  display: inline-flex; align-items: center; gap: 4px; padding: 3px 4px 3px 8px;
+  font: 500 13px/1 var(--f-mono); background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 6px;
+}
+.tag-chip button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 0 3px; }
+.tags-in { flex: 1; min-width: 90px; border: 0; background: transparent; color: var(--ink); font: 400 13px var(--f-mono); padding: 4px; outline: none; }
+
+/* Texte / tokens */
+.prompt-row { display: grid; gap: 8px; margin-bottom: 12px; }
+.prompt-edit { display: flex; gap: 8px; }
+.prompt-edit .text-in { flex: 1; font-family: var(--f-mono); font-size: 14px; }
+.tokens {
+  display: flex; flex-wrap: wrap; align-content: flex-start; gap: 5px 4px;
+  min-height: 96px; max-height: 250px; overflow: auto; padding: 12px;
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
+  font: 500 14px/1.25 var(--f-mono);
+}
+.tok { padding: 3px 5px 2px; border-radius: 5px; border: 1px solid transparent; white-space: pre; }
+.tok-prompt { color: var(--ink-2); border-color: var(--line-2); }
+.tok-unk { color: var(--muted); border: 1px dashed var(--muted); }
+.tok-gen {
+  cursor: help;
+  background: color-mix(in srgb, var(--accent) calc(10% + var(--p) * 58%), var(--surface));
+}
+.tok-eos { color: var(--muted); border: 1px dashed var(--muted); font-size: 12px; }
+.tok-cut { text-decoration: line-through; opacity: .5; }
+.tok.in-win { box-shadow: inset 0 -2px 0 var(--pen); }
+.caret { width: 2px; height: 1.25em; align-self: center; background: var(--pick); animation: blink 1.1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.tok.fly {
+  position: fixed; left: 0; top: 0; z-index: 50; pointer-events: none;
+  font: 700 14px/1.25 var(--f-mono); background: var(--pick); color: var(--pick-ink);
+  box-shadow: 0 6px 18px rgb(0 0 0 / .25);
+}
+.tok-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+.lg { display: inline-flex; align-items: center; gap: 6px; }
+.lg-grad { width: 54px; height: 10px; border-radius: 3px; background: linear-gradient(to right, color-mix(in srgb, var(--accent) 10%, var(--surface)), color-mix(in srgb, var(--accent) 68%, var(--surface))); }
+.lg-win { width: 22px; height: 10px; border-bottom: 2px solid var(--pen); }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
+.speed { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.status { margin-top: 12px; display: grid; gap: 6px; }
+.status-row { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--muted); }
+.status-row b { font: 700 13px var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.status-row .fr.done { background: var(--pick); color: var(--pick-ink); padding: 1px 6px; border-radius: 4px; }
+.finish-note { font-size: 14px; color: var(--ink-2); }
+
+/* Roulette */
+.roulette { position: relative; height: 56px; margin-top: 26px; }
+.segs { display: flex; gap: 2px; height: 100%; border-radius: 8px; overflow: hidden; background: var(--surface-2); }
+.seg {
+  flex: 0 1 0; flex-grow: 1; min-width: 0; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--seg); color: var(--seg-ink); font: 700 12px/1 var(--f-mono); white-space: pre;
+  transition: flex-grow .28s ease, background-color .2s;
+}
+.seg.rest { background: color-mix(in srgb, var(--seg) 55%, var(--surface-3)); }
+.seg.nolabel span { visibility: hidden; }
+.seg.picked { background: var(--pick); color: var(--pick-ink); }
+.marker { position: absolute; top: -22px; bottom: -6px; width: 0; pointer-events: none; }
+.marker::before { content: ""; position: absolute; left: -1px; top: 16px; bottom: 0; width: 2px; background: var(--ink); }
+.marker span {
+  position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+  font: 700 11px/1 var(--f-mono); color: var(--pick-ink); background: var(--pick); padding: 2px 5px; border-radius: 4px;
+}
+.rl-scale { display: flex; justify-content: space-between; font: 500 11px var(--f-mono); color: var(--muted); margin-top: 10px; }
+.readout { margin-top: 10px; font-size: 14.5px; color: var(--ink-2); min-height: 2.6em; }
+.readout b { color: var(--ink); }
+.readout code { font-weight: 700; color: var(--ink); }
+
+/* Pipeline */
+.pipeline { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-wrap: wrap; align-items: stretch; gap: 6px 4px; }
+.stage {
+  display: grid; gap: 3px; padding: 7px 10px; min-width: 64px;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--surface-2);
+}
+.stage .st-name { font: 500 11px/1 var(--f-mono); color: var(--muted); }
+.stage .st-n { font: 700 18px/1 var(--f-mono); font-variant-numeric: tabular-nums; }
+.stage .st-note { font: 400 11px/1.2 var(--f-body); color: var(--muted); }
+.stage.off { opacity: .5; }
+.stage.cut { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.stage.final { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.stage.final .st-name, .stage.final .st-note { color: color-mix(in srgb, var(--surface) 75%, transparent); }
+.arrow { align-self: center; color: var(--muted); font-size: 13px; }
+
+/* Distribution */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+.sw { display: inline-block; width: 16px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+.sw.ghost { background: var(--ghost); height: 14px; vertical-align: -3px; }
+.sw.bar { background: var(--accent); }
+.sw.tail { background: var(--ghost); }
+.tag {
+  display: inline-block; font: 500 11px/1 var(--f-mono); padding: 3px 6px; border-radius: 99px; white-space: nowrap;
+}
+.tag.out { color: var(--muted); border: 1px solid var(--line-2); }
+.tag.pen { color: var(--pen); background: var(--pen-wash); }
+.rows-wrap { position: relative; --cols: 26px minmax(64px, 104px) minmax(0, 1fr) 58px 76px; }
+.axis, .row { display: grid; grid-template-columns: var(--cols); gap: 8px; align-items: center; }
+.axis { height: 20px; }
+.axis-track { position: relative; height: 100%; }
+.tick { position: absolute; top: 0; bottom: 0; }
+.tick i { position: absolute; top: 2px; transform: translateX(-50%); font: 500 10.5px/1 var(--f-mono); font-style: normal; color: var(--muted); white-space: nowrap; }
+.tick::after { content: ""; position: absolute; left: 0; top: 16px; width: 1px; height: var(--rows-h, 400px); background: var(--line); }
+.tick.zero::after { background: var(--line-2); }
+.rows { position: relative; transition: height .3s; }
+.row {
+  position: absolute; left: 0; right: 0; top: 0; height: 28px; border-radius: 6px;
+  transition: transform .42s cubic-bezier(.2, .8, .2, 1), opacity .3s;
+}
+.row.enter { opacity: 0; }
+.row:hover { background: color-mix(in srgb, var(--surface-2) 70%, transparent); }
+.r-rank { font: 500 11px var(--f-mono); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.r-tok { font: 700 13.5px/1 var(--f-mono); white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+.r-track { position: relative; height: 20px; }
+.r-ghost, .r-bar {
+  position: absolute; left: calc(var(--a, 0) * 100%); width: calc((var(--b, 0) - var(--a, 0)) * 100%);
+  transition: left .2s ease, width .2s ease;
+}
+.r-ghost { top: 0; bottom: 0; background: var(--ghost); border-radius: 0 4px 4px 0; }
+.r-bar { top: 5px; bottom: 5px; background: var(--accent); border-radius: 0 4px 4px 0; }
+.neg .r-ghost.neg, .r-bar.neg, .r-ghost.neg { border-radius: 4px 0 0 4px; }
+.r-val { font: 700 12.5px/1 var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.r-tag { justify-self: start; }
+.row.out .r-tok { text-decoration: line-through; color: var(--muted); }
+.row.out .r-val { color: var(--muted); font-weight: 500; }
+.row.picked { box-shadow: 0 0 0 2px var(--pick); background: color-mix(in srgb, var(--pick) 12%, transparent); }
+.rows-foot { margin-top: 10px; font-size: 13px; color: var(--muted); }
+.dist-empty { font-size: 14px; color: var(--muted); }
+
+/* Vue d'ensemble */
+.ov-box { position: relative; width: 100%; }
+#ov { display: block; width: 100%; height: 190px; cursor: crosshair; }
+.ov-sum { margin-top: 8px; font-size: 13.5px; color: var(--ink-2); }
+
+/* Variantes */
+.var-list { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+.var { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 12px; align-items: baseline; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
+.var-seed, .var-fr { font: 500 12px var(--f-mono); color: var(--muted); }
+.var-fr b { color: var(--ink); }
+.var-text { font: 500 14px/1.7 var(--f-mono); overflow-wrap: anywhere; }
+.var-prompt { color: var(--muted); }
+.vt { padding: 1px 2px; border-radius: 3px; background: color-mix(in srgb, var(--accent) calc(10% + var(--p) * 58%), var(--surface)); }
+.vt.cut { text-decoration: line-through; opacity: .5; }
+.var-note { margin-top: 10px; font-size: 14px; color: var(--ink-2); }
+.var-note b { color: var(--ink); }
+
+/* API */
+.code-wrap { position: relative; }
+.code {
+  margin: 0; padding: 14px 16px; max-height: 420px; overflow: auto;
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
+  font: 400 13px/1.55 var(--f-mono); white-space: pre; tab-size: 4;
+}
+.code .c { color: var(--muted); }
+.copy { position: absolute; top: 8px; right: 8px; }
+.api-note { margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+
+/* Section 3 : référence */
+.chain { list-style: none; margin: 0 0 30px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 6px; align-items: center; }
+.chain li { display: grid; gap: 2px; padding: 8px 12px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+.chain li b { font: 700 13px/1 var(--f-mono); }
+.chain li span { font-size: 12px; color: var(--muted); }
+.chain li.arrow { padding: 0; border: 0; background: none; }
+.chain-note { margin: -18px 0 30px; font-size: 14px; color: var(--muted); max-width: 52em; }
+.ref-group { font-size: 1.25rem; font-weight: 800; margin: 30px 0 14px; letter-spacing: -.01em; }
+.ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 430px), 1fr)); gap: 16px; }
+.doc { display: grid; gap: 12px; align-content: start; }
+.doc header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px; }
+.doc h4 { font: 700 17px/1.2 var(--f-mono); }
+.doc-tag { font: 500 11px/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.doc-what { font-size: 15.5px; }
+.doc-meta { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 0; font-size: 14px; }
+.doc-meta dt { color: var(--muted); }
+.doc-meta dd { margin: 0; }
+.doc-meta code { overflow-wrap: anywhere; }
+.doc-pit { font-size: 14.5px; color: var(--ink-2); }
+.doc-pit strong { color: var(--ink); }
+.doc-try { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
+.doc:target { box-shadow: 0 0 0 2px var(--accent); }
+
+.foot { max-width: 1500px; margin: 0 auto; padding-block: 24px 40px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--muted); }
+
+/* Infobulle */
+.tip {
+  position: fixed; z-index: 60; max-width: 340px; pointer-events: none;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line-2); border-radius: 10px;
+  padding: 10px 12px; font-size: 13px; line-height: 1.4; box-shadow: 0 10px 30px rgb(0 0 0 / .18);
+}
+.tip-h { font: 700 14px var(--f-mono); margin-bottom: 4px; }
+.tip-sub { color: var(--muted); margin-bottom: 6px; }
+.tip table { border-collapse: collapse; width: 100%; font: 400 12px var(--f-mono); font-variant-numeric: tabular-nums; }
+.tip th { text-align: right; font-weight: 500; color: var(--muted); padding: 2px 0 4px 10px; border-bottom: 1px solid var(--line); }
+.tip td { text-align: right; padding: 2px 0 2px 10px; }
+.tip th:first-child, .tip td:first-child { text-align: left; padding-left: 0; }
+.tip tr.me td { color: var(--pick); font-weight: 700; }
+.tip .kv { display: grid; grid-template-columns: 1fr auto; gap: 2px 14px; font-variant-numeric: tabular-nums; }
+.tip .kv span:nth-child(even) { font-family: var(--f-mono); text-align: right; }
+.tip .kv .pen { color: var(--pen); }
+.tip-foot { margin-top: 6px; color: var(--muted); font-size: 12px; }
+
+@media (max-width: 1060px) {
+  .lab { grid-template-columns: minmax(0, 1fr); }
+  .params { position: static; max-height: none; overflow: visible; }
+  .smx-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .smx-row { grid-template-columns: 62px minmax(70px, 1fr) 44px minmax(80px, 1fr); }
+  .smx-row > :nth-child(4), .smx-row > :nth-child(5) { display: none; }
+  .rows-wrap { --cols: 0 minmax(56px, 84px) minmax(0, 1fr) 52px 64px; }
+  .r-rank { visibility: hidden; }
+  .var { grid-template-columns: minmax(0, 1fr); }
+  .speed { margin-left: 0; }
+  .hero { padding-top: 36px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0s !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#top">La roulette des tokens</a>
+  <nav class="nav" aria-label="Sections">
+    <a href="#softmax">1 · Logits et softmax</a>
+    <a href="#labo">2 · Le labo</a>
+    <a href="#parametres">3 · Les paramètres</a>
+  </nav>
+  <button class="btn small ghost" id="themeBtn" type="button">Thème : auto</button>
+</header>
+
+<main class="page" id="top">
+
+  <section class="hero">
+    <p class="eyebrow">Formation LLM · échantillonnage</p>
+    <h1>La roulette des <span class="h1-tok">tokens<small>p = 0,42</small></span></h1>
+    <p class="lead">À chaque étape, un LLM attribue un score à chacun des tokens de son vocabulaire, puis en tire un au sort. Les paramètres d'échantillonnage décident à quoi ressemble ce tirage. Cette page permet de les manipuler et d'en voir l'effet en direct, sur la distribution comme sur le texte généré.</p>
+  </section>
+
+  <!-- ─────────────── 1. Logits et softmax ─────────────── -->
+  <section class="section" id="softmax">
+    <div class="section-head">
+      <span class="step">1</span>
+      <h2>Des logits aux probabilités</h2>
+    </div>
+    <div class="smx-grid">
+      <div class="prose">
+        <p>En sortie, le réseau produit un <strong>logit</strong> par token du vocabulaire : un score brut, sans unité, qui peut être négatif et n'a pas de plafond. Un logit isolé ne veut rien dire. Seuls les <em>écarts</em> entre logits comptent.</p>
+        <p>Le <strong>softmax</strong> transforme ces scores en probabilités, en deux temps. L'exponentielle rend tout positif et amplifie les écarts. La division par la somme ramène le total à 100 %.</p>
+        <div class="formula" role="img" aria-label="p indice i égale exponentielle de z i divisé par T, sur la somme pour tous les j de l'exponentielle de z j divisé par T">
+          <span>p<sub>i</sub> =</span>
+          <span class="frac"><span>e<sup>z<sub>i</sub>/T</sup></span><span>Σ<sub>j</sub> e<sup>z<sub>j</sub>/T</sup></span></span>
+        </div>
+        <p>La <strong>température</strong> <em>T</em> divise les logits juste avant l'exponentielle. En dessous de 1, les écarts se creusent et la distribution se resserre sur le favori. Au-dessus de 1, ils s'écrasent et la distribution s'aplatit.</p>
+        <p>Les <code>logprobs</code> renvoyés par l'API valent ln(p) : ce sont des probabilités en échelle logarithmique, calculées après le softmax. Ce ne sont pas des logits.</p>
+        <p>Tous les autres paramètres agissent sur cette liste de logits avant le tirage. Les pénalités en baissent certains, les filtres (<code>top_k</code>, <code>top_p</code>, <code>min_p</code>, grammaire) en éliminent, la température les redimensionne. Le labo ci-dessous montre toute la chaîne.</p>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3>Le softmax à la main</h3>
+          <p class="card-sub">Cinq candidats pour le token qui suit « Le ciel est ». Déplacez les logits et la température.</p>
+        </div>
+        <div class="smx-table" id="smxTable"></div>
+        <div class="smx-foot">
+          <div class="ctl" id="smxTctl">
+            <div class="ctl-top"><label for="smxT"><code>temperature</code></label><output id="smxTout" for="smxT">1.00</output></div>
+            <input type="range" id="smxT" min="0.1" max="3" step="0.05" value="1">
+          </div>
+          <div class="btn-row">
+            <button class="btn small" id="smxUp" type="button">Tous les logits +2</button>
+            <button class="btn small" id="smxDown" type="button">Tous les logits −2</button>
+            <button class="btn small ghost" id="smxReset" type="button">Réinitialiser</button>
+          </div>
+          <p class="smx-note" id="smxNote"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── 2. Le labo ─────────────── -->
+  <section class="section" id="labo">
+    <div class="section-head">
+      <span class="step">2</span>
+      <h2>Le labo</h2>
+      <p class="section-intro">Choisissez un début de phrase et réglez la chaîne d'échantillonnage à gauche. Tirez ensuite les tokens un par un ou laissez le modèle générer. Tout se recalcule en direct.</p>
+      <p class="model-note" id="modelNote"></p>
+    </div>
+
+    <div class="banner" id="banner" hidden>
+      <span id="bannerText"></span>
+      <button class="btn small ghost" id="bannerReset" type="button">Revenir aux défauts</button>
+    </div>
+
+    <div class="lab">
+      <aside class="card params" aria-label="Paramètres d'échantillonnage">
+        <div class="p-group">
+          <h3>Ordre de la chaîne</h3>
+          <div class="seg-ctl" role="group" aria-label="Ordre de la chaîne">
+            <button type="button" data-order="llama" aria-pressed="true">llama.cpp</button>
+            <button type="button" data-order="hf" aria-pressed="false">transformers</button>
+          </div>
+          <p class="ctl-hint" id="orderHint"></p>
+        </div>
+        <div class="p-group">
+          <h3>Pénalités <small>baissent des logits</small></h3>
+          <div class="slot" data-slot="pen"></div>
+        </div>
+        <div class="p-group">
+          <h3>Grammaire <small>masque des tokens</small></h3>
+          <div class="ctl" id="grammarCtl">
+            <div class="ctl-top"><label for="p-grammar"><code>grammar</code></label><span class="off-pill">désactivée</span></div>
+            <input type="text" id="p-grammar" class="text-in mono" placeholder='("toit" | "lit") "."' spellcheck="false" autocomplete="off">
+            <p class="ctl-err" id="grammarErr" hidden></p>
+            <p class="ctl-hint">GBNF simplifiée : une suite de tokens entre guillemets, avec des choix entre parenthèses. Une fois la suite terminée, seul <code>&lt;eos&gt;</code> reste permis. <a href="#ref-grammar">En savoir plus</a></p>
+          </div>
+        </div>
+        <div class="p-group">
+          <h3>Filtres <small>éliminent des tokens</small></h3>
+          <div class="slot" data-slot="filt"></div>
+        </div>
+        <div class="p-group">
+          <h3>Température <small>redimensionne</small></h3>
+          <div class="slot" data-slot="temp"></div>
+        </div>
+        <div class="p-group">
+          <h3>Tirage et arrêt</h3>
+          <div class="ctl">
+            <div class="ctl-top"><label for="p-seed"><code>seed</code></label></div>
+            <input type="number" id="p-seed" class="text-in mono" step="1" min="-1">
+            <p class="ctl-hint">-1 = graine aléatoire à chaque requête. <a href="#ref-seed">En savoir plus</a></p>
+          </div>
+          <div class="slot" data-slot="gen"></div>
+          <div class="ctl" id="stopCtl">
+            <div class="ctl-top"><label for="stopInput"><code>stop</code></label><span class="off-pill">aucune</span></div>
+            <div class="tags" id="stopTags"><input id="stopInput" class="tags-in" placeholder="ajouter, puis Entrée" autocomplete="off" spellcheck="false"></div>
+            <p class="ctl-hint">Chaînes qui arrêtent la génération. Essayez <code>.</code> ou <code>,</code> <a href="#ref-stop">En savoir plus</a></p>
+          </div>
+        </div>
+        <div class="p-group">
+          <h3>Visibilité <small>ne change pas le texte</small></h3>
+          <label class="check" for="p-logprobs"><input type="checkbox" id="p-logprobs"><code>logprobs</code><span>Ajoute les log-probabilités à la réponse JSON.</span></label>
+          <div class="slot" data-slot="vis"></div>
+        </div>
+        <div class="p-group">
+          <button class="btn block" id="resetParams" type="button">Revenir aux défauts de llama-server</button>
+        </div>
+      </aside>
+
+      <div class="lab-main">
+        <div class="lab-col">
+          <article class="card" id="textCard">
+            <div class="card-head"><h3>Le texte</h3></div>
+            <div class="prompt-row">
+              <label class="sr-only" for="presetSel">Début de phrase proposé</label>
+              <select id="presetSel" class="select"></select>
+              <div class="prompt-edit">
+                <label class="sr-only" for="promptInput">Prompt</label>
+                <input id="promptInput" class="text-in" autocomplete="off" spellcheck="false">
+                <button class="btn" id="promptApply" type="button">Utiliser</button>
+              </div>
+            </div>
+            <div class="tokens" id="tokens"></div>
+            <div class="tok-legend">
+              <span class="lg"><span class="lg-grad"></span>fond : probabilité du token au moment de son tirage</span>
+              <span class="lg" id="lgWin"><span class="lg-win"></span>dans la fenêtre des pénalités</span>
+            </div>
+            <div class="controls">
+              <button class="btn primary" id="btnStep" type="button">Tirer le token suivant</button>
+              <button class="btn" id="btnRun" type="button">Générer</button>
+              <button class="btn" id="btnReset" type="button">Recommencer</button>
+              <label class="speed" for="speedSel">Vitesse
+                <select id="speedSel" class="select small">
+                  <option value="1100">lente</option>
+                  <option value="550" selected>normale</option>
+                  <option value="160">rapide</option>
+                  <option value="0">instantanée</option>
+                </select>
+              </label>
+            </div>
+            <div class="status" id="status"></div>
+          </article>
+
+          <article class="card" id="drawCard">
+            <div class="card-head">
+              <h3>Le tirage</h3>
+              <p class="card-sub">Chaque segment est un candidat encore en lice, sa largeur est sa probabilité finale. Le générateur aléatoire, initialisé par la seed, donne un nombre u entre 0 et 1 : le segment où il tombe gagne.</p>
+            </div>
+            <div class="roulette">
+              <div class="segs" id="segs"></div>
+              <div class="marker" id="marker" hidden><span>u</span></div>
+            </div>
+            <div class="rl-scale"><span>0</span><span>0,5</span><span>1</span></div>
+            <p class="readout" id="readout" aria-live="polite"></p>
+          </article>
+
+          <article class="card" id="ovCard">
+            <div class="card-head">
+              <h3>Tout le vocabulaire</h3>
+              <p class="card-sub" id="ovSub"></p>
+            </div>
+            <div class="ov-box"><canvas id="ov" role="img" aria-label="Probabilité de chaque token du vocabulaire, du plus probable au moins probable, en échelle logarithmique"></canvas></div>
+            <div class="legend" style="margin-top:8px">
+              <span><span class="sw tail"></span>probabilité vue par les filtres</span>
+              <span><span class="sw bar"></span>probabilité finale des candidats retenus</span>
+            </div>
+            <p class="ov-sum" id="ovSum"></p>
+          </article>
+        </div>
+
+        <div class="lab-col">
+          <article class="card" id="distCard">
+            <div class="card-head">
+              <h3>Distribution du prochain token</h3>
+              <div class="seg-ctl small" role="group" aria-label="Affichage">
+                <button type="button" data-view="prob" aria-pressed="true">Probabilités</button>
+                <button type="button" data-view="logit" aria-pressed="false">Logits</button>
+              </div>
+              <p class="card-sub">Les meilleurs candidats, classés par logit après pénalités. La chaîne ci-dessous indique combien de tokens restent à chaque étape. Survolez une ligne pour le détail du calcul.</p>
+            </div>
+            <ol class="pipeline" id="pipeline" aria-label="Nombre de tokens restants à chaque étape de la chaîne"></ol>
+            <div class="legend" id="distLegend"></div>
+            <div class="rows-wrap" id="rowsWrap">
+              <div class="axis"><span></span><span></span><div class="axis-track" id="axis"></div><span></span><span></span></div>
+              <div class="rows" id="rows"></div>
+            </div>
+            <p class="rows-foot" id="rowsFoot"></p>
+          </article>
+        </div>
+
+        <article class="card span" id="varCard">
+          <div class="card-head">
+            <h3>Même requête, cinq fois</h3>
+            <button class="btn primary" id="btnVariants" type="button">Envoyer 5 requêtes</button>
+            <p class="card-sub">Envoie cinq fois la même requête (même prompt, mêmes réglages). Avec <code>seed</code> = -1, chaque requête tire sa propre graine. Avec une seed fixe, les cinq réponses sont identiques.</p>
+          </div>
+          <ul class="var-list" id="varList"></ul>
+          <p class="var-note" id="varNote"></p>
+        </article>
+
+        <article class="card span" id="apiCard">
+          <div class="card-head">
+            <h3>Côté API</h3>
+            <div class="seg-ctl small" role="group" aria-label="Vue API">
+              <button type="button" data-api="req" aria-pressed="true">Requête Python</button>
+              <button type="button" data-api="res" aria-pressed="false">Réponse JSON</button>
+            </div>
+            <p class="card-sub">Les réglages actuels, tels qu'on les passerait à llama-server avec le client OpenAI.</p>
+          </div>
+          <div class="code-wrap">
+            <pre class="code" id="apiCode" tabindex="0"></pre>
+            <button class="btn small copy" id="copyBtn" type="button">Copier</button>
+          </div>
+          <p class="api-note" id="apiNote"></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── 3. Les paramètres ─────────────── -->
+  <section class="section" id="parametres">
+    <div class="section-head">
+      <span class="step">3</span>
+      <h2>Les paramètres, un par un</h2>
+      <p class="section-intro">Chaque fiche reprend ce que fait le paramètre, sa valeur par défaut dans llama-server, les valeurs courantes, les pièges, et comment le passer depuis le client OpenAI. Les boutons chargent une démonstration dans le labo.</p>
+    </div>
+    <ol class="chain" aria-label="Ordre par défaut de la chaîne de llama-server">
+      <li><b>logits</b><span>sortie du modèle</span></li><li class="arrow" aria-hidden="true">→</li>
+      <li><b>pénalités</b><span>repeat · frequency · presence</span></li><li class="arrow" aria-hidden="true">→</li>
+      <li><b>DRY</b><span>séquences répétées</span></li><li class="arrow" aria-hidden="true">→</li>
+      <li><b>grammaire</b><span>masque</span></li><li class="arrow" aria-hidden="true">→</li>
+      <li><b>top_k</b><span>filtre</span></li><li class="arrow" aria-hidden="true">→</li>
+      <li><b>top_p</b><span>filtre</span></li><li class="arrow" aria-hidden="true">→</li>
+      <li><b>min_p</b><span>filtre</span></li><li class="arrow" aria-hidden="true">→</li>
+      <li><b>temperature</b><span>redimensionne</span></li><li class="arrow" aria-hidden="true">→</li>
+      <li><b>tirage</b><span>seed</span></li>
+    </ol>
+    <p class="chain-note">Ordre par défaut de llama-server. Le paramètre <code>samplers</code> permet de le modifier. Dans Hugging Face transformers, la température passe avant les filtres : le bouton « transformers » du labo montre la différence.</p>
+
+    <h3 class="ref-group">Ils façonnent la distribution</h3>
+    <div class="ref-grid" id="refShape"></div>
+    <h3 class="ref-group">Ils pilotent le tirage et l'arrêt</h3>
+    <div class="ref-grid" id="refDraw"></div>
+    <h3 class="ref-group">Ils ne changent pas le texte</h3>
+    <div class="ref-grid" id="refNone"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>Page autonome : HTML, CSS et JavaScript dans un seul fichier, sans bibliothèque. Elle fonctionne hors ligne (les polices se chargent depuis Google Fonts quand une connexion est disponible). Le corpus et le modèle sont générés de façon déterministe : tout le monde obtient les mêmes résultats avec la même seed.</p>
+</footer>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+
+<script>
+'use strict';
+
+// ─── 1. Utilitaires ──────────────────────────────────────────────
+
+// Générateur pseudo-aléatoire déterministe (même seed → même suite de nombres).
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function hashStr(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function hash01(h, w) {
+  let x = Math.imul(h ^ Math.imul(w + 1, 0x9E3779B1), 0x85EBCA6B);
+  x ^= x >>> 13; x = Math.imul(x, 0xC2B2AE35); x ^= x >>> 16;
+  return (x >>> 0) / 4294967296;
+}
+function pickWeighted(items, weightOf, rnd) {
+  let total = 0;
+  for (const it of items) total += weightOf(it);
+  let r = rnd() * total;
+  for (const it of items) { r -= weightOf(it); if (r < 0) return it; }
+  return items[items.length - 1];
+}
+
+// Tokenizer simplifié : 1 token = 1 mot ou 1 signe de ponctuation.
+const TOKEN_RE = /[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*'?|[.,!?;:]/gu;
+function tokenize(text) { return text.replace(/[’‘]/g, "'").match(TOKEN_RE) || []; }
+function needsSpaceBefore(tok, prev) { return prev !== undefined && !/^[.,]$/.test(tok) && !prev.endsWith("'"); }
+function joinTokens(toks) {
+  let s = '';
+  toks.forEach((t, i) => { if (i && needsSpaceBefore(t, toks[i - 1])) s += ' '; s += t; });
+  return s;
+}
+
+// ─── 2. Corpus d'entraînement ────────────────────────────────────
+// Gabarits de phrases : {a|b|c} = choix, "3=a" = poids 3. Le corpus est
+// tiré avec une graine fixe, donc identique sur toutes les machines.
+
+const THEMES = {
+  maison: { w: 3, templates: [
+    [60, '{5=Le chat|3=Le chien|2=Le lapin|Le vieux chat|Le petit chien} {5=dort|2=se repose|2=est couché|joue} {5=sur le {5=canapé|3=lit|3=tapis|2=toit|2=coussin|rebord de la fenêtre}|2=dans {3=le jardin|2=la cuisine|le salon|son panier}|près de la cheminée}.'],
+    [25, '{2=Le chat|Le chien|Le lapin} {mange|boit|attend} {2=dans la cuisine|devant la porte|près de sa gamelle}.'],
+    [20, '{Il|Elle} regarde les oiseaux {2=par la fenêtre|dans le jardin|sur le toit}.'],
+    [15, 'Le soir, le chat dort {2=sur le canapé|sur le lit|près de la cheminée}.'],
+    [15, 'Le matin, {le chien|le chat} {sort dans le jardin|attend devant la porte|réclame à manger}.'],
+    [15, 'Le chat est un animal {2=domestique|très indépendant|curieux|qui aime dormir}.'],
+    [15, 'Le chien est {le meilleur ami de l\'homme|un animal fidèle|toujours content de jouer}.'],
+    [10, 'Les oiseaux chantent {dans le jardin|sur le toit|tôt le matin}.'],
+    [10, 'Quand il pleut, {le chat|le chien} {reste à la maison|dort sur le canapé|ne sort pas}.'],
+  ] },
+  geo: { w: 2, templates: [
+    [40, 'La capitale de {6=la France est Paris|2=l\'Italie est Rome|2=l\'Espagne est Madrid|l\'Allemagne est Berlin|la Belgique est Bruxelles|le Japon est Tokyo|le Portugal est Lisbonne}.'],
+    [10, 'La France est {un grand pays|célèbre pour sa cuisine|un pays d\'Europe}.'],
+    [12, 'Paris est {une grande ville|la plus grande ville de France|célèbre pour la tour Eiffel|une belle ville}.'],
+    [10, '{Rome|Madrid|Berlin|Bruxelles|Lisbonne} est une {belle|grande|vieille} ville.'],
+    [10, '{La Seine|Le Rhône|La Loire} est un fleuve {de France|très long|qui traverse le pays}.'],
+  ] },
+  meteo: { w: 2, templates: [
+    [40, 'Demain, il va {5=pleuvoir|3=faire {3=beau|2=froid|chaud|gris}|2=neiger|y avoir du vent} {4=|2=sur toute la région|dans le nord|toute la journée}.'],
+    [20, 'Aujourd\'hui, {il fait {beau|froid|chaud|gris}|le ciel est {bleu|gris|couvert|dégagé}|il pleut {beaucoup|un peu|depuis ce matin}}.'],
+    [15, 'Le ciel est {4=bleu|2=gris|couvert|clair|noir} {2=ce matin|aujourd\'hui|au-dessus de la ville|et le vent souffle}.'],
+    [10, 'Quand il pleut, {le chat|le chien} {reste à la maison|dort sur le canapé|ne sort pas}.'],
+    [10, 'En hiver, il {2=fait froid|neige souvent|pleut beaucoup} {|dans les montagnes|dans le nord}.'],
+  ] },
+  conte: { w: 3, templates: [
+    [50, 'Il était une fois {3=un {3=roi|2=petit garçon|dragon|prince|chevalier|vieux pêcheur|meunier|loup}|3=une {3=princesse|2=petite fille|reine|sorcière|fée|jeune bergère}} qui vivait {3=dans un {château|petit village|grand palais}|2=dans une {forêt profonde|haute tour|petite cabane|vallée lointaine}|au bord de la mer|près d\'une rivière}.'],
+    [20, '{Un jour|Un matin|Un soir}, {le roi|la princesse|le dragon|le prince|la sorcière|le petit garçon} {partit|décida de partir} {à l\'aventure|dans la forêt|vers la montagne|au château}.'],
+    [15, '{Le dragon|Le loup|La sorcière} {dormait|attendait|se cachait} {dans une grotte|au fond de la forêt|dans la montagne}.'],
+    [10, 'Ils vécurent heureux et eurent beaucoup d\'enfants.'],
+    [10, '{Le roi|La reine} avait {une fille|un fils|trois fils|deux filles}.'],
+    [10, 'Le chevalier {combattit le dragon|sauva la princesse|traversa la forêt} {|avec courage|sans peur}.'],
+  ] },
+  cuisine: { w: 1, templates: [
+    [20, 'Pour faire {3=une omelette|2=une crêpe|un gâteau|une soupe}, il faut {3=des œufs|2=de la farine|du lait|du sucre|du beurre} {3=|et une poêle|et un peu de patience}.'],
+    [15, '{Le chef|Ma grand-mère|Le cuisinier} {prépare|cuisine|goûte} {une soupe|un gâteau au chocolat|une tarte aux pommes|des crêpes} {2=|pour le dîner|dans la cuisine}.'],
+    [10, 'Le gâteau est {délicieux|trop sucré|encore chaud|prêt}.'],
+  ] },
+};
+
+function expandTemplate(src, rnd) {
+  let i = 0;
+  function seq(stops) {
+    let out = '';
+    while (i < src.length && !stops.includes(src[i])) {
+      if (src[i] === '{') { i++; out += alt(); } else out += src[i++];
+    }
+    return out;
+  }
+  function alt() {
+    const opts = [];
+    for (;;) {
+      const m = /^(\d+)=/.exec(src.slice(i));
+      let w = 1;
+      if (m) { w = +m[1]; i += m[0].length; }
+      opts.push({ w, text: seq('|}') });
+      if (src[i++] === '}') break;
+    }
+    return pickWeighted(opts, o => o.w, rnd).text;
+  }
+  return seq('');
+}
+
+// Documents de 4 à 7 phrases, surtout dans un même thème, terminés par <eos>.
+function buildCorpus() {
+  const rnd = mulberry32(20260928);
+  const themes = Object.values(THEMES);
+  const all = themes.flatMap(t => t.templates);
+  const docs = [];
+  for (let d = 0; d < 900; d++) {
+    const th = pickWeighted(themes, t => t.w, rnd);
+    const n = 4 + Math.floor(rnd() * 4);
+    const sents = [];
+    for (let k = 0; k < n; k++) {
+      const pool = rnd() < 0.85 ? th.templates : all;
+      sents.push(tokenize(expandTemplate(pickWeighted(pool, t => t[0], rnd)[1], rnd)));
+    }
+    docs.push(sents);
+  }
+  return docs;
+}
+
+// ─── 3. Mini-modèle de langue (4-grammes, lissage Witten-Bell) ──
+
+const EOS = 0;
+const MODEL = (() => {
+  const vocab = ['<eos>'];
+  const index = new Map([['<eos>', EOS]]);
+  const ids = [];
+  const idOf = t => {
+    let id = index.get(t);
+    if (id === undefined) { id = vocab.length; vocab.push(t); index.set(t, id); }
+    return id;
+  };
+  for (const doc of buildCorpus()) {
+    for (const sent of doc) for (const t of sent) ids.push(idOf(t));
+    ids.push(EOS);
+  }
+  const V = vocab.length;
+  const uni = new Float64Array(V);
+  for (const id of ids) uni[id]++;
+  // tables[L] : contexte de L tokens → { n: occurrences, c: Map(token suivant → nombre) }
+  const tables = [null, new Map(), new Map(), new Map()];
+  for (let i = 1; i < ids.length; i++) {
+    for (let L = 1; L <= 3 && i - L >= 0; L++) {
+      const key = ids.slice(i - L, i).join(',');
+      let st = tables[L].get(key);
+      if (!st) tables[L].set(key, st = { n: 0, c: new Map() });
+      st.n++;
+      st.c.set(ids[i], (st.c.get(ids[i]) || 0) + 1);
+    }
+  }
+  return { vocab, index, V, uni, N: ids.length, tables };
+})();
+
+const LOGIT_OFFSET = 9;   // les logits ne sont définis qu'à une constante près
+const TAIL_MIX = 0.04;    // masse réservée aux fréquences générales : une vraie « queue » de distribution
+
+function modelLogits(ctx) {
+  const { V, uni, N, tables } = MODEL;
+  const uniP = new Float64Array(V);
+  for (let w = 0; w < V; w++) uniP[w] = (uni[w] + 1) / (N + V);
+  const P = Float64Array.from(uniP);
+  let key = '';
+  for (let L = 1; L <= 3 && L <= ctx.length; L++) {
+    const suf = ctx.slice(ctx.length - L);
+    if (suf.some(x => x < 0)) break;
+    const st = tables[L].get(suf.join(','));
+    if (!st) break;
+    const d = st.n + st.c.size;
+    for (let w = 0; w < V; w++) P[w] *= st.c.size / d;
+    for (const [w, c] of st.c) P[w] += c / d;
+    key = suf.join(',');
+  }
+  const h = hashStr(key);
+  const z = new Float64Array(V);
+  for (let w = 0; w < V; w++) {
+    const p = (1 - TAIL_MIX) * P[w] + TAIL_MIX * uniP[w];
+    let v = Math.log(p) + LOGIT_OFFSET;
+    if (p < 0.004) v += (hash01(h, w) - 0.5) * 1.2;   // un peu de relief dans la queue
+    z[w] = v;
+  }
+  return z;
+}
+
+// ─── 4. Chaîne d'échantillonnage (comme llama.cpp) ──────────────
+
+const N_CTX = 256;
+const DRY_BASE = 1.75, DRY_ALLOWED = 2;
+const CHAINS = {
+  llama: ['top_k', 'top_p', 'min_p', 'temperature'],
+  hf: ['temperature', 'top_k', 'top_p', 'min_p'],
+};
+const REASONS = ['', 'grammaire', 'top_k', 'top_p', 'min_p', 'T = 0'];
+
+function softmaxOf(ids, z, div) {
+  let m = -Infinity;
+  for (const w of ids) m = Math.max(m, z[w] / div);
+  const out = new Float64Array(ids.length);
+  let s = 0;
+  ids.forEach((w, i) => { out[i] = Math.exp(z[w] / div - m); s += out[i]; });
+  for (let i = 0; i < out.length; i++) out[i] /= s;
+  return out;
+}
+function softmaxAll(z, div) {
+  let m = -Infinity;
+  for (const v of z) m = Math.max(m, v / div);
+  const out = new Float64Array(z.length);
+  let s = 0;
+  for (let i = 0; i < z.length; i++) { out[i] = Math.exp(z[i] / div - m); s += out[i]; }
+  for (let i = 0; i < z.length; i++) out[i] /= s;
+  return out;
+}
+
+// DRY : pour chaque token candidat, longueur de la plus longue fin de contexte
+// qui, suivie de ce token, répéterait une séquence déjà présente.
+function dryLengths(ctx) {
+  const N = ctx.length, best = new Map();
+  for (let j = 1; j < N; j++) {
+    const tok = ctx[j];
+    if (tok < 0) continue;
+    let k = 0;
+    while (k < 40 && j - 1 - k >= 0 && ctx[j - 1 - k] >= 0 && ctx[j - 1 - k] === ctx[N - 1 - k]) k++;
+    if (k > (best.get(tok) || 0)) best.set(tok, k);
+  }
+  return best;
+}
+
+function parseGrammar(src) {
+  const body = src.replace(/^\s*root\s*::=\s*/, '').trim();
+  if (!body) return { steps: null };
+  const re = /"([^"]*)"|\(|\)|\||[^\s()|"]+/g;
+  const steps = [];
+  let group = null, m;
+  while ((m = re.exec(body))) {
+    const t = m[0];
+    if (t === '(') {
+      if (group) return { error: 'Les parenthèses imbriquées ne sont pas gérées.' };
+      group = [];
+    } else if (t === ')') {
+      if (!group || !group.length) return { error: 'Parenthèse fermante inattendue.' };
+      steps.push(group); group = null;
+    } else if (t === '|') {
+      if (!group) return { error: 'Placez les choix entre parenthèses : ("a" | "b").' };
+    } else if (m[1] !== undefined) {
+      const id = MODEL.index.get(m[1]);
+      if (id === undefined) return { error: `« ${m[1]} » n'est pas un token du vocabulaire.` };
+      if (group) group.push(id); else steps.push([id]);
+    } else {
+      return { error: `Mettez chaque token entre guillemets : "${t}".` };
+    }
+  }
+  if (group) return { error: 'Parenthèse non fermée.' };
+  return { steps: steps.map(g => new Set(g)) };
+}
+
+function runChain(ctx, genCount, P, chainKey, grammarSteps) {
+  const V = MODEL.V;
+  const raw = modelLogits(ctx);
+  const rawP = softmaxAll(raw, 1);
+  const z = Float64Array.from(raw);
+
+  // Pénalités de répétition, sur les repeat_last_n derniers tokens (prompt compris).
+  const pen = new Float64Array(V), dry = new Float64Array(V), cnt = new Int32Array(V);
+  const lastN = P.repeat_last_n < 0 ? ctx.length : P.repeat_last_n;
+  for (const id of ctx.slice(Math.max(0, ctx.length - lastN))) if (id >= 0) cnt[id]++;
+  const penOn = lastN > 0 && (P.repeat_penalty !== 1 || P.frequency_penalty !== 0 || P.presence_penalty !== 0);
+  let nPen = 0;
+  if (penOn) {
+    for (let w = 0; w < V; w++) {
+      if (!cnt[w]) continue;
+      let v = z[w];
+      if (P.repeat_penalty !== 1) v = v <= 0 ? v * P.repeat_penalty : v / P.repeat_penalty;
+      v -= cnt[w] * P.frequency_penalty + P.presence_penalty;
+      pen[w] = v - z[w]; z[w] = v; nPen++;
+    }
+  }
+  const dryLen = P.dry_multiplier > 0 ? dryLengths(ctx) : new Map();
+  let nDry = 0;
+  for (const [w, k] of dryLen) {
+    if (k < DRY_ALLOWED) continue;
+    const d = P.dry_multiplier * Math.pow(DRY_BASE, k - DRY_ALLOWED);
+    dry[w] = -d; z[w] -= d; nDry++;
+  }
+
+  const order = Array.from({ length: V }, (_, i) => i).sort((a, b) => z[b] - z[a]);
+  const rank = new Int32Array(V);
+  order.forEach((w, i) => { rank[w] = i; });
+  const reason = new Int8Array(V);
+
+  // Grammaire : seuls les tokens permis à cette étape restent.
+  const allowed = grammarSteps ? (genCount < grammarSteps.length ? grammarSteps[genCount] : new Set([EOS])) : null;
+  let alive = order;
+  if (allowed) {
+    alive = order.filter(w => allowed.has(w));
+    for (const w of order) if (!allowed.has(w)) reason[w] = 1;
+  }
+  const stages = [
+    { key: 'model', n: V, on: true },
+    { key: 'penalties', n: V, on: penOn || P.dry_multiplier > 0, touched: nPen + nDry },
+    { key: 'grammar', n: alive.length, on: !!allowed },
+  ];
+
+  let div = 1;
+  const filterDiv = chainKey === 'hf' && P.temperature > 0 ? P.temperature : 1;
+  const cut = {};
+  for (const s of CHAINS[chainKey]) {
+    const before = alive.length;
+    if (s === 'top_k') {
+      if (P.top_k > 0 && P.top_k < alive.length) {
+        for (const w of alive.slice(P.top_k)) reason[w] = 2;
+        alive = alive.slice(0, P.top_k);
+      }
+      if (P.top_k > 0) cut.topk = alive.length;
+      stages.push({ key: 'top_k', n: alive.length, on: P.top_k > 0, cut: alive.length < before });
+    } else if (s === 'top_p') {
+      if (P.top_p < 1) {
+        const pr = softmaxOf(alive, z, div);
+        let c = 0, keep = alive.length;
+        for (let i = 0; i < pr.length; i++) { c += pr[i]; if (c >= P.top_p) { keep = i + 1; break; } }
+        for (const w of alive.slice(keep)) reason[w] = 3;
+        alive = alive.slice(0, keep);
+        cut.topp = alive.length;
+      }
+      stages.push({ key: 'top_p', n: alive.length, on: P.top_p < 1, cut: alive.length < before });
+    } else if (s === 'min_p') {
+      if (P.min_p > 0) {
+        const thr = z[alive[0]] / div + Math.log(P.min_p);
+        let keep = alive.findIndex(w => z[w] / div < thr);
+        if (keep < 0) keep = alive.length;
+        keep = Math.max(keep, 1);
+        for (const w of alive.slice(keep)) reason[w] = 4;
+        alive = alive.slice(0, keep);
+        cut.minp = true;
+      }
+      stages.push({ key: 'min_p', n: alive.length, on: P.min_p > 0, cut: alive.length < before });
+    } else if (s === 'temperature') {
+      if (P.temperature <= 0) {
+        for (const w of alive.slice(1)) reason[w] = 5;
+        alive = alive.slice(0, 1);
+      } else div = P.temperature;
+      stages.push({ key: 'temperature', n: alive.length, on: P.temperature !== 1, cut: alive.length < before });
+    }
+  }
+
+  const fp = softmaxOf(alive, z, div);
+  const finalP = new Float64Array(V);
+  alive.forEach((w, i) => { finalP[w] = fp[i]; });
+  const seenP = softmaxAll(z, filterDiv);
+  return { raw, rawP, z, pen, dry, cnt, dryLen, order, rank, reason, alive, finalP, div, seenP, stages, cut, allowed, lastN, penOn };
+}
+
+// ─── 5. Génération ───────────────────────────────────────────────
+
+function pickToken(r, u) {
+  let acc = 0;
+  for (const w of r.alive) { acc += r.finalP[w]; if (u < acc) return w; }
+  return r.alive[r.alive.length - 1];
+}
+
+function makeTok(r, id, u) {
+  const top = Array.from(r.order).sort((a, b) => r.rawP[b] - r.rawP[a]).slice(0, 20);
+  return {
+    id, text: MODEL.vocab[id], u,
+    p: r.finalP[id], rawP: r.rawP[id], rank: r.rank[id] + 1, nAlive: r.alive.length,
+    top: top.map(w => ({ id: w, rawP: r.rawP[w], p: r.finalP[w] })),
+  };
+}
+
+// Texte généré tel que l'API le renverrait (espace initial compris), avec la position de chaque token.
+function genPieces(prompt, gen) {
+  let prev = prompt.length ? prompt[prompt.length - 1].text : undefined;
+  const pieces = [];
+  let pos = 0;
+  for (const g of gen) {
+    if (g.id === EOS) { pieces.push({ text: '', start: pos }); continue; }
+    const t = (needsSpaceBefore(g.text, prev) ? ' ' : '') + g.text;
+    pieces.push({ text: t, start: pos });
+    pos += t.length; prev = g.text;
+  }
+  return pieces;
+}
+
+function finishCheck(prompt, gen, P) {
+  if (gen.length && gen[gen.length - 1].id === EOS) return { reason: 'stop', detail: 'eos' };
+  if (gen.length && P.stop.length) {
+    const txt = genPieces(prompt, gen).map(p => p.text).join('');
+    let at = -1, str = null;
+    for (const s of P.stop) {
+      const i = s ? txt.indexOf(s) : -1;
+      if (i >= 0 && (at < 0 || i < at)) { at = i; str = s; }
+    }
+    if (at >= 0) return { reason: 'stop', detail: 'stop', str, at };
+  }
+  if (P.max_tokens > 0 && gen.length >= P.max_tokens) return { reason: 'length', detail: 'max_tokens' };
+  if (prompt.length + gen.length >= N_CTX) return { reason: 'length', detail: 'ctx' };
+  return null;
+}
+
+// Une requête complète, sans animation (utilisée pour « 5 requêtes »).
+function generate(prompt, P, chainKey, grammarSteps, seed) {
+  const rng = mulberry32(seed);
+  const gen = [];
+  let finish = finishCheck(prompt, gen, P);
+  while (!finish) {
+    const ctx = prompt.map(t => t.id).concat(gen.map(t => t.id));
+    const r = runChain(ctx, gen.length, P, chainKey, grammarSteps);
+    const u = rng();
+    gen.push(makeTok(r, pickToken(r, u), u));
+    finish = finishCheck(prompt, gen, P);
+  }
+  return { gen, finish };
+}
+
+// ─── 6. Interface ────────────────────────────────────────────────
+
+const $ = (s, root = document) => root.querySelector(s);
+const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+const nf = (x, d) => x.toFixed(d).replace('.', ',').replace('-', '−');
+const code = (x, d) => (+x.toFixed(d)).toString();
+function pct(p) {
+  if (!(p > 0)) return '0 %';
+  const v = p * 100;
+  let s;
+  if (v >= 1) s = v.toFixed(1);
+  else if (v >= 0.1) s = v.toFixed(2);
+  else if (v >= 0.01) s = v.toFixed(3);
+  else return '< 0,01 %';
+  return s.replace('.', ',') + ' %';
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]); }
+const tokName = id => MODEL.vocab[id];
+
+const DEFAULTS = {
+  temperature: 0.8, top_k: 40, top_p: 0.95, min_p: 0.05,
+  repeat_penalty: 1, repeat_last_n: 64, frequency_penalty: 0, presence_penalty: 0, dry_multiplier: 0,
+  seed: -1, max_tokens: -1, stop: [], grammar: '', logprobs: false, top_logprobs: 5,
+};
+const PROMPTS = [
+  { text: 'Le chat dort sur le', note: 'plusieurs suites plausibles' },
+  { text: 'La capitale de la France est', note: 'le modèle est sûr de lui' },
+  { text: 'Il était une fois un', note: 'conte : beaucoup de choix' },
+  { text: 'Il était une fois', note: 'pile ou face entre « un » et « une »' },
+  { text: 'Demain, il va', note: 'météo' },
+  { text: 'Le chat', note: 'idéal pour voir une boucle à T = 0' },
+];
+
+const S = {
+  params: structuredClone(DEFAULTS),
+  order: 'llama',
+  view: 'prob',
+  api: 'req',
+  grammar: { steps: null },
+  prompt: [],
+  gen: [],
+  finish: null,
+  rng: null,
+  seedUsed: null,
+  running: false,
+  busy: false,
+  cur: null,
+  lastDraw: null,
+};
+
+// ── Curseurs de paramètres ──
+const SLIDERS = [
+  { key: 'repeat_penalty', slot: 'pen', min: 1, max: 2, step: 0.01, dec: 2, off: v => v === 1, hint: '1 = désactivé · courant 1.05 à 1.2' },
+  { key: 'repeat_last_n', slot: 'pen', min: 0, max: 128, step: 1, dec: 0, off: v => v === 0, hint: 'Fenêtre des pénalités, en tokens · défaut 64', doc: 'repeat_penalty' },
+  { key: 'frequency_penalty', slot: 'pen', min: 0, max: 2, step: 0.05, dec: 2, off: v => v === 0, hint: 'Retire f × nombre d\'occurrences · courant 0.1 à 0.5' },
+  { key: 'presence_penalty', slot: 'pen', min: 0, max: 2, step: 0.05, dec: 2, off: v => v === 0, hint: 'Retire p une fois si déjà vu · courant 0.1 à 0.5' },
+  { key: 'dry_multiplier', slot: 'pen', min: 0, max: 2, step: 0.05, dec: 2, off: v => v === 0, hint: 'Pénalise les séquences répétées · courant 0.8 (base 1.75, allowed_length 2)' },
+  { key: 'top_k', slot: 'filt', min: 0, max: 100, step: 1, dec: 0, off: v => v === 0, hint: '0 = désactivé · défaut 40' },
+  { key: 'top_p', slot: 'filt', min: 0, max: 1, step: 0.01, dec: 2, off: v => v >= 1, hint: '1 = désactivé · défaut 0.95' },
+  { key: 'min_p', slot: 'filt', min: 0, max: 0.5, step: 0.01, dec: 2, off: v => v === 0, hint: '0 = désactivé · défaut 0.05' },
+  { key: 'temperature', slot: 'temp', min: 0, max: 2.5, step: 0.05, dec: 2, off: () => false, hint: '0 = toujours le plus probable · défaut 0.8' },
+  { key: 'max_tokens', slot: 'gen', min: 0, max: 128, step: 1, dec: 0, off: v => v < 0, hint: '-1 = jusqu\'à remplir le contexte (256 tokens ici)',
+    toSlider: v => (v < 0 ? 0 : v), fromSlider: v => (v === 0 ? -1 : v), show: v => (v < 0 ? '-1' : String(v)) },
+  { key: 'top_logprobs', slot: 'vis', min: 1, max: 20, step: 1, dec: 0, off: () => false, hint: 'Candidats listés par position, au survol d\'un token généré', doc: 'logprobs' },
+];
+
+function buildSliders() {
+  for (const sp of SLIDERS) {
+    const el = document.createElement('div');
+    el.className = 'ctl';
+    el.dataset.key = sp.key;
+    el.innerHTML = `<div class="ctl-top"><label for="p-${sp.key}"><code>${sp.key}</code></label><span class="off-pill">désactivé</span><output id="o-${sp.key}" for="p-${sp.key}"></output></div>
+      <input type="range" id="p-${sp.key}" min="${sp.min}" max="${sp.max}" step="${sp.step}">
+      <p class="ctl-hint">${sp.hint}. <a href="#ref-${sp.doc || sp.key}">En savoir plus</a></p>`;
+    $(`[data-slot="${sp.slot}"]`).append(el);
+    const input = $('input', el);
+    input.addEventListener('input', () => {
+      const v = +input.value;
+      S.params[sp.key] = sp.fromSlider ? sp.fromSlider(v) : v;
+      paintSlider(sp);
+      hideBanner();
+      invalidate();
+    });
+  }
+}
+function paintSlider(sp) {
+  const el = $(`.ctl[data-key="${sp.key}"]`);
+  const input = $('input', el);
+  const v = S.params[sp.key];
+  const sv = sp.toSlider ? sp.toSlider(v) : v;
+  input.value = sv;
+  input.style.setProperty('--fill', ((sv - sp.min) / (sp.max - sp.min)) * 100 + '%');
+  $('output', el).textContent = sp.show ? sp.show(v) : v.toFixed(sp.dec);
+  el.classList.toggle('is-off', sp.off(v));
+}
+function syncControls() {
+  SLIDERS.forEach(paintSlider);
+  $('#p-seed').value = S.params.seed;
+  $('#p-logprobs').checked = S.params.logprobs;
+  $('#p-grammar').value = S.params.grammar;
+  applyGrammar();
+  renderStopTags();
+  $$('[data-order]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.order === S.order)));
+  $('#orderHint').textContent = S.order === 'llama'
+    ? 'Température appliquée en dernier : top_k, top_p et min_p voient la distribution à T = 1. La température ne change pas quels tokens passent, seulement leurs proportions.'
+    : 'Température appliquée en premier, comme dans transformers : à T élevée, top_p et min_p laissent passer beaucoup plus de tokens.';
+}
+
+function applyGrammar() {
+  const g = parseGrammar(S.params.grammar);
+  const err = $('#grammarErr');
+  err.hidden = !g.error;
+  err.textContent = g.error || '';
+  $('#p-grammar').classList.toggle('invalid', !!g.error);
+  $('#grammarCtl').classList.toggle('is-off', !g.steps);
+  S.grammar = g.error ? { steps: null } : g;
+}
+
+function renderStopTags() {
+  const box = $('#stopTags');
+  $$('.tag-chip', box).forEach(n => n.remove());
+  S.params.stop.forEach((s, i) => {
+    const chip = document.createElement('span');
+    chip.className = 'tag-chip';
+    chip.innerHTML = `${esc(JSON.stringify(s))}<button type="button" aria-label="Retirer ${esc(JSON.stringify(s))}">×</button>`;
+    $('button', chip).addEventListener('click', () => { S.params.stop.splice(i, 1); renderStopTags(); invalidate(); });
+    box.insertBefore(chip, $('#stopInput'));
+  });
+  $('#stopCtl').classList.toggle('is-off', !S.params.stop.length);
+}
+
+// ── Prompt ──
+function lookupToken(t) {
+  const idx = MODEL.index;
+  const alt = [t, t.toLowerCase(), t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()];
+  for (const a of alt) if (idx.has(a)) return { id: idx.get(a), text: a };
+  return { id: -1, text: t };
+}
+function setPrompt(text) {
+  $('#promptInput').value = text;
+  S.prompt = tokenize(text).map(lookupToken);
+  resetGen();
+}
+function resetGen() {
+  S.running = false;
+  S.gen = [];
+  S.finish = null;
+  S.rng = null;
+  S.seedUsed = null;
+  S.lastDraw = null;
+  invalidate();
+}
+const ctxIds = () => S.prompt.map(t => t.id).concat(S.gen.filter(g => g.id !== EOS).map(g => g.id));
+
+// ── Un pas de génération ──
+function doStep() {
+  if (S.finish) return null;
+  if (!S.gen.length) {
+    S.seedUsed = S.params.seed >= 0 ? S.params.seed : Math.floor(Math.random() * 2 ** 31);
+    S.rng = mulberry32(S.seedUsed);
+  }
+  const pre = finishCheck(S.prompt, S.gen, S.params);
+  if (pre) { S.finish = pre; return null; }
+  const r = S.cur || compute();
+  const u = S.rng();
+  const id = pickToken(r, u);
+  const tok = makeTok(r, id, u);
+  S.gen.push(tok);
+  S.finish = finishCheck(S.prompt, S.gen, S.params);
+  S.lastDraw = { tok, alive: r.alive.length };
+  return { tok, r };
+}
+const compute = () => runChain(ctxIds(), S.gen.length, S.params, S.order, S.grammar.steps);
+
+let rafId = 0;
+function invalidate() {
+  if (rafId) return;
+  rafId = requestAnimationFrame(() => { rafId = 0; renderAll(); });
+}
+function renderAll() {
+  S.cur = compute();
+  renderTokens();
+  renderStatus();
+  renderPipeline(S.cur);
+  renderRows(S.cur);
+  renderRoulette(S.cur);
+  drawOverview(S.cur);
+  renderReadout();
+  renderApi();
+}
+
+// ── Tokens du contexte ──
+function renderTokens() {
+  const box = $('#tokens');
+  const P = S.params;
+  const ctxLen = S.prompt.length + S.gen.filter(g => g.id !== EOS).length;
+  const winOn = S.cur && S.cur.penOn;
+  const winStart = winOn ? ctxLen - S.cur.lastN : Infinity;
+  const cutAt = S.finish && S.finish.detail === 'stop' ? S.finish.at : Infinity;
+  const pieces = genPieces(S.prompt, S.gen);
+  let html = '';
+  let k = 0;
+  S.prompt.forEach(t => {
+    const win = k++ >= winStart ? ' in-win' : '';
+    html += t.id < 0
+      ? `<span class="tok tok-unk${win}" title="Hors vocabulaire : le modèle l'ignore">${esc(t.text)}</span>`
+      : `<span class="tok tok-prompt${win}">${esc(t.text)}</span>`;
+  });
+  S.gen.forEach((g, i) => {
+    if (g.id === EOS) { html += `<span class="tok tok-eos tok-gen" data-i="${i}" style="--p:${g.p.toFixed(3)}">&lt;eos&gt;</span>`; return; }
+    const win = k++ >= winStart ? ' in-win' : '';
+    const cut = pieces[i].start + pieces[i].text.length > cutAt ? ' tok-cut' : '';
+    html += `<span class="tok tok-gen${win}${cut}" data-i="${i}" style="--p:${g.p.toFixed(3)}">${esc(g.text)}</span>`;
+  });
+  if (!S.finish) html += '<span class="caret" aria-hidden="true"></span>';
+  box.innerHTML = html;
+  box.scrollTop = box.scrollHeight;
+  $('#lgWin').hidden = !winOn;
+  $('#btnStep').disabled = !!S.finish || S.running;
+  $('#btnRun').textContent = S.running ? 'Pause' : 'Générer';
+  $('#btnRun').disabled = !!S.finish && !S.running;
+  void P;
+}
+
+function finishText(f) {
+  if (f.detail === 'eos') return 'Le modèle a tiré <code>&lt;eos&gt;</code>, le token de fin de séquence : il estime que le texte est terminé.';
+  if (f.detail === 'stop') return `Chaîne d'arrêt <code>${esc(JSON.stringify(f.str))}</code> rencontrée : la génération s'arrête et cette chaîne n'est pas renvoyée (barrée ci-dessus).`;
+  if (f.detail === 'max_tokens') return '<code>max_tokens</code> atteint : la génération est coupée net, même au milieu d\'une phrase.';
+  return `Contexte plein (${N_CTX} tokens) : avec <code>max_tokens</code> = -1, seule la taille du contexte arrête un modèle qui ne tire jamais <code>&lt;eos&gt;</code>.`;
+}
+function renderStatus() {
+  const P = S.params;
+  const seed = S.seedUsed !== null ? S.seedUsed : (P.seed >= 0 ? P.seed : 'tirée au 1er token');
+  $('#status').innerHTML = `<div class="status-row">
+      <span>générés <b>${S.gen.length}</b>${P.max_tokens > 0 ? ` / ${P.max_tokens}` : ''}</span>
+      <span>contexte <b>${S.prompt.length + S.gen.length}</b> / ${N_CTX}</span>
+      <span>seed <b>${esc(seed)}</b></span>
+      <span>finish_reason <b class="fr${S.finish ? ' done' : ''}">${S.finish ? S.finish.reason : 'null'}</b></span>
+    </div>${S.finish ? `<p class="finish-note">${finishText(S.finish)}</p>` : ''}`;
+}
+
+// ── Chaîne : nombre de tokens à chaque étape ──
+const STAGE_NAME = { model: 'logits', penalties: 'pénalités', grammar: 'grammaire', top_k: 'top_k', top_p: 'top_p', min_p: 'min_p', temperature: 'temperature' };
+function renderPipeline(r) {
+  const P = S.params;
+  const items = r.stages.map(st => {
+    let note = '';
+    if (st.key === 'model') note = 'vocabulaire';
+    else if (st.key === 'penalties') note = st.on ? `${st.touched} logits baissés` : 'désactivées';
+    else if (st.key === 'grammar') note = st.on ? `étape ${S.gen.length + 1}` : 'désactivée';
+    else if (st.key === 'temperature') note = P.temperature <= 0 ? 'glouton' : `÷ ${code(P.temperature, 2)}`;
+    else note = st.on ? (st.cut ? 'filtre' : 'rien à couper') : 'désactivé';
+    const cls = ['stage', st.on ? '' : 'off', st.cut ? 'cut' : ''].join(' ');
+    return `<li class="${cls}"><span class="st-name">${STAGE_NAME[st.key]}</span><span class="st-n">${st.n}</span><span class="st-note">${note}</span></li>`;
+  });
+  items.push(`<li class="stage final"><span class="st-name">tirage</span><span class="st-n">${r.alive.length}</span><span class="st-note">candidat${r.alive.length > 1 ? 's' : ''}</span></li>`);
+  $('#pipeline').innerHTML = items.join('<li class="arrow" aria-hidden="true">→</li>');
+}
+
+// ── Lignes de la distribution ──
+const ROWS = 20, ROW_H = 28;
+const rowEls = new Map();
+function niceTicks(lo, hi) {
+  const span = hi - lo, raw = span / 5;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 5, 10].map(m => m * mag).find(s => span / s <= 6) || 10 * mag;
+  const out = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(6));
+  return out;
+}
+function renderRows(r) {
+  const box = $('#rows');
+  let ids = r.alive.slice(0, ROWS);
+  if (ids.length < ROWS) for (const w of r.order) { if (ids.length >= ROWS) break; if (r.reason[w]) ids.push(w); }
+  ids.sort((a, b) => r.rank[a] - r.rank[b]);
+  const shown = new Set(ids);
+  for (const [w, el] of rowEls) if (!shown.has(w)) { el.remove(); rowEls.delete(w); }
+
+  const logit = S.view === 'logit';
+  const fl = w => (r.reason[w] ? -Infinity : r.z[w] / r.div);
+  let lo = 0, hi = 1;
+  if (logit) {
+    lo = 0; hi = 0;
+    for (const w of ids) {
+      for (const v of [r.raw[w], fl(w)]) if (isFinite(v)) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+    }
+    const pad = (hi - lo) * 0.04 || 1;
+    hi += pad; if (lo < 0) lo -= pad;
+  }
+  const pos = v => (v - lo) / (hi - lo);
+  const zero = pos(0);
+
+  const ticks = logit ? niceTicks(lo, hi) : [0, 0.25, 0.5, 0.75, 1];
+  $('#axis').innerHTML = ticks.map(t => `<span class="tick${t === 0 ? ' zero' : ''}" style="left:${(pos(t) * 100).toFixed(2)}%"><i>${logit ? nf(t, Number.isInteger(t) ? 0 : 1) : (t * 100) + ' %'}</i></span>`).join('');
+  $('#rowsWrap').style.setProperty('--rows-h', ids.length * ROW_H + 'px');
+
+  ids.forEach((w, i) => {
+    let el = rowEls.get(w);
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'row enter';
+      el.dataset.w = w;
+      el.innerHTML = '<span class="r-rank"></span><span class="r-tok"></span><span class="r-track"><span class="r-ghost"></span><span class="r-bar"></span></span><span class="r-val"></span><span class="r-tag"></span>';
+      el.style.transform = `translateY(${i * ROW_H}px)`;
+      box.append(el);
+      rowEls.set(w, el);
+      requestAnimationFrame(() => el.classList.remove('enter'));
+    }
+    el.style.transform = `translateY(${i * ROW_H}px)`;
+    const out = r.reason[w] !== 0;
+    el.classList.toggle('out', out);
+    el.classList.remove('picked');
+    $('.r-rank', el).textContent = r.rank[w] + 1;
+    $('.r-tok', el).textContent = tokName(w);
+    const g = $('.r-ghost', el), b = $('.r-bar', el);
+    if (logit) {
+      const gv = pos(r.raw[w]);
+      g.style.setProperty('--a', Math.min(gv, zero)); g.style.setProperty('--b', Math.max(gv, zero));
+      g.classList.toggle('neg', r.raw[w] < 0);
+      const f = fl(w);
+      const bv = isFinite(f) ? pos(f) : zero;
+      b.style.setProperty('--a', Math.min(bv, zero)); b.style.setProperty('--b', Math.max(bv, zero));
+      b.classList.toggle('neg', f < 0 && isFinite(f));
+      $('.r-val', el).textContent = isFinite(f) ? nf(f, 2) : '−∞';
+    } else {
+      g.style.setProperty('--a', 0); g.style.setProperty('--b', r.rawP[w]);
+      b.style.setProperty('--a', 0); b.style.setProperty('--b', r.finalP[w]);
+      g.classList.remove('neg'); b.classList.remove('neg');
+      $('.r-val', el).textContent = pct(r.finalP[w]);
+    }
+    const delta = r.pen[w] + r.dry[w];
+    $('.r-tag', el).innerHTML = out
+      ? `<span class="tag out">${REASONS[r.reason[w]]}</span>`
+      : (delta < -0.005 ? `<span class="tag pen">${nf(delta, 2)}</span>` : '');
+  });
+  box.style.height = ids.length * ROW_H + 'px';
+
+  const restIds = r.order.filter(w => !shown.has(w));
+  const restRaw = restIds.reduce((s, w) => s + r.rawP[w], 0);
+  const restFinal = restIds.reduce((s, w) => s + r.finalP[w], 0);
+  $('#rowsFoot').textContent = `+ ${restIds.length} autres tokens : ${pct(restRaw)} de la distribution brute, ${pct(restFinal)} après la chaîne.`;
+
+  $('#distLegend').innerHTML = logit
+    ? '<span><span class="sw ghost"></span>logit brut du modèle</span><span><span class="sw bar"></span>logit final, envoyé au softmax (après pénalités et ÷ T)</span><span><span class="tag out">top_p</span> éliminé : logit mis à −∞</span>'
+    : '<span><span class="sw ghost"></span>modèle brut (T = 1, sans pénalité)</span><span><span class="sw bar"></span>après toute la chaîne</span><span><span class="tag out">top_p</span> filtre qui a éliminé le token</span><span><span class="tag pen">−1,20</span> pénalité sur le logit</span>';
+}
+
+// ── Roulette ──
+const MAXSEG = 24;
+const segEls = new Map();
+function rouletteItems(r) {
+  const many = r.alive.length > MAXSEG;
+  const head = r.alive.slice(0, many ? MAXSEG - 1 : MAXSEG);
+  const items = head.map(w => ({ key: w, p: r.finalP[w], label: tokName(w) }));
+  if (many) {
+    const rest = r.alive.slice(MAXSEG - 1);
+    items.push({ key: 'rest', p: rest.reduce((s, w) => s + r.finalP[w], 0), label: `+${rest.length}`, ids: new Set(rest) });
+  }
+  return items;
+}
+function renderRoulette(r) {
+  const box = $('#segs');
+  const W = box.clientWidth || 600;
+  const items = rouletteItems(r);
+  const keys = new Set(items.map(it => it.key));
+  for (const [k, el] of segEls) if (!keys.has(k)) { el.remove(); segEls.delete(k); }
+  items.forEach(it => {
+    let el = segEls.get(it.key);
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'seg' + (it.key === 'rest' ? ' rest' : '');
+      el.innerHTML = '<span></span>';
+      el.style.flexGrow = 0;
+      segEls.set(it.key, el);
+    }
+    el.style.flexGrow = it.p;
+    el.firstChild.textContent = it.label;
+    el.title = it.key === 'rest' ? `${it.ids.size} candidats peu probables : ${pct(it.p)} au total` : `${it.label} : ${pct(it.p)}`;
+    el.classList.toggle('nolabel', it.p * W < it.label.length * 7.6 + 10);
+    el.classList.remove('picked');
+    el._ids = it.ids;
+  });
+  const want = items.map(it => segEls.get(it.key));
+  const same = want.length === box.children.length && want.every((el, i) => box.children[i] === el);
+  if (!same) want.forEach(el => box.append(el));
+  $('#marker').hidden = true;
+}
+function segFor(id) {
+  if (segEls.has(id)) return segEls.get(id);
+  const rest = segEls.get('rest');
+  return rest && rest._ids && rest._ids.has(id) ? rest : null;
+}
+function renderReadout() {
+  const d = S.lastDraw;
+  const el = $('#readout');
+  if (!d) {
+    el.innerHTML = `${S.cur.alive.length} candidat${S.cur.alive.length > 1 ? 's' : ''} en lice. Cliquez sur <b>Tirer le token suivant</b> pour lancer u.`;
+    return;
+  }
+  const t = d.tok;
+  const name = t.id === EOS ? '&lt;eos&gt;' : esc(t.text);
+  el.innerHTML = d.alive === 1
+    ? `Dernier tirage : un seul candidat en lice, <code>u = ${nf(t.u, 4)}</code> n'a aucune influence. <b>« ${name} »</b> est choisi à coup sûr.`
+    : `Dernier tirage : <code>u = ${nf(t.u, 4)}</code> tombe dans le segment de <b>« ${name} »</b> (probabilité finale ${pct(t.p)}, rang ${t.rank} sur ${d.alive} candidats).`;
+}
+
+// ── Vue d'ensemble du vocabulaire (canvas) ──
+const LOG_MIN = -8;
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function drawOverview(r) {
+  const cv = $('#ov');
+  const W = cv.clientWidth, H = 190, dpr = window.devicePixelRatio || 1;
+  if (!W) return;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const g = cv.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, W, H);
+  const c = { line: cssVar('--line'), muted: cssVar('--muted'), ink2: cssVar('--ink-2'), ghost: cssVar('--ghost'), accent: cssVar('--accent') };
+  const mono = cssVar('--f-mono');
+  const m = { l: 40, r: 8, t: 18, b: 22 };
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const V = MODEL.V, bw = pw / V;
+  const y = p => m.t + ph * (Math.max(Math.log10(Math.max(p, 1e-30)), LOG_MIN) / LOG_MIN);
+  const x = i => m.l + i * bw;
+
+  g.font = `500 10.5px ${mono}`;
+  g.textBaseline = 'middle';
+  g.textAlign = 'right';
+  for (const e of [0, -2, -4, -6, -8]) {
+    const yy = Math.round(y(10 ** e)) + 0.5;
+    g.strokeStyle = c.line; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(m.l, yy); g.lineTo(W - m.r, yy); g.stroke();
+    g.fillStyle = c.muted;
+    g.fillText(e === 0 ? '1' : `1e${e}`, m.l - 6, yy);
+  }
+  const base = m.t + ph;
+  g.fillStyle = c.ghost;
+  for (let i = 0; i < V; i++) { const yy = y(r.seenP[r.order[i]]); g.fillRect(x(i), yy, Math.max(bw - (bw > 3 ? 1 : 0), 0.7), base - yy); }
+  g.fillStyle = c.accent;
+  for (const w of r.alive) { const i = r.rank[w]; const yy = y(r.finalP[w]); g.fillRect(x(i), yy, Math.max(bw - (bw > 3 ? 1 : 0), 0.9), base - yy); }
+
+  // Seuils des filtres (seulement si la grammaire ne réordonne pas les candidats).
+  g.strokeStyle = c.ink2; g.fillStyle = c.ink2; g.lineWidth = 1.5;
+  g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  const vline = (n, label, row) => {
+    const xx = Math.round(x(n)) + 0.5;
+    g.beginPath(); g.moveTo(xx, m.t - 2 + row * 11); g.lineTo(xx, base); g.stroke();
+    g.fillText(label, Math.min(xx + 4, W - m.r - g.measureText(label).width), m.t + 6 + row * 11);
+  };
+  if (!r.allowed) {
+    if (r.cut.topk && r.cut.topk < V) vline(r.cut.topk, `top_k = ${S.params.top_k}`, 0);
+    if (r.cut.topp) vline(r.cut.topp, `top_p = ${code(S.params.top_p, 2)}`, 1);
+  }
+  if (r.cut.minp) {
+    const thr = S.params.min_p * r.seenP[r.alive[0]];
+    const yy = Math.round(y(thr)) + 0.5;
+    g.setLineDash([]);
+    g.beginPath(); g.moveTo(m.l, yy); g.lineTo(W - m.r, yy); g.stroke();
+    const label = `min_p × p(meilleur) = ${pct(thr)}`;
+    g.fillText(label, W - m.r - g.measureText(label).width, yy - 4);
+  }
+  g.fillStyle = c.muted; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  g.fillText('rang 1', m.l, H - 6);
+  g.textAlign = 'right';
+  g.fillText(`rang ${V}`, W - m.r, H - 6);
+
+  $('#ovSub').textContent = `Les ${V} tokens du vocabulaire, du plus probable au moins probable. Échelle logarithmique : chaque graduation divise la probabilité par 100.`;
+  const keptSeen = r.alive.reduce((s, w) => s + r.seenP[w], 0);
+  $('#ovSum').textContent = r.alive.length === V
+    ? `Aucun filtre ne coupe : les ${V} tokens restent candidats, y compris la queue très improbable.`
+    : `${r.alive.length} candidat${r.alive.length > 1 ? 's' : ''} retenu${r.alive.length > 1 ? 's' : ''} sur ${V}. Ils pesaient ${pct(keptSeen)} avant les filtres ; les ${V - r.alive.length} tokens écartés en pesaient ${pct(1 - keptSeen)}. Après renormalisation, les retenus totalisent 100 %.`;
+}
+function overviewHover(ev) {
+  const r = S.cur;
+  const cv = $('#ov');
+  const rect = cv.getBoundingClientRect();
+  const pw = rect.width - 48;
+  const i = Math.floor(((ev.clientX - rect.left - 40) / pw) * MODEL.V);
+  if (i < 0 || i >= MODEL.V) { hideTip(); return; }
+  const w = r.order[i];
+  const status = r.reason[w] ? `éliminé par ${REASONS[r.reason[w]]}` : 'candidat retenu';
+  showTip(`<div class="tip-h">« ${esc(tokName(w))} » · rang ${i + 1}</div><div class="kv"><span>vue par les filtres</span><span>${pct(r.seenP[w])}</span><span>finale</span><span>${pct(r.finalP[w])}</span></div><div class="tip-foot">${status}</div>`, ev.clientX, ev.clientY);
+}
+
+// ── Infobulles ──
+const tip = $('#tip');
+function showTip(html, x, y) {
+  tip.innerHTML = html;
+  tip.hidden = false;
+  const b = tip.getBoundingClientRect();
+  let left = x + 14, top = y + 16;
+  if (left + b.width > innerWidth - 8) left = x - b.width - 14;
+  if (top + b.height > innerHeight - 8) top = y - b.height - 14;
+  tip.style.left = Math.max(8, left) + 'px';
+  tip.style.top = Math.max(8, top) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+const signed = v => (v >= 0 ? '+' : '') + nf(v, 2);
+function rowTip(w) {
+  const r = S.cur, P = S.params;
+  const kv = [['logit brut du modèle', nf(r.raw[w], 2)]];
+  if (r.pen[w]) kv.push([`pénalités (vu ${r.cnt[w]}× dans la fenêtre)`, signed(r.pen[w]), 'pen']);
+  if (r.dry[w]) kv.push([`DRY (prolongerait une séquence de ${r.dryLen.get(w)} tokens)`, signed(r.dry[w]), 'pen']);
+  kv.push(['logit après pénalités', nf(r.z[w], 2)]);
+  if (!r.reason[w] && r.div !== 1) kv.push([`÷ temperature ${code(P.temperature, 2)}`, nf(r.z[w] / r.div, 2)]);
+  kv.push(['p brute (T = 1, sans pénalité)', pct(r.rawP[w])]);
+  kv.push(['p finale', pct(r.finalP[w])]);
+  const why = {
+    1: 'interdit par la grammaire à cette étape',
+    2: `hors des ${P.top_k} meilleurs (top_k)`,
+    3: `au-delà de la masse cumulée ${code(P.top_p, 2)} (top_p)`,
+    4: `probabilité inférieure à ${code(P.min_p, 2)} × celle du meilleur (min_p)`,
+    5: 'température 0 : seul le meilleur reste',
+  }[r.reason[w]];
+  return `<div class="tip-h">« ${esc(tokName(w))} » · rang ${r.rank[w] + 1}</div>
+    <div class="kv">${kv.map(([k, v, cls]) => `<span>${k}</span><span class="${cls || ''}">${v}</span>`).join('')}</div>
+    <div class="tip-foot">${why ? 'Éliminé : ' + why + '.' : 'En lice pour le tirage.'}</div>`;
+}
+function chipTip(i) {
+  const g = S.gen[i];
+  const n = S.params.top_logprobs;
+  const rows = g.top.slice(0, n);
+  if (!rows.some(t => t.id === g.id)) rows.push({ id: g.id, rawP: g.rawP, p: g.p });
+  const name = g.id === EOS ? '&lt;eos&gt;' : esc(g.text);
+  return `<div class="tip-h">« ${name} » · token généré n°${i + 1}</div>
+    <div class="tip-sub">Tiré avec u = ${nf(g.u, 4)} parmi ${g.nAlive} candidat${g.nAlive > 1 ? 's' : ''}.</div>
+    <table><thead><tr><th>token</th><th>logprob</th><th>p brute</th><th>p finale</th></tr></thead><tbody>
+    ${rows.map(t => `<tr class="${t.id === g.id ? 'me' : ''}"><td>${esc(tokName(t.id))}</td><td>${nf(Math.log(t.rawP), 2)}</td><td>${pct(t.rawP)}</td><td>${pct(t.p)}</td></tr>`).join('')}
+    </tbody></table>
+    <div class="tip-foot">top_logprobs = ${n}. logprob = ln(p brute) : math.exp(logprob) redonne la probabilité.</div>`;
+}
+
+// ── Animation d'un tirage ──
+const speedMs = () => +$('#speedSel').value;
+function showDraw(res) {
+  const mk = $('#marker');
+  mk.hidden = false;
+  const to = (res.tok.u * 100).toFixed(3) + '%';
+  mk.style.left = to;
+  if (!reduceMotion.matches) mk.animate([{ left: '0%' }, { left: to }], { duration: 620, easing: 'cubic-bezier(.2,.9,.25,1)' });
+  const seg = segFor(res.tok.id);
+  if (seg) setTimeout(() => seg.classList.add('picked'), reduceMotion.matches ? 0 : 560);
+  const row = rowEls.get(res.tok.id);
+  if (row) setTimeout(() => row.classList.add('picked'), reduceMotion.matches ? 0 : 560);
+}
+function flyChip(fromRect, text, ms) {
+  const chips = $$('#tokens .tok-gen');
+  const toEl = chips[chips.length - 1];
+  if (!fromRect || !toEl || reduceMotion.matches || ms < 140) return;
+  const to = toEl.getBoundingClientRect();
+  const f = document.createElement('span');
+  f.className = 'tok fly';
+  f.textContent = text;
+  document.body.append(f);
+  const fb = f.getBoundingClientRect();
+  const x0 = fromRect.left + fromRect.width / 2 - fb.width / 2, y0 = fromRect.top + fromRect.height / 2 - fb.height / 2;
+  toEl.style.visibility = 'hidden';
+  const anim = f.animate([
+    { transform: `translate(${x0}px, ${y0}px) scale(1.2)` },
+    { transform: `translate(${to.left}px, ${to.top}px) scale(1)` },
+  ], { duration: ms, easing: 'cubic-bezier(.5,0,.2,1)' });
+  anim.onfinish = () => { f.remove(); toEl.style.visibility = ''; };
+}
+async function animatedStep(minMs) {
+  if (S.busy || S.finish) return;
+  S.busy = true;
+  const res = doStep();
+  if (!res) { S.busy = false; renderAll(); return; }
+  const ms = reduceMotion.matches ? 0 : Math.max(speedMs(), minMs || 0);
+  if (ms > 0) {
+    showDraw(res);
+    await sleep(Math.max(ms * 0.55, Math.min(ms, 640)));
+    const seg = segFor(res.tok.id);
+    const from = seg ? seg.getBoundingClientRect() : null;
+    renderAll();
+    flyChip(from, res.tok.id === EOS ? '<eos>' : res.tok.text, Math.min(ms * 0.6, 520));
+    await sleep(ms * 0.4);
+  } else {
+    renderAll();
+  }
+  S.busy = false;
+}
+async function run() {
+  if (S.running) { S.running = false; renderAll(); return; }
+  if (S.finish) return;
+  S.running = true;
+  renderAll();
+  while (S.running && !S.finish) {
+    if (speedMs() === 0) {
+      while (!S.finish) { doStep(); S.cur = compute(); }
+      break;
+    }
+    await animatedStep();
+  }
+  S.running = false;
+  renderAll();
+}
+
+// ── Cinq requêtes ──
+function inlineGen(prompt, gen, finish) {
+  const pieces = genPieces(prompt, gen);
+  const cutAt = finish && finish.detail === 'stop' ? finish.at : Infinity;
+  return gen.map((g, i) => {
+    if (g.id === EOS) return ' <span class="tok-eos" style="padding:0 3px;border-radius:3px">&lt;eos&gt;</span>';
+    const sp = pieces[i].text.startsWith(' ') ? ' ' : '';
+    const cut = pieces[i].start + pieces[i].text.length > cutAt ? ' cut' : '';
+    return `${sp}<span class="vt${cut}" style="--p:${g.p.toFixed(3)}">${esc(g.text)}</span>`;
+  }).join('');
+}
+function runVariants() {
+  const P = S.params;
+  const list = [];
+  for (let i = 0; i < 5; i++) {
+    const seed = P.seed >= 0 ? P.seed : Math.floor(Math.random() * 2 ** 31);
+    const res = generate(S.prompt, P, S.order, S.grammar.steps, seed);
+    const text = genPieces(S.prompt, res.gen).map(p => p.text).join('');
+    list.push({ seed, ...res, text: res.finish.detail === 'stop' ? text.slice(0, res.finish.at) : text });
+  }
+  const promptTxt = esc(joinTokens(S.prompt.map(t => t.text)));
+  $('#varList').innerHTML = list.map(v => `<li class="var">
+      <span class="var-seed">seed ${v.seed}</span>
+      <p class="var-text"><span class="var-prompt">${promptTxt}</span>${inlineGen(S.prompt, v.gen, v.finish)}</p>
+      <span class="var-fr">finish_reason <b>${v.finish.reason}</b></span>
+    </li>`).join('');
+  const distinct = new Set(list.map(v => v.text)).size;
+  let note;
+  if (distinct === 1) {
+    if (P.seed >= 0) note = '<b>Les 5 réponses sont identiques</b> : même prompt, mêmes paramètres, même seed. Le générateur aléatoire produit exactement la même suite de nombres u.';
+    else if (P.temperature <= 0 || P.top_k === 1) note = '<b>Les 5 réponses sont identiques</b> malgré 5 seeds différentes : il ne reste qu\'un candidat à chaque étape, le hasard n\'a plus de prise.';
+    else note = '<b>Les 5 réponses sont identiques</b> : le modèle était assez sûr de lui pour que les 5 tirages tombent pareil.';
+  } else {
+    note = `<b>${distinct} réponses différentes sur 5.</b> ${P.seed >= 0 ? '' : 'Chaque requête a tiré sa propre graine.'}`;
+  }
+  $('#varNote').innerHTML = note;
+}
+
+// ── Côté API ──
+function pyStr(s) { return s.includes('"') && !s.includes("'") ? `'${s}'` : JSON.stringify(s); }
+function buildRequest() {
+  const P = S.params, D = DEFAULTS;
+  const prompt = joinTokens(S.prompt.map(t => t.text));
+  const args = [], extra = [], kept = [];
+  const add = (cond, line, dflt) => { if (cond) args.push(line); else if (dflt) kept.push(dflt); };
+  const addX = (cond, line, dflt) => { if (cond) extra.push(line); else if (dflt) kept.push(dflt); };
+  args.push(`temperature=${code(P.temperature, 2)},`);
+  add(P.top_p !== D.top_p, `top_p=${code(P.top_p, 2)},`, 'top_p=0.95');
+  add(P.max_tokens !== D.max_tokens, `max_tokens=${P.max_tokens},`, 'max_tokens=-1');
+  add(P.seed !== D.seed, `seed=${P.seed},`, 'seed=-1');
+  add(P.stop.length > 0, `stop=[${P.stop.map(pyStr).join(', ')}],`);
+  add(P.frequency_penalty !== 0, `frequency_penalty=${code(P.frequency_penalty, 2)},`, 'frequency_penalty=0');
+  add(P.presence_penalty !== 0, `presence_penalty=${code(P.presence_penalty, 2)},`, 'presence_penalty=0');
+  if (P.logprobs) { args.push('logprobs=True,'); args.push(`top_logprobs=${P.top_logprobs},`); }
+  addX(P.top_k !== D.top_k, `"top_k": ${P.top_k},`, 'top_k=40');
+  addX(P.min_p !== D.min_p, `"min_p": ${code(P.min_p, 2)},`, 'min_p=0.05');
+  addX(P.repeat_penalty !== 1, `"repeat_penalty": ${code(P.repeat_penalty, 2)},`, 'repeat_penalty=1.0');
+  addX(P.repeat_last_n !== D.repeat_last_n, `"repeat_last_n": ${P.repeat_last_n},`, 'repeat_last_n=64');
+  addX(P.dry_multiplier !== 0, `"dry_multiplier": ${code(P.dry_multiplier, 2)},`, 'dry_multiplier=0');
+  if (S.grammar.steps) extra.push(`"grammar": ${pyStr('root ::= ' + P.grammar.replace(/^\s*root\s*::=\s*/, '').trim())},`);
+  if (S.order === 'hf') extra.push('"samplers": ["penalties", "dry", "temperature", "top_k", "top_p", "min_p"],');
+  const lines = [
+    'from openai import OpenAI',
+    '',
+    'client = OpenAI(base_url="http://localhost:8080/v1", api_key="sk-no-key-required")',
+    '',
+    'response = client.chat.completions.create(',
+    '    model="local",',
+    `    messages=[{"role": "user", "content": ${pyStr(prompt)}}],`,
+    ...args.map(a => '    ' + a),
+  ];
+  if (extra.length) lines.push('    extra_body={', ...extra.map(e => '        ' + e), '    },');
+  lines.push(')', '', 'print(response.choices[0].message.content)');
+  if (kept.length) {
+    lines.push('', '# Laissés aux défauts du serveur :');
+    for (let i = 0; i < kept.length; i += 4) lines.push(`#   ${kept.slice(i, i + 4).join(', ')}`);
+  }
+  return lines.join('\n');
+}
+function buildResponse() {
+  if (!S.gen.length) return null;
+  const pieces = genPieces(S.prompt, S.gen);
+  let content = pieces.map(p => p.text).join('');
+  if (S.finish && S.finish.detail === 'stop') content = content.slice(0, S.finish.at);
+  const choice = { index: 0, message: { role: 'assistant', content }, finish_reason: S.finish ? S.finish.reason : null };
+  const LIMIT = 8;
+  if (S.params.logprobs) {
+    const n = S.params.top_logprobs;
+    choice.logprobs = {
+      content: S.gen.slice(0, LIMIT).map((g, i) => {
+        const prev = i === 0 ? (S.prompt.length ? S.prompt[S.prompt.length - 1].text : undefined) : S.gen[i - 1].text;
+        const tk = id => (id === EOS ? '<eos>' : (needsSpaceBefore(tokName(id), prev) ? ' ' : '') + tokName(id));
+        return {
+          token: tk(g.id),
+          logprob: +Math.log(g.rawP).toFixed(4),
+          top_logprobs: g.top.slice(0, n).map(t => ({ token: tk(t.id), logprob: +Math.log(t.rawP).toFixed(4) })),
+        };
+      }),
+    };
+  }
+  const obj = {
+    object: 'chat.completion',
+    model: 'mini-4-grammes',
+    choices: [choice],
+    usage: { prompt_tokens: S.prompt.length, completion_tokens: S.gen.length, total_tokens: S.prompt.length + S.gen.length },
+  };
+  let json = JSON.stringify(obj, null, 2);
+  if (S.params.logprobs && S.gen.length > LIMIT) {
+    json = json.replace(/(\n {10}\}\n)( {8}\]\n {6}\})/, `$1          // … ${S.gen.length - LIMIT} tokens de plus, non affichés\n$2`);
+  }
+  return json;
+}
+function renderApi() {
+  const pre = $('#apiCode');
+  if (S.api === 'req') {
+    pre.innerHTML = esc(buildRequest()).replace(/^(# .*)$/gm, '<span class="c">$1</span>');
+    $('#apiNote').textContent = 'Le mini-modèle du labo continue le texte du prompt. Avec un vrai modèle de chat, le prompt passe par le gabarit de conversation, mais les paramètres s\'envoient de la même façon. Ceux qui n\'existent pas dans l\'API OpenAI passent par extra_body.';
+  } else {
+    const json = buildResponse();
+    pre.innerHTML = json ? esc(json).replace(/^(\s*\/\/.*)$/gm, '<span class="c">$1</span>') : '<span class="c">Générez au moins un token pour voir la réponse.</span>';
+    $('#apiNote').innerHTML = S.params.logprobs
+      ? 'Les logprobs sont calculés sur la distribution brute du modèle, avant la chaîne d\'échantillonnage (comportement par défaut de llama-server).'
+      : 'Cochez <code>logprobs</code> dans les paramètres pour voir les log-probabilités de chaque token.';
+  }
+}
+
+// ── Softmax à la main ──
+const SMX = { tokens: ['bleu', 'gris', 'couvert', 'dégagé', 'vert'], init: [7.2, 6.1, 4.8, 4.2, 0.5], z: [], T: 1, shifted: 0 };
+function buildSmx() {
+  const box = $('#smxTable');
+  box.innerHTML = '<div class="smx-row head"><span>token</span><span>logit z</span><span style="text-align:right">z</span><span style="text-align:right">z / T</span><span style="text-align:right">e^(z/T)</span><span>probabilité</span></div>' +
+    SMX.tokens.map((t, i) => `<div class="smx-row">
+      <label class="smx-tok" for="smx-${i}">${t}</label>
+      <input type="range" id="smx-${i}" min="-6" max="16" step="0.1">
+      <span class="smx-num strong" id="smxz-${i}"></span>
+      <span class="smx-num" id="smxzt-${i}"></span>
+      <span class="smx-num" id="smxe-${i}"></span>
+      <span class="smx-p"><span class="smx-bar" id="smxb-${i}"></span><span class="smx-num strong" id="smxp-${i}"></span></span>
+    </div>`).join('');
+  SMX.tokens.forEach((_, i) => $(`#smx-${i}`).addEventListener('input', e => { SMX.z[i] = +e.target.value; SMX.shifted = 0; renderSmx(); }));
+  $('#smxT').addEventListener('input', e => { SMX.T = +e.target.value; SMX.shifted = 0; renderSmx(); });
+  const shift = d => {
+    const lo = Math.min(...SMX.z), hi = Math.max(...SMX.z);
+    if (lo + d < -6 || hi + d > 16) return;
+    SMX.z = SMX.z.map(v => +(v + d).toFixed(1));
+    SMX.shifted = d;
+    renderSmx();
+  };
+  $('#smxUp').addEventListener('click', () => shift(2));
+  $('#smxDown').addEventListener('click', () => shift(-2));
+  $('#smxReset').addEventListener('click', () => { SMX.z = SMX.init.slice(); SMX.T = 1; SMX.shifted = 0; renderSmx(); });
+  SMX.z = SMX.init.slice();
+}
+function fmtExp(v) {
+  if (v >= 1000) return Math.round(v).toLocaleString('fr-FR');
+  if (v >= 1) return v.toPrecision(3).replace('.', ',');
+  return v.toPrecision(2).replace('.', ',');
+}
+function renderSmx() {
+  const T = SMX.T;
+  const m = Math.max(...SMX.z);
+  const ex = SMX.z.map(z => Math.exp(z / T));
+  const exs = SMX.z.map(z => Math.exp((z - m) / T));
+  const sum = exs.reduce((a, b) => a + b, 0);
+  const sumRaw = ex.reduce((a, b) => a + b, 0);
+  SMX.z.forEach((z, i) => {
+    const input = $(`#smx-${i}`);
+    input.value = z;
+    input.style.setProperty('--fill', ((z + 6) / 22) * 100 + '%');
+    $(`#smxz-${i}`).textContent = nf(z, 1);
+    $(`#smxzt-${i}`).textContent = nf(z / T, 2);
+    $(`#smxe-${i}`).textContent = fmtExp(ex[i]);
+    const p = exs[i] / sum;
+    $(`#smxb-${i}`).style.width = (p * 100).toFixed(2) + '%';
+    $(`#smxp-${i}`).textContent = pct(p);
+  });
+  $('#smxT').value = T;
+  $('#smxT').style.setProperty('--fill', ((T - 0.1) / 2.9) * 100 + '%');
+  $('#smxTout').textContent = T.toFixed(2);
+  const top = SMX.z.indexOf(m);
+  const pTop = exs[top] / sum;
+  let note = `Somme des exponentielles : <b>${fmtExp(sumRaw)}</b>. Le favori « ${SMX.tokens[top]} » prend ${pct(pTop)}.`;
+  if (SMX.shifted) note = `Tous les logits ont bougé de ${SMX.shifted > 0 ? '+' : '−'}2, la somme aussi (<b>${fmtExp(sumRaw)}</b>), mais <b>aucune probabilité n'a changé</b> : seuls les écarts entre logits comptent.`;
+  else if (T < 0.6) note += ' Température basse : les écarts sont multipliés, le favori écrase les autres.';
+  else if (T > 1.6) note += ' Température haute : les écarts fondent, la distribution s\'aplatit.';
+  $('#smxNote').innerHTML = note;
+}
+
+// ── Fiches des paramètres ──
+const L0 = { max_tokens: 20 };
+const DOCS = [
+  { key: 'temperature', group: 'refShape', tag: 'redimensionne',
+    what: 'Divise les logits avant le softmax. Basse, la distribution se resserre sur les meilleurs tokens. Haute, elle s\'aplatit et la queue remonte.',
+    def: '0.8', common: '0 (déterministe) · 0.2 à 0.5 (factuel, code) · 0.7 à 1.0 (conversation) · 1.2 et plus (créatif)', how: 'temperature=0.8',
+    pit: 'À 0, le token le plus probable est toujours choisi : même réponse à chaque appel. Au-delà de 1.5, le texte part en charabia. Dans llama.cpp, elle est appliquée en dernier : elle ne change pas quels tokens passent top_k, top_p et min_p, seulement leurs proportions.',
+    tries: [
+      { label: 'T = 0 : 5 requêtes, 1 seule réponse', prompt: 'Il était une fois', params: { temperature: 0, ...L0 }, run: 'variants' },
+      { label: 'T = 1,8 sans filtre : le charabia', prompt: 'Le chat dort sur le', params: { temperature: 1.8, top_k: 0, top_p: 1, min_p: 0, ...L0 }, run: 'variants' },
+    ] },
+  { key: 'top_k', group: 'refShape', tag: 'filtre',
+    what: 'Ne garde que les k tokens les plus probables et élimine tous les autres.',
+    def: '40', common: '20 à 100 · 0 = désactivé', how: 'extra_body={"top_k": 40}',
+    pit: 'top_k = 1 revient au décodage glouton : la température n\'a plus aucun effet. C\'est un filtre brutal, qui garde k tokens que le modèle soit sûr de lui ou non, sans regarder la forme de la distribution.',
+    tries: [
+      { label: 'top_k = 1 : la température ne sert plus à rien', prompt: 'Il était une fois un', params: { top_k: 1, temperature: 1.5, ...L0 }, run: 'variants' },
+      { label: 'top_k = 3', prompt: 'Il était une fois un', params: { top_k: 3, top_p: 1, min_p: 0, temperature: 1 } },
+    ] },
+  { key: 'top_p', group: 'refShape', tag: 'filtre',
+    what: 'Nucleus sampling : garde le plus petit ensemble de tokens dont les probabilités cumulées atteignent p.',
+    def: '0.95', common: '0.9 à 0.95 · 1.0 = désactivé', how: 'top_p=0.95',
+    pit: 'Il s\'adapte à la distribution : peu de candidats quand le modèle est sûr de lui, beaucoup quand il hésite. Avec une queue longue, il laisse passer des tokens très improbables.',
+    tries: [
+      { label: 'top_p = 0,6 quand le modèle hésite', prompt: 'Il était une fois un', params: { top_p: 0.6, top_k: 0, min_p: 0, temperature: 1 } },
+      { label: '… et quand il est sûr de lui', prompt: 'La capitale de la France est', params: { top_p: 0.6, top_k: 0, min_p: 0, temperature: 1 } },
+    ] },
+  { key: 'min_p', group: 'refShape', tag: 'filtre',
+    what: 'Élimine les tokens dont la probabilité est inférieure à min_p × celle du meilleur token.',
+    def: '0.05', common: '0.02 à 0.1 · 0 = désactivé', how: 'extra_body={"min_p": 0.05}',
+    pit: 'Spécifique à llama.cpp. Souvent préféré à top_p sur les petits modèles : il coupe la queue sans limiter la diversité quand le modèle hésite vraiment. Il permet des températures plus hautes sans charabia.',
+    tries: [
+      { label: 'min_p = 0,1 avec T = 1,8', prompt: 'Le chat dort sur le', params: { min_p: 0.1, top_k: 0, top_p: 1, temperature: 1.8, ...L0 }, run: 'variants' },
+      { label: 'La même chose sans min_p', prompt: 'Le chat dort sur le', params: { min_p: 0, top_k: 0, top_p: 1, temperature: 1.8, ...L0 }, run: 'variants' },
+    ] },
+  { key: 'repeat_penalty', group: 'refShape', tag: 'pénalité',
+    what: 'Pénalise les tokens déjà vus dans les repeat_last_n derniers tokens : un logit positif est divisé par la pénalité, un logit négatif est multiplié.',
+    def: '1.0 (désactivé), repeat_last_n = 64', common: '1.05 à 1.2', how: 'extra_body={"repeat_penalty": 1.1}',
+    pit: 'Contre les boucles du type « le chat dort. le chat dort. le chat dort ». Trop haut, le modèle évite des mots nécessaires (ponctuation, articles) et devient incohérent. Pénalise aussi les tokens du prompt. Comme la pénalité est multiplicative, son effet dépend de l\'échelle des logits.',
+    tries: [
+      { label: 'Provoquer une boucle (T = 0)', prompt: 'Le chat', params: { temperature: 0, max_tokens: 48 }, run: 'generate' },
+      { label: 'La casser : repeat_penalty = 1,15', prompt: 'Le chat', params: { temperature: 0, max_tokens: 48, repeat_penalty: 1.15 }, run: 'generate' },
+      { label: 'Trop fort : repeat_penalty = 2 (seed 2)', prompt: 'Il était une fois un', params: { repeat_penalty: 2, max_tokens: 40, seed: 2 }, run: 'generate' },
+    ] },
+  { key: 'frequency_penalty', group: 'refShape', tag: 'pénalité',
+    what: 'Soustrait f × (nombre d\'occurrences) au logit de chaque token déjà apparu.',
+    def: '0', common: '0.1 à 0.5', how: 'frequency_penalty=0.3',
+    pit: 'Pénalité proportionnelle : plus un token revient, plus il est pénalisé. Réduit les répétitions de vocabulaire. Dans llama.cpp, les occurrences sont comptées sur la même fenêtre repeat_last_n.',
+    tries: [{ label: 'Sur la boucle : frequency_penalty = 0,5', prompt: 'Le chat', params: { temperature: 0, max_tokens: 48, frequency_penalty: 0.5 }, run: 'generate' }] },
+  { key: 'presence_penalty', group: 'refShape', tag: 'pénalité',
+    what: 'Soustrait p au logit de tout token déjà apparu, une seule fois, quel que soit son nombre d\'occurrences.',
+    def: '0', common: '0.1 à 0.5', how: 'presence_penalty=0.3',
+    pit: 'Pénalité fixe : elle pousse le modèle vers de nouveaux mots et de nouveaux sujets plutôt que vers la répétition. Complémentaire de frequency_penalty.',
+    tries: [{ label: 'Sur la boucle : presence_penalty = 1', prompt: 'Le chat', params: { temperature: 0, max_tokens: 48, presence_penalty: 1 }, run: 'generate' }] },
+  { key: 'dry_multiplier', group: 'refShape', tag: 'pénalité',
+    what: 'Sampler DRY (« Don\'t Repeat Yourself ») : pénalise la répétition de séquences (n-grammes), pas de tokens isolés. Le token qui prolongerait une séquence déjà vue perd multiplier × base^(longueur − allowed_length).',
+    def: '0 (désactivé)', common: '0.8, avec dry_base = 1.75 et dry_allowed_length = 2', how: 'extra_body={"dry_multiplier": 0.8}',
+    pit: 'Plus fin que repeat_penalty : il cible les boucles de phrases entières sans toucher aux mots courants isolés. La pénalité croît de façon exponentielle avec la longueur de la répétition. Utile en écriture longue.',
+    tries: [{ label: 'Sur la boucle : dry_multiplier = 0,8', prompt: 'Le chat', params: { temperature: 0, max_tokens: 48, dry_multiplier: 0.8 }, run: 'generate' }] },
+  { key: 'grammar', title: 'response_format / json_schema / grammar', group: 'refShape', tag: 'masque',
+    what: 'Contraint la sortie à un format via une grammaire GBNF. À chaque étape, les tokens qui violeraient la grammaire sont masqués (logit à −∞) avant le reste de la chaîne.',
+    def: 'aucune', common: 'schéma JSON, grammaire GBNF', how: 'response_format={...}, extra_body={"grammar": ...}',
+    pit: 'Le sampler ne peut choisir que des tokens valides pour la grammaire. Un json_schema est converti en grammaire par le serveur. Forcer un format peut obliger le modèle à choisir un token qu\'il jugeait improbable. Dans le labo, la grammaire est simplifiée : une suite de tokens, avec des choix entre parenthèses.',
+    tries: [{ label: 'Forcer « toit », « tapis » ou « coussin », puis un point', prompt: 'Le chat dort sur le', params: { grammar: '("toit" | "tapis" | "coussin") "."' }, run: 'generate' }] },
+
+  { key: 'seed', group: 'refDraw', tag: 'tirage',
+    what: 'Initialise le générateur aléatoire qui produit les nombres u du tirage.',
+    def: '-1 (aléatoire)', common: 'n\'importe quel entier', how: 'seed=42',
+    pit: 'Même prompt + même seed + mêmes paramètres = même réponse, même à temperature = 1. Indispensable pour un exercice reproductible. Ne garantit rien si le serveur, le modèle ou la composition du batch change.',
+    tries: [
+      { label: 'seed = 42 : 5 réponses identiques', prompt: 'Il était une fois', params: { seed: 42, temperature: 1, max_tokens: 16 }, run: 'variants' },
+      { label: 'seed = -1 : 5 réponses différentes', prompt: 'Il était une fois', params: { seed: -1, temperature: 1, max_tokens: 16 }, run: 'variants' },
+    ] },
+  { key: 'max_tokens', group: 'refDraw', tag: 'arrêt',
+    what: 'Nombre maximal de tokens générés.',
+    def: '-1 (jusqu\'à la fin du contexte)', common: '50 à 2000 selon l\'usage', how: 'max_tokens=256',
+    pit: 'Coupe net : finish_reason vaut "length" et la phrase reste inachevée. Trop bas, les réponses sont tronquées. Trop haut, un modèle qui boucle remplit tout le contexte.',
+    tries: [{ label: 'max_tokens = 6 : coupé net', prompt: 'Il était une fois', params: { max_tokens: 6 }, run: 'generate' }] },
+  { key: 'stop', group: 'refDraw', tag: 'arrêt',
+    what: 'Chaînes qui arrêtent la génération dès qu\'elles apparaissent dans le texte généré.',
+    def: 'aucune', common: '["\\n"], ["###"], ["4."]', how: 'stop=["\\n"]',
+    pit: 'La chaîne d\'arrêt n\'est pas renvoyée. Sert à contrôler le format sans grammaire : s\'arrêter après une ligne, après trois éléments d\'une liste…',
+    tries: [{ label: 'stop = ["."] : une seule phrase', prompt: 'Il était une fois', params: { stop: ['.'] }, run: 'generate' }] },
+
+  { key: 'logprobs', title: 'logprobs / top_logprobs', group: 'refNone', tag: 'visibilité',
+    what: 'Renvoie la log-probabilité du token choisi et des n meilleurs candidats, à chaque position.',
+    def: 'désactivé', common: 'top_logprobs = 5 à 20', how: 'logprobs=True, top_logprobs=5',
+    pit: 'Ne change pas la génération, rend la distribution visible. math.exp(logprob) redonne la probabilité. Outil pédagogique n°1 pour comprendre tous les autres paramètres : dans le labo, survolez un token généré.',
+    tries: [{ label: 'Voir les logprobs dans la réponse', prompt: 'Le chat dort sur le', params: { logprobs: true, top_logprobs: 5, max_tokens: 8 }, run: 'generate', api: 'res' }] },
+  { key: 'n_probs', group: 'refNone', tag: 'visibilité',
+    what: 'Équivalent natif de top_logprobs dans llama.cpp, sur l\'endpoint /completion.',
+    def: '0', common: '5 à 20', how: 'extra_body={"n_probs": 5}',
+    pit: 'Même information que top_logprobs, au format de l\'API native. Avec post_sampling_probs, llama-server renvoie les probabilités après la chaîne plutôt que celles du modèle brut.' },
+  { key: 'cache_prompt', group: 'refNone', tag: 'performance',
+    what: 'Réutilise le KV cache du préfixe commun avec la requête précédente : les tokens déjà traités ne sont pas recalculés.',
+    def: 'true', common: 'true / false', how: 'extra_body={"cache_prompt": False}',
+    pit: 'N\'affecte pas le texte, seulement le temps de traitement du prompt (prompt_ms). Le désactiver rend l\'effet du cache mesurable. Rien à voir dans ce labo : il ne touche pas la distribution.' },
+];
+function buildDocs() {
+  DOCS.forEach((d, di) => {
+    const el = document.createElement('article');
+    el.className = 'card doc';
+    el.id = 'ref-' + d.key;
+    el.innerHTML = `<header><h4>${esc(d.title || d.key)}</h4><span class="doc-tag">${d.tag}</span></header>
+      <p class="doc-what">${esc(d.what)}</p>
+      <dl class="doc-meta">
+        <dt>Défaut serveur</dt><dd><code>${esc(d.def)}</code></dd>
+        <dt>Valeurs courantes</dt><dd>${esc(d.common)}</dd>
+        <dt>Comment le passer</dt><dd><code>${esc(d.how)}</code></dd>
+      </dl>
+      <p class="doc-pit"><strong>Effet et pièges.</strong> ${esc(d.pit)}</p>
+      ${d.tries ? `<div class="doc-try">${d.tries.map((t, ti) => `<button class="btn small" type="button" data-try="${di}:${ti}">${esc(t.label)}</button>`).join('')}</div>` : ''}`;
+    $('#' + d.group).append(el);
+  });
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-try]');
+    if (!b) return;
+    const [di, ti] = b.dataset.try.split(':').map(Number);
+    applyTry(DOCS[di].tries[ti]);
+  });
+}
+async function applyTry(t) {
+  S.running = false;
+  S.params = { ...structuredClone(DEFAULTS), ...structuredClone(t.params) };
+  S.order = 'llama';
+  if (t.api) S.api = t.api;
+  $$('[data-api]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.api === S.api)));
+  syncControls();
+  const idx = PROMPTS.findIndex(p => p.text === t.prompt);
+  $('#presetSel').value = idx >= 0 ? idx : '';
+  setPrompt(t.prompt);
+  $('#banner').hidden = false;
+  $('#bannerText').innerHTML = `Démonstration chargée : <b>${esc(t.label)}</b>. Les autres paramètres sont revenus aux défauts de llama-server.`;
+  if (t.run === 'generate' && speedMs() > 550) $('#speedSel').value = '550';
+  if (t.run === 'generate' && t.params.max_tokens > 20) $('#speedSel').value = '160';
+  const target = t.run === 'variants' ? '#varCard' : '#labo';
+  $(target).scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
+  await sleep(reduceMotion.matches ? 50 : 600);
+  renderAll();
+  if (t.run === 'variants') runVariants();
+  else if (t.run === 'generate') run();
+}
+function hideBanner() { $('#banner').hidden = true; }
+
+// ── Thème ──
+const THEME_LABEL = { auto: 'Thème : auto', light: 'Thème : clair', dark: 'Thème : sombre' };
+function setTheme(mode) {
+  if (mode === 'auto') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = mode;
+  $('#themeBtn').textContent = THEME_LABEL[mode];
+  try { localStorage.setItem('roulette-theme', mode); } catch (e) { /* stockage indisponible */ }
+  if (S.cur) drawOverview(S.cur);
+}
+
+// ── Initialisation ──
+function init() {
+  $('#modelNote').innerHTML = `<b>À savoir :</b> le modèle du labo est un mini-modèle statistique (4-grammes) entraîné au chargement de la page sur un petit corpus français : ${MODEL.N.toLocaleString('fr-FR')} tokens, vocabulaire de ${MODEL.V} tokens. Un vrai LLM en a de 32 000 à plus de 200 000, découpés en sous-mots. Ce modèle ne comprend rien, mais il produit des logits comme un LLM, et toute la chaîne qui suit (pénalités, filtres, température, tirage) reproduit celle de llama.cpp.`;
+
+  buildSliders();
+  buildSmx();
+  renderSmx();
+  buildDocs();
+
+  const sel = $('#presetSel');
+  sel.innerHTML = PROMPTS.map((p, i) => `<option value="${i}">${esc(p.text)} · ${esc(p.note)}</option>`).join('') + '<option value="">Texte libre…</option>';
+  sel.addEventListener('change', () => { if (sel.value !== '') setPrompt(PROMPTS[+sel.value].text); else $('#promptInput').focus(); });
+  const applyPrompt = () => {
+    const v = $('#promptInput').value;
+    const idx = PROMPTS.findIndex(p => p.text === v);
+    sel.value = idx >= 0 ? idx : '';
+    setPrompt(v);
+  };
+  $('#promptApply').addEventListener('click', applyPrompt);
+  $('#promptInput').addEventListener('keydown', e => { if (e.key === 'Enter') applyPrompt(); });
+
+  $$('[data-order]').forEach(b => b.addEventListener('click', () => { S.order = b.dataset.order; syncControls(); hideBanner(); invalidate(); }));
+  $$('[data-view]').forEach(b => b.addEventListener('click', () => {
+    S.view = b.dataset.view;
+    $$('[data-view]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    invalidate();
+  }));
+  $$('[data-api]').forEach(b => b.addEventListener('click', () => {
+    S.api = b.dataset.api;
+    $$('[data-api]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    renderApi();
+  }));
+
+  $('#p-seed').addEventListener('input', e => {
+    const v = parseInt(e.target.value, 10);
+    S.params.seed = Number.isFinite(v) ? Math.max(-1, v) : -1;
+    hideBanner();
+    invalidate();
+  });
+  $('#p-logprobs').addEventListener('change', e => { S.params.logprobs = e.target.checked; renderApi(); });
+  $('#p-grammar').addEventListener('input', e => { S.params.grammar = e.target.value; applyGrammar(); hideBanner(); invalidate(); });
+  $('#stopInput').addEventListener('keydown', e => {
+    const input = e.target;
+    if (e.key === 'Enter' && input.value) {
+      e.preventDefault();
+      const s = input.value.replace(/\\n/g, '\n');
+      if (!S.params.stop.includes(s)) S.params.stop.push(s);
+      input.value = '';
+      renderStopTags();
+      hideBanner();
+      invalidate();
+    } else if (e.key === 'Backspace' && !input.value && S.params.stop.length) {
+      S.params.stop.pop();
+      renderStopTags();
+      invalidate();
+    }
+  });
+  $('#resetParams').addEventListener('click', () => { S.params = structuredClone(DEFAULTS); S.order = 'llama'; syncControls(); hideBanner(); invalidate(); });
+  $('#bannerReset').addEventListener('click', () => { S.params = structuredClone(DEFAULTS); syncControls(); hideBanner(); resetGen(); });
+
+  $('#btnStep').addEventListener('click', () => animatedStep(650));
+  $('#btnRun').addEventListener('click', run);
+  $('#btnReset').addEventListener('click', resetGen);
+  $('#btnVariants').addEventListener('click', runVariants);
+
+  $('#copyBtn').addEventListener('click', () => {
+    const pre = $('#apiCode');
+    const done = () => { $('#copyBtn').textContent = 'Copié'; setTimeout(() => { $('#copyBtn').textContent = 'Copier'; }, 1400); };
+    const fallback = () => { const range = document.createRange(); range.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(range); };
+    try { navigator.clipboard.writeText(pre.textContent).then(done, fallback); } catch (e) { fallback(); }
+  });
+
+  // Infobulles : lignes de distribution, tokens générés, vue d'ensemble.
+  $('#rows').addEventListener('mousemove', e => {
+    const row = e.target.closest('.row');
+    if (row) showTip(rowTip(+row.dataset.w), e.clientX, e.clientY); else hideTip();
+  });
+  $('#rows').addEventListener('mouseleave', hideTip);
+  const chipHandler = e => {
+    const chip = e.target.closest('.tok-gen');
+    if (chip) showTip(chipTip(+chip.dataset.i), e.clientX, e.clientY); else hideTip();
+  };
+  $('#tokens').addEventListener('mousemove', chipHandler);
+  $('#tokens').addEventListener('click', chipHandler);
+  $('#tokens').addEventListener('mouseleave', hideTip);
+  $('#ov').addEventListener('mousemove', overviewHover);
+  $('#ov').addEventListener('mouseleave', hideTip);
+  addEventListener('scroll', hideTip, { passive: true });
+
+  let theme = 'auto';
+  try { theme = localStorage.getItem('roulette-theme') || 'auto'; } catch (e) { /* stockage indisponible */ }
+  setTheme(theme);
+  $('#themeBtn').addEventListener('click', () => {
+    const cur = document.documentElement.dataset.theme || 'auto';
+    setTheme({ auto: 'light', light: 'dark', dark: 'auto' }[cur]);
+  });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => S.cur && drawOverview(S.cur));
+  new ResizeObserver(() => S.cur && (drawOverview(S.cur), renderRoulette(S.cur))).observe($('#ovCard'));
+  if (document.fonts) document.fonts.ready.then(() => S.cur && drawOverview(S.cur));
+
+  syncControls();
+  sel.value = '0';
+  setPrompt(PROMPTS[0].text);
+  renderAll();
+}
+init();
+</script>
+</body>
+</html>

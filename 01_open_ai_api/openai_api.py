@@ -22,6 +22,7 @@ ayman = OpenAI(
 r = rq.get(f'{AYMAN_URL}/health')
 print(r.status_code)
 
+
 # response = ayman.chat.completions.create(
 #       model='local',
 #       messages= [
