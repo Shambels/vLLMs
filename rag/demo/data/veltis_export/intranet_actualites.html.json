@@ -1,0 +1,487 @@
+{
+  "schema_name": "DoclingDocument",
+  "version": "1.10.0",
+  "name": "intranet_actualites",
+  "origin": {
+    "mimetype": "text/html",
+    "binary_hash": 3380787396142978951,
+    "filename": "intranet_actualites.html"
+  },
+  "furniture": {
+    "self_ref": "#/furniture",
+    "children": [],
+    "content_layer": "furniture",
+    "name": "_root_",
+    "label": "unspecified"
+  },
+  "body": {
+    "self_ref": "#/body",
+    "children": [
+      {
+        "$ref": "#/texts/0"
+      },
+      {
+        "$ref": "#/texts/1"
+      },
+      {
+        "$ref": "#/texts/2"
+      },
+      {
+        "$ref": "#/texts/3"
+      },
+      {
+        "$ref": "#/texts/4"
+      },
+      {
+        "$ref": "#/texts/5"
+      },
+      {
+        "$ref": "#/texts/6"
+      },
+      {
+        "$ref": "#/texts/7"
+      }
+    ],
+    "content_layer": "body",
+    "name": "_root_",
+    "label": "unspecified"
+  },
+  "groups": [
+    {
+      "self_ref": "#/groups/0",
+      "parent": {
+        "$ref": "#/texts/18"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/20"
+        },
+        {
+          "$ref": "#/groups/1"
+        }
+      ],
+      "content_layer": "furniture",
+      "name": "footer",
+      "label": "section"
+    },
+    {
+      "self_ref": "#/groups/1",
+      "parent": {
+        "$ref": "#/groups/0"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/21"
+        },
+        {
+          "$ref": "#/texts/22"
+        },
+        {
+          "$ref": "#/texts/23"
+        },
+        {
+          "$ref": "#/texts/24"
+        },
+        {
+          "$ref": "#/texts/25"
+        },
+        {
+          "$ref": "#/texts/26"
+        }
+      ],
+      "content_layer": "furniture",
+      "name": "group",
+      "label": "inline"
+    }
+  ],
+  "texts": [
+    {
+      "self_ref": "#/texts/0",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "title",
+      "prov": [],
+      "orig": "Actualit\u00e9s \u2014 Intranet Veltis",
+      "text": "Actualit\u00e9s - Intranet Veltis"
+    },
+    {
+      "self_ref": "#/texts/1",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "Ce site utilise des cookies techniques n\u00e9cessaires \u00e0 son fonctionnement.",
+      "text": "Ce site utilise des cookies techniques n\u00e9cessaires \u00e0 son fonctionnement."
+    },
+    {
+      "self_ref": "#/texts/2",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "Accepter",
+      "text": "Accepter"
+    },
+    {
+      "self_ref": "#/texts/3",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "Param\u00e9trer",
+      "text": "Param\u00e9trer"
+    },
+    {
+      "self_ref": "#/texts/4",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "Intranet Veltis",
+      "text": "Intranet Veltis",
+      "formatting": {
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false,
+        "script": "baseline"
+      }
+    },
+    {
+      "self_ref": "#/texts/5",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "Accueil Actualit\u00e9s Ressources humaines Informatique Annuaire Mon profil",
+      "text": "Accueil Actualit\u00e9s Ressources humaines Informatique Annuaire Mon profil",
+      "hyperlink": "#"
+    },
+    {
+      "self_ref": "#/texts/6",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "Accueil > Actualit\u00e9s",
+      "text": "Accueil > Actualit\u00e9s"
+    },
+    {
+      "self_ref": "#/texts/7",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/8"
+        },
+        {
+          "$ref": "#/texts/9"
+        },
+        {
+          "$ref": "#/texts/12"
+        },
+        {
+          "$ref": "#/texts/15"
+        },
+        {
+          "$ref": "#/texts/18"
+        }
+      ],
+      "content_layer": "body",
+      "label": "title",
+      "prov": [],
+      "orig": "Actualit\u00e9s",
+      "text": "Actualit\u00e9s"
+    },
+    {
+      "self_ref": "#/texts/8",
+      "parent": {
+        "$ref": "#/texts/7"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "orig": "5 mars 2026",
+      "text": "5 mars 2026"
+    },
+    {
+      "self_ref": "#/texts/9",
+      "parent": {
+        "$ref": "#/texts/7"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/10"
+        },
+        {
+          "$ref": "#/texts/11"
+        }
+      ],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [],
+      "orig": "R\u00e9novation de la caf\u00e9t\u00e9ria",
+      "text": "R\u00e9novation de la caf\u00e9t\u00e9ria",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/10",
+      "parent": {
+        "$ref": "#/texts/9"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "orig": "La caf\u00e9t\u00e9ria sera ferm\u00e9e pour travaux du 23 au 27 mars 2026. Des food trucks seront pr\u00e9sents sur le parking pendant toute la semaine.",
+      "text": "La caf\u00e9t\u00e9ria sera ferm\u00e9e pour travaux du 23 au 27 mars 2026. Des food trucks seront pr\u00e9sents sur le parking pendant toute la semaine."
+    },
+    {
+      "self_ref": "#/texts/11",
+      "parent": {
+        "$ref": "#/texts/9"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "orig": "20 f\u00e9vrier 2026",
+      "text": "20 f\u00e9vrier 2026"
+    },
+    {
+      "self_ref": "#/texts/12",
+      "parent": {
+        "$ref": "#/texts/7"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/13"
+        },
+        {
+          "$ref": "#/texts/14"
+        }
+      ],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [],
+      "orig": "Partenariat avec CityLoc pour la location longue dur\u00e9e",
+      "text": "Partenariat avec CityLoc pour la location longue dur\u00e9e",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/13",
+      "parent": {
+        "$ref": "#/texts/12"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "orig": "Veltis et le loueur CityLoc ont sign\u00e9 un partenariat pour proposer le Veltis Pro L en location longue dur\u00e9e aux commer\u00e7ants. Premier objectif : 200 v\u00e9los en circulation d'ici la fin de l'ann\u00e9e.",
+      "text": "Veltis et le loueur CityLoc ont sign\u00e9 un partenariat pour proposer le Veltis Pro L en location longue dur\u00e9e aux commer\u00e7ants. Premier objectif : 200 v\u00e9los en circulation d'ici la fin de l'ann\u00e9e."
+    },
+    {
+      "self_ref": "#/texts/14",
+      "parent": {
+        "$ref": "#/texts/12"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "orig": "2 f\u00e9vrier 2026",
+      "text": "2 f\u00e9vrier 2026"
+    },
+    {
+      "self_ref": "#/texts/15",
+      "parent": {
+        "$ref": "#/texts/7"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/16"
+        },
+        {
+          "$ref": "#/texts/17"
+        }
+      ],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [],
+      "orig": "La nouvelle ligne de thermolaquage tourne \u00e0 plein r\u00e9gime",
+      "text": "La nouvelle ligne de thermolaquage tourne \u00e0 plein r\u00e9gime",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/16",
+      "parent": {
+        "$ref": "#/texts/15"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "orig": "Install\u00e9e fin 2025, la nouvelle ligne de peinture permet de traiter deux fois plus de cadres par jour et consomme 30 % d'\u00e9nergie en moins.",
+      "text": "Install\u00e9e fin 2025, la nouvelle ligne de peinture permet de traiter deux fois plus de cadres par jour et consomme 30 % d'\u00e9nergie en moins."
+    },
+    {
+      "self_ref": "#/texts/17",
+      "parent": {
+        "$ref": "#/texts/15"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "orig": "15 janvier 2026",
+      "text": "15 janvier 2026"
+    },
+    {
+      "self_ref": "#/texts/18",
+      "parent": {
+        "$ref": "#/texts/7"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/19"
+        },
+        {
+          "$ref": "#/groups/0"
+        }
+      ],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [],
+      "orig": "Le 1 000e Veltis Trike est sorti de l'atelier",
+      "text": "Le 1 000e Veltis Trike est sorti de l'atelier",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/19",
+      "parent": {
+        "$ref": "#/texts/18"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "orig": "Lanc\u00e9 en 2022, le Trike a franchi le cap symbolique des mille exemplaires. Il a \u00e9t\u00e9 livr\u00e9 aux services techniques d'une commune voisine.",
+      "text": "Lanc\u00e9 en 2022, le Trike a franchi le cap symbolique des mille exemplaires. Il a \u00e9t\u00e9 livr\u00e9 aux services techniques d'une commune voisine."
+    },
+    {
+      "self_ref": "#/texts/20",
+      "parent": {
+        "$ref": "#/groups/0"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "\u00c0 propos de Veltis \u2014 Fond\u00e9e en 2011, Veltis SA con\u00e7oit et fabrique \u00e0 Valmont des v\u00e9los cargo \u00e0 assistance \u00e9lectrique pour les familles, les professionnels et les collectivit\u00e9s. L'entreprise emploie 182 personnes et distribue ses v\u00e9los dans 11 pays.",
+      "text": "\u00c0 propos de Veltis - Fond\u00e9e en 2011, Veltis SA con\u00e7oit et fabrique \u00e0 Valmont des v\u00e9los cargo \u00e0 assistance \u00e9lectrique pour les familles, les professionnels et les collectivit\u00e9s. L'entreprise emploie 182 personnes et distribue ses v\u00e9los dans 11 pays."
+    },
+    {
+      "self_ref": "#/texts/21",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "\u00a9 2026 Veltis SA \u2014 Intranet r\u00e9serv\u00e9 au personnel \u2014",
+      "text": "\u00a9 2026 Veltis SA - Intranet r\u00e9serv\u00e9 au personnel -"
+    },
+    {
+      "self_ref": "#/texts/22",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "Mentions l\u00e9gales",
+      "text": "Mentions l\u00e9gales",
+      "hyperlink": "#"
+    },
+    {
+      "self_ref": "#/texts/23",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "|",
+      "text": "|"
+    },
+    {
+      "self_ref": "#/texts/24",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "Gestion des cookies",
+      "text": "Gestion des cookies",
+      "hyperlink": "#"
+    },
+    {
+      "self_ref": "#/texts/25",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "|",
+      "text": "|"
+    },
+    {
+      "self_ref": "#/texts/26",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "text",
+      "prov": [],
+      "orig": "Contacter le webmaster",
+      "text": "Contacter le webmaster",
+      "hyperlink": "#"
+    }
+  ],
+  "pictures": [],
+  "tables": [],
+  "key_value_items": [],
+  "form_items": [],
+  "pages": {}
+}

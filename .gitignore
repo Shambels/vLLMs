@@ -10,4 +10,9 @@ wheels/
 .venv
 
 
+
 models/
+rag_models/
+.env
+
+rag/demo/export_folder/

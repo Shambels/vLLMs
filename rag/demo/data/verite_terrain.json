@@ -1,0 +1,242 @@
+[
+  {
+    "id": "Q01",
+    "question": "En quelle année Veltis a-t-elle été fondée ?",
+    "reponse": "En 2011.",
+    "document": "presentation_veltis.pdf",
+    "modalite": "texte",
+    "remarque": null
+  },
+  {
+    "id": "Q02",
+    "question": "Quelle est l'autonomie du Veltis Famille ?",
+    "reponse": "90 km.",
+    "document": "presentation_veltis.pdf",
+    "modalite": "texte",
+    "remarque": null
+  },
+  {
+    "id": "Q03",
+    "question": "À quelle heure et où dois-je me présenter le premier jour ?",
+    "reponse": "À 8 h 30 à l'accueil du bâtiment A.",
+    "document": "guide_onboarding.pdf",
+    "modalite": "texte",
+    "remarque": null
+  },
+  {
+    "id": "Q04",
+    "question": "Combien de temps dure l'accompagnement par un parrain ou une marraine ?",
+    "reponse": "3 mois.",
+    "document": "guide_onboarding.pdf",
+    "modalite": "texte",
+    "remarque": null
+  },
+  {
+    "id": "Q05",
+    "question": "Dans quel délai faut-il changer le mot de passe provisoire ?",
+    "reponse": "Dans les 24 heures.",
+    "document": "guide_onboarding.pdf",
+    "modalite": "texte",
+    "remarque": null
+  },
+  {
+    "id": "Q06",
+    "question": "La formation sécurité est-elle obligatoire pour les employés de bureau ?",
+    "reponse": "Oui, elle est obligatoire avant tout accès à l'atelier, quel que soit le poste (3 heures).",
+    "document": "guide_onboarding.pdf",
+    "modalite": "texte",
+    "remarque": null
+  },
+  {
+    "id": "Q07",
+    "question": "Quel est le chiffre d'affaires 2025 de Veltis ?",
+    "reponse": "38,4 millions d'euros.",
+    "document": "rapport_annuel_2025.pdf",
+    "modalite": "tableau",
+    "remarque": "Aussi présent dans le texte et dans le PPTX."
+  },
+  {
+    "id": "Q08",
+    "question": "Combien de Veltis Pro L ont été vendus au troisième trimestre 2025 ?",
+    "reponse": "850.",
+    "document": "rapport_annuel_2025.pdf",
+    "modalite": "tableau",
+    "remarque": null
+  },
+  {
+    "id": "Q09",
+    "question": "Combien de Veltis Trike ont été vendus en 2025 au total ?",
+    "reponse": "1 280.",
+    "document": "rapport_annuel_2025.pdf",
+    "modalite": "tableau",
+    "remarque": null
+  },
+  {
+    "id": "Q10",
+    "question": "Combien a coûté le robot de soudure acheté en 2025 ?",
+    "reponse": "412 000 €.",
+    "document": "rapport_annuel_2025.pdf",
+    "modalite": "tableau_2_pages",
+    "remarque": "Ligne située dans la partie du tableau sur la 2e page."
+  },
+  {
+    "id": "Q11",
+    "question": "Quel était le chiffre d'affaires de Veltis en 2022 ?",
+    "reponse": "23,5 millions d'euros.",
+    "document": "rapport_annuel_2025.pdf",
+    "modalite": "image",
+    "remarque": "Uniquement dans le graphique en barres."
+  },
+  {
+    "id": "Q12",
+    "question": "Quel est le salaire de base d'un technicien en classe C, échelon 1 ?",
+    "reponse": "3 150 € brut par mois.",
+    "document": "grille_salariale_2026.pdf",
+    "modalite": "tableau_fusionne",
+    "remarque": null
+  },
+  {
+    "id": "Q13",
+    "question": "Quel est le montant de l'indemnité vélo ?",
+    "reponse": "0,35 € par kilomètre.",
+    "document": "grille_salariale_2026.pdf",
+    "modalite": "tableau",
+    "remarque": "Aussi dans l'onboarding et la FAQ."
+  },
+  {
+    "id": "Q14",
+    "question": "Quel budget le conseil d'administration a-t-il approuvé pour le deuxième site ?",
+    "reponse": "6,5 millions d'euros.",
+    "document": "pv_conseil_administration_2026-03-12_scan.pdf",
+    "modalite": "scan",
+    "remarque": "Le PDF ne contient aucune couche texte."
+  },
+  {
+    "id": "Q15",
+    "question": "Comment s'est déroulé le vote sur le deuxième site de production ?",
+    "reponse": "5 voix pour et 1 abstention (Bernard Klein).",
+    "document": "pv_conseil_administration_2026-03-12_scan.pdf",
+    "modalite": "scan",
+    "remarque": null
+  },
+  {
+    "id": "Q16",
+    "question": "Quel dividende le conseil propose-t-il pour l'exercice 2025 ?",
+    "reponse": "0,80 € par action.",
+    "document": "pv_conseil_administration_2026-03-12_scan.pdf",
+    "modalite": "scan",
+    "remarque": null
+  },
+  {
+    "id": "Q17",
+    "question": "Quel est l'objectif de chiffre d'affaires pour 2028 ?",
+    "reponse": "60 millions d'euros.",
+    "document": "plan_strategique_2026-2028.pptx",
+    "modalite": "image",
+    "remarque": "Uniquement dans le graphique de la diapositive 4."
+  },
+  {
+    "id": "Q18",
+    "question": "Quand et comment Veltis entrera-t-elle sur le marché allemand ?",
+    "reponse": "En 2027, via une filiale commerciale.",
+    "document": "plan_strategique_2026-2028.pptx",
+    "modalite": "slide",
+    "remarque": "Tableau natif PowerPoint."
+  },
+  {
+    "id": "Q19",
+    "question": "Qui est responsable de la qualité chez Veltis ?",
+    "reponse": "Nadia Ferreira.",
+    "document": "organigramme_et_processus_production.pdf",
+    "modalite": "image",
+    "remarque": "Uniquement dans l'organigramme."
+  },
+  {
+    "id": "Q20",
+    "question": "Combien de temps dure le contrôle qualité d'un vélo ?",
+    "reponse": "45 min en moyenne.",
+    "document": "organigramme_et_processus_production.pdf",
+    "modalite": "image",
+    "remarque": "Uniquement dans le schéma de production."
+  },
+  {
+    "id": "Q21",
+    "question": "Combien de jours de télétravail par semaine sont autorisés ?",
+    "reponse": "3 jours, avec présence obligatoire le mardi.",
+    "document": "politique_teletravail_2025.docx",
+    "modalite": "texte",
+    "remarque": "PIÈGE VERSION : la politique 2023 indique 2 jours."
+  },
+  {
+    "id": "Q22",
+    "question": "Quel est le montant de l'indemnité de télétravail ?",
+    "reponse": "50 € par mois.",
+    "document": "politique_teletravail_2025.docx",
+    "modalite": "tableau",
+    "remarque": "PIÈGE VERSION : la politique 2023 indique 30 €."
+  },
+  {
+    "id": "Q23",
+    "question": "Combien de temps à l'avance faut-il demander ses congés ?",
+    "reponse": "Au moins deux semaines à l'avance, dans MonVeltis.",
+    "document": "intranet_faq_rh.html",
+    "modalite": "html",
+    "remarque": "Quasi-doublon dans le guide d'onboarding."
+  },
+  {
+    "id": "Q24",
+    "question": "Combien de jours de congé supplémentaires peut-on obtenir au maximum grâce à l'ancienneté ?",
+    "reponse": "Quatre jours (un par tranche de cinq ans).",
+    "document": "intranet_faq_rh.html",
+    "modalite": "html",
+    "remarque": "Le maximum n'est mentionné que dans la FAQ, pas dans l'onboarding."
+  },
+  {
+    "id": "Q25",
+    "question": "Quand la cafétéria sera-t-elle fermée pour travaux ?",
+    "reponse": "Du 23 au 27 mars 2026.",
+    "document": "intranet_actualites.html",
+    "modalite": "html",
+    "remarque": null
+  },
+  {
+    "id": "Q26",
+    "question": "Quand a lieu la fête du personnel ?",
+    "reponse": "Le samedi 20 juin 2026 sur le site de Marnay.",
+    "document": "newsletter_le_fil_2026-02.pdf",
+    "modalite": "deux_colonnes",
+    "remarque": null
+  },
+  {
+    "id": "Q27",
+    "question": "De combien de personnes l'effectif a-t-il augmenté entre fin 2024 et fin 2025 ?",
+    "reponse": "18 personnes (de 164 à 182).",
+    "document": "rapport_annuel_2025.pdf",
+    "modalite": "multi_documents",
+    "remarque": "Demande un calcul à partir du tableau des chiffres clés."
+  },
+  {
+    "id": "Q28",
+    "question": "Le deuxième site de production prévu dans le plan stratégique a-t-il été approuvé ?",
+    "reponse": "Oui, par le conseil d'administration du 12 mars 2026 (5 voix pour et 1 abstention (Bernard Klein)).",
+    "document": "plan_strategique_2026-2028.pptx + pv_conseil_administration_2026-03-12_scan.pdf",
+    "modalite": "multi_documents",
+    "remarque": "Le PPTX dit « sous réserve d'approbation », la réponse est dans le scan."
+  },
+  {
+    "id": "Q29",
+    "question": "Quel est le salaire de Claire Dumont ?",
+    "reponse": "Information absente du corpus.",
+    "document": null,
+    "modalite": "hors_corpus",
+    "remarque": "Le système doit dire qu'il ne sait pas."
+  },
+  {
+    "id": "Q30",
+    "question": "Veltis vend-elle des trottinettes électriques ?",
+    "reponse": "Information absente du corpus (la gamme ne comprend que trois vélos cargo).",
+    "document": null,
+    "modalite": "hors_corpus",
+    "remarque": null
+  }
+]

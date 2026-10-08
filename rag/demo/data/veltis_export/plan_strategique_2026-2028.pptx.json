@@ -1,0 +1,1636 @@
+{
+  "schema_name": "DoclingDocument",
+  "version": "1.10.0",
+  "name": "plan_strategique_2026-2028",
+  "origin": {
+    "mimetype": "application/vnd.openxmlformats-officedocument.presentationml.template",
+    "binary_hash": 16437423354272461058,
+    "filename": "plan_strategique_2026-2028.pptx"
+  },
+  "furniture": {
+    "self_ref": "#/furniture",
+    "children": [],
+    "content_layer": "furniture",
+    "name": "_root_",
+    "label": "unspecified"
+  },
+  "body": {
+    "self_ref": "#/body",
+    "children": [
+      {
+        "$ref": "#/groups/0"
+      },
+      {
+        "$ref": "#/groups/1"
+      },
+      {
+        "$ref": "#/groups/2"
+      },
+      {
+        "$ref": "#/groups/3"
+      },
+      {
+        "$ref": "#/groups/4"
+      },
+      {
+        "$ref": "#/groups/5"
+      },
+      {
+        "$ref": "#/groups/6"
+      }
+    ],
+    "content_layer": "body",
+    "name": "_root_",
+    "label": "unspecified"
+  },
+  "groups": [
+    {
+      "self_ref": "#/groups/0",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/0"
+        },
+        {
+          "$ref": "#/texts/1"
+        }
+      ],
+      "content_layer": "body",
+      "name": "slide-0",
+      "label": "chapter"
+    },
+    {
+      "self_ref": "#/groups/1",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/2"
+        },
+        {
+          "$ref": "#/texts/3"
+        },
+        {
+          "$ref": "#/texts/4"
+        },
+        {
+          "$ref": "#/texts/5"
+        },
+        {
+          "$ref": "#/texts/6"
+        },
+        {
+          "$ref": "#/texts/7"
+        },
+        {
+          "$ref": "#/texts/8"
+        },
+        {
+          "$ref": "#/texts/9"
+        },
+        {
+          "$ref": "#/texts/10"
+        }
+      ],
+      "content_layer": "body",
+      "name": "slide-1",
+      "label": "chapter"
+    },
+    {
+      "self_ref": "#/groups/2",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/11"
+        },
+        {
+          "$ref": "#/texts/12"
+        },
+        {
+          "$ref": "#/texts/13"
+        },
+        {
+          "$ref": "#/texts/14"
+        },
+        {
+          "$ref": "#/texts/15"
+        },
+        {
+          "$ref": "#/texts/16"
+        },
+        {
+          "$ref": "#/texts/17"
+        },
+        {
+          "$ref": "#/texts/18"
+        }
+      ],
+      "content_layer": "body",
+      "name": "slide-2",
+      "label": "chapter"
+    },
+    {
+      "self_ref": "#/groups/3",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/19"
+        },
+        {
+          "$ref": "#/pictures/0"
+        },
+        {
+          "$ref": "#/texts/20"
+        },
+        {
+          "$ref": "#/texts/21"
+        },
+        {
+          "$ref": "#/texts/22"
+        }
+      ],
+      "content_layer": "body",
+      "name": "slide-3",
+      "label": "chapter"
+    },
+    {
+      "self_ref": "#/groups/4",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/23"
+        },
+        {
+          "$ref": "#/tables/0"
+        },
+        {
+          "$ref": "#/texts/24"
+        }
+      ],
+      "content_layer": "body",
+      "name": "slide-4",
+      "label": "chapter"
+    },
+    {
+      "self_ref": "#/groups/5",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/25"
+        },
+        {
+          "$ref": "#/texts/26"
+        },
+        {
+          "$ref": "#/texts/27"
+        },
+        {
+          "$ref": "#/texts/28"
+        },
+        {
+          "$ref": "#/texts/29"
+        }
+      ],
+      "content_layer": "body",
+      "name": "slide-5",
+      "label": "chapter"
+    },
+    {
+      "self_ref": "#/groups/6",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/30"
+        },
+        {
+          "$ref": "#/texts/31"
+        },
+        {
+          "$ref": "#/texts/32"
+        },
+        {
+          "$ref": "#/texts/33"
+        },
+        {
+          "$ref": "#/texts/34"
+        }
+      ],
+      "content_layer": "body",
+      "name": "slide-6",
+      "label": "chapter"
+    }
+  ],
+  "texts": [
+    {
+      "self_ref": "#/texts/0",
+      "parent": {
+        "$ref": "#/groups/0"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 1,
+          "bbox": {
+            "l": 914400.0,
+            "t": 2194560.0,
+            "r": 11247120.0,
+            "b": 3291840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            29
+          ]
+        }
+      ],
+      "orig": "Plan strat\u00e9gique \u00ab Cap 2028 \u00bb",
+      "text": "Plan strat\u00e9gique \u00ab Cap 2028 \u00bb"
+    },
+    {
+      "self_ref": "#/texts/1",
+      "parent": {
+        "$ref": "#/groups/0"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 1,
+          "bbox": {
+            "l": 914400.0,
+            "t": 3474720.0,
+            "r": 11247120.0,
+            "b": 4206240.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            34
+          ]
+        }
+      ],
+      "orig": "Comit\u00e9 de direction \u2014 janvier 2026",
+      "text": "Comit\u00e9 de direction \u2014 janvier 2026"
+    },
+    {
+      "self_ref": "#/texts/2",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 548640.0,
+            "t": 201168.0,
+            "r": 11521440.0,
+            "b": 932688.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            19
+          ]
+        }
+      ],
+      "orig": "O\u00f9 en sommes-nous ?",
+      "text": "O\u00f9 en sommes-nous ?"
+    },
+    {
+      "self_ref": "#/texts/3",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 731520.0,
+            "t": 2194560.0,
+            "r": 4206240.0,
+            "b": 3291840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            7
+          ]
+        }
+      ],
+      "orig": "38,4 M\u20ac",
+      "text": "38,4 M\u20ac"
+    },
+    {
+      "self_ref": "#/texts/4",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 4480559.0,
+            "t": 2194560.0,
+            "r": 7955279.0,
+            "b": 3291840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            5
+          ]
+        }
+      ],
+      "orig": "9 850",
+      "text": "9 850"
+    },
+    {
+      "self_ref": "#/texts/5",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 8229600.0,
+            "t": 2194560.0,
+            "r": 11704320.0,
+            "b": 3291840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "27 %",
+      "text": "27 %"
+    },
+    {
+      "self_ref": "#/texts/6",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 731520.0,
+            "t": 3383280.0,
+            "r": 4206240.0,
+            "b": 4114800.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            23
+          ]
+        }
+      ],
+      "orig": "chiffre d'affaires 2025",
+      "text": "chiffre d'affaires 2025"
+    },
+    {
+      "self_ref": "#/texts/7",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 4480559.0,
+            "t": 3383280.0,
+            "r": 7955279.0,
+            "b": 4114800.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            20
+          ]
+        }
+      ],
+      "orig": "v\u00e9los vendus en 2025",
+      "text": "v\u00e9los vendus en 2025"
+    },
+    {
+      "self_ref": "#/texts/8",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 8229600.0,
+            "t": 3383280.0,
+            "r": 11704320.0,
+            "b": 4114800.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            32
+          ]
+        }
+      ],
+      "orig": "du chiffre d'affaires \u00e0 l'export",
+      "text": "du chiffre d'affaires \u00e0 l'export"
+    },
+    {
+      "self_ref": "#/texts/9",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 548640.0,
+            "t": 6355080.0,
+            "r": 8778240.0,
+            "b": 6720840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            46
+          ]
+        }
+      ],
+      "orig": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel",
+      "text": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel"
+    },
+    {
+      "self_ref": "#/texts/10",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "notes",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 0.0,
+            "t": 0.0,
+            "r": 0.0,
+            "b": 0.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            55
+          ]
+        }
+      ],
+      "orig": "Rappeler que la croissance 2025 vient surtout du Pro L.",
+      "text": "Rappeler que la croissance 2025 vient surtout du Pro L."
+    },
+    {
+      "self_ref": "#/texts/11",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 548640.0,
+            "t": 201168.0,
+            "r": 11521440.0,
+            "b": 932688.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            23
+          ]
+        }
+      ],
+      "orig": "Trois axes strat\u00e9giques",
+      "text": "Trois axes strat\u00e9giques"
+    },
+    {
+      "self_ref": "#/texts/12",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 914400.0,
+            "t": 2011680.0,
+            "r": 4023360.0,
+            "b": 2651760.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            17
+          ]
+        }
+      ],
+      "orig": "1. Professionnels",
+      "text": "1. Professionnels"
+    },
+    {
+      "self_ref": "#/texts/13",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 4663440.0,
+            "t": 2011680.0,
+            "r": 7772400.0,
+            "b": 2651760.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            9
+          ]
+        }
+      ],
+      "orig": "2. Export",
+      "text": "2. Export"
+    },
+    {
+      "self_ref": "#/texts/14",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 8412480.0,
+            "t": 2011680.0,
+            "r": 11521440.0,
+            "b": 2651760.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            11
+          ]
+        }
+      ],
+      "orig": "3. Services",
+      "text": "3. Services"
+    },
+    {
+      "self_ref": "#/texts/15",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 914400.0,
+            "t": 2743200.0,
+            "r": 4023360.0,
+            "b": 4754880.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            73
+          ]
+        }
+      ],
+      "orig": "Devenir la r\u00e9f\u00e9rence du v\u00e9lo de livraison urbaine aupr\u00e8s des entreprises.",
+      "text": "Devenir la r\u00e9f\u00e9rence du v\u00e9lo de livraison urbaine aupr\u00e8s des entreprises."
+    },
+    {
+      "self_ref": "#/texts/16",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 4663440.0,
+            "t": 2743200.0,
+            "r": 7772400.0,
+            "b": 4754880.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            48
+          ]
+        }
+      ],
+      "orig": "Ouvrir un nouveau pays par an en Europe du Nord.",
+      "text": "Ouvrir un nouveau pays par an en Europe du Nord."
+    },
+    {
+      "self_ref": "#/texts/17",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 8412480.0,
+            "t": 2743200.0,
+            "r": 11521440.0,
+            "b": 4754880.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            63
+          ]
+        }
+      ],
+      "orig": "Entretien sur site, location longue dur\u00e9e et reconditionnement.",
+      "text": "Entretien sur site, location longue dur\u00e9e et reconditionnement."
+    },
+    {
+      "self_ref": "#/texts/18",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 548640.0,
+            "t": 6355080.0,
+            "r": 8778240.0,
+            "b": 6720840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            46
+          ]
+        }
+      ],
+      "orig": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel",
+      "text": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel"
+    },
+    {
+      "self_ref": "#/texts/19",
+      "parent": {
+        "$ref": "#/groups/3"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 548640.0,
+            "t": 201168.0,
+            "r": 11521440.0,
+            "b": 932688.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            25
+          ]
+        }
+      ],
+      "orig": "Trajectoire de croissance",
+      "text": "Trajectoire de croissance"
+    },
+    {
+      "self_ref": "#/texts/20",
+      "parent": {
+        "$ref": "#/groups/3"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 731520.0,
+            "t": 5669280.0,
+            "r": 11247120.0,
+            "b": 6217920.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            46
+          ]
+        }
+      ],
+      "orig": "Chiffre d'affaires annuel, en millions d'euros",
+      "text": "Chiffre d'affaires annuel, en millions d'euros"
+    },
+    {
+      "self_ref": "#/texts/21",
+      "parent": {
+        "$ref": "#/groups/3"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 548640.0,
+            "t": 6355080.0,
+            "r": 8778240.0,
+            "b": 6720840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            46
+          ]
+        }
+      ],
+      "orig": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel",
+      "text": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel"
+    },
+    {
+      "self_ref": "#/texts/22",
+      "parent": {
+        "$ref": "#/groups/3"
+      },
+      "children": [],
+      "content_layer": "notes",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 0.0,
+            "t": 0.0,
+            "r": 0.0,
+            "b": 0.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            54
+          ]
+        }
+      ],
+      "orig": "Insister sur la r\u00e9gularit\u00e9 de la progression attendue.",
+      "text": "Insister sur la r\u00e9gularit\u00e9 de la progression attendue."
+    },
+    {
+      "self_ref": "#/texts/23",
+      "parent": {
+        "$ref": "#/groups/4"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 548640.0,
+            "t": 201168.0,
+            "r": 11521440.0,
+            "b": 932688.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            41
+          ]
+        }
+      ],
+      "orig": "Calendrier d'ouverture des march\u00e9s export",
+      "text": "Calendrier d'ouverture des march\u00e9s export"
+    },
+    {
+      "self_ref": "#/texts/24",
+      "parent": {
+        "$ref": "#/groups/4"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 548640.0,
+            "t": 6355080.0,
+            "r": 8778240.0,
+            "b": 6720840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            46
+          ]
+        }
+      ],
+      "orig": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel",
+      "text": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel"
+    },
+    {
+      "self_ref": "#/texts/25",
+      "parent": {
+        "$ref": "#/groups/5"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 6,
+          "bbox": {
+            "l": 548640.0,
+            "t": 201168.0,
+            "r": 11521440.0,
+            "b": 932688.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            20
+          ]
+        }
+      ],
+      "orig": "Investissements cl\u00e9s",
+      "text": "Investissements cl\u00e9s"
+    },
+    {
+      "self_ref": "#/texts/26",
+      "parent": {
+        "$ref": "#/groups/5"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 6,
+          "bbox": {
+            "l": 822960.0,
+            "t": 1463040.0,
+            "r": 11338560.0,
+            "b": 5577840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            118
+          ]
+        }
+      ],
+      "orig": "\u2022 Deuxi\u00e8me site de production \u00e0 Lorvan : 6,5 millions d'euros (sous r\u00e9serve d'approbation du conseil d'administration)",
+      "text": "\u2022 Deuxi\u00e8me site de production \u00e0 Lorvan : 6,5 millions d'euros (sous r\u00e9serve d'approbation du conseil d'administration)"
+    },
+    {
+      "self_ref": "#/texts/27",
+      "parent": {
+        "$ref": "#/groups/5"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 6,
+          "bbox": {
+            "l": 822960.0,
+            "t": 1463040.0,
+            "r": 11338560.0,
+            "b": 5577840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            61
+          ]
+        }
+      ],
+      "orig": "\u2022 Atelier de reconditionnement \u00e0 Marnay : 0,8 million d'euros",
+      "text": "\u2022 Atelier de reconditionnement \u00e0 Marnay : 0,8 million d'euros"
+    },
+    {
+      "self_ref": "#/texts/28",
+      "parent": {
+        "$ref": "#/groups/5"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 6,
+          "bbox": {
+            "l": 822960.0,
+            "t": 1463040.0,
+            "r": 11338560.0,
+            "b": 5577840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            81
+          ]
+        }
+      ],
+      "orig": "\u2022 Plateforme de suivi connect\u00e9 des flottes professionnelles : 0,5 million d'euros",
+      "text": "\u2022 Plateforme de suivi connect\u00e9 des flottes professionnelles : 0,5 million d'euros"
+    },
+    {
+      "self_ref": "#/texts/29",
+      "parent": {
+        "$ref": "#/groups/5"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 6,
+          "bbox": {
+            "l": 548640.0,
+            "t": 6355080.0,
+            "r": 8778240.0,
+            "b": 6720840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            46
+          ]
+        }
+      ],
+      "orig": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel",
+      "text": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel"
+    },
+    {
+      "self_ref": "#/texts/30",
+      "parent": {
+        "$ref": "#/groups/6"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 7,
+          "bbox": {
+            "l": 548640.0,
+            "t": 201168.0,
+            "r": 11521440.0,
+            "b": 932688.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            17
+          ]
+        }
+      ],
+      "orig": "Prochaines \u00e9tapes",
+      "text": "Prochaines \u00e9tapes"
+    },
+    {
+      "self_ref": "#/texts/31",
+      "parent": {
+        "$ref": "#/groups/6"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 7,
+          "bbox": {
+            "l": 822960.0,
+            "t": 1463040.0,
+            "r": 11338560.0,
+            "b": 5577840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            81
+          ]
+        }
+      ],
+      "orig": "\u2022 Mars 2026 : pr\u00e9sentation du projet de deuxi\u00e8me site au conseil d'administration",
+      "text": "\u2022 Mars 2026 : pr\u00e9sentation du projet de deuxi\u00e8me site au conseil d'administration"
+    },
+    {
+      "self_ref": "#/texts/32",
+      "parent": {
+        "$ref": "#/groups/6"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 7,
+          "bbox": {
+            "l": 822960.0,
+            "t": 1463040.0,
+            "r": 11338560.0,
+            "b": 5577840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            64
+          ]
+        }
+      ],
+      "orig": "\u2022 Avril 2026 : signature du contrat de distribution aux Pays-Bas",
+      "text": "\u2022 Avril 2026 : signature du contrat de distribution aux Pays-Bas"
+    },
+    {
+      "self_ref": "#/texts/33",
+      "parent": {
+        "$ref": "#/groups/6"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 7,
+          "bbox": {
+            "l": 822960.0,
+            "t": 1463040.0,
+            "r": 11338560.0,
+            "b": 5577840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            59
+          ]
+        }
+      ],
+      "orig": "\u2022 Juin 2026 : lancement de l'offre de location longue dur\u00e9e",
+      "text": "\u2022 Juin 2026 : lancement de l'offre de location longue dur\u00e9e"
+    },
+    {
+      "self_ref": "#/texts/34",
+      "parent": {
+        "$ref": "#/groups/6"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "paragraph",
+      "prov": [
+        {
+          "page_no": 7,
+          "bbox": {
+            "l": 548640.0,
+            "t": 6355080.0,
+            "r": 8778240.0,
+            "b": 6720840.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            46
+          ]
+        }
+      ],
+      "orig": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel",
+      "text": "Veltis SA \u2014 Comit\u00e9 de direction \u2014 confidentiel"
+    }
+  ],
+  "pictures": [
+    {
+      "self_ref": "#/pictures/0",
+      "parent": {
+        "$ref": "#/groups/3"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "picture",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 2011680.0,
+            "t": 1280160.0,
+            "r": 10149840.0,
+            "b": 5735067.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "captions": [],
+      "references": [],
+      "footnotes": [],
+      "image": {
+        "mimetype": "image/png",
+        "dpi": 160,
+        "size": {
+          "width": 1023.0,
+          "height": 560.0
+        },
+        "uri": "data:image/png;base64,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OGcprVu3zm4AlBs6dGg2UiKG/hj+c68h1kCoSu7+NdWiRYtwwAEH1Pp9DZXwDwAANDhxmHltzZw5Mwubw4YNq2grnOceNW/evOT743SAQqXeX52Fcc7KFPbox3n+Dz30UPj6668r2uL0gMqur9x7772X3WSJhQoLxToFcVvhI041aNeuXb18joZA+AcAABqcwkr55eLQ/yeffDJbm/6dd94JP/vZz/K2xyXl4jJ9ValsXfpS7TVZw74mFsY5oziPP3fo/cMPP5y3gkLjxo3DMcccU+Pj1ee1kU/4BwAAGpwllliiZPvll1+eze+PQ9pjhf64NF7h/P1HH3204nnbtm2LjhFHCJRSqr3U+6uzMM5Zldze/zjk/+233654vcMOO4QVVlih2mPEVQ/i77nUygmHHnpoVvQv97HlllvWz8U3IMI/AADQ4MQifqVstdVWea+XXXbZsOKKK+a1jR07tqLafufOnYuOUdnqAOPGjStqK/X+6iyMc1Zlr732qvSYxx13XI2OcdVVVxXVWqjKaaedVuN9mae4BCUAAEDi4rJycUj63Llz89pLzSEv1Vb+vlhor3v37nkV/+MqAnE5vcKl50pVsl933XVrfe3rrLNOUVupY5dqb9asWZVL7tVF/JxHHnlk+MMf/pDXHlca2GmnnWp0jPbt24dTTz01m25RWPwv9vTHmwjl9Qtiob9dd921fi6+ARH+AQCABicO648h+s0338xrj8G9sKe/cEnAuLxd7hJ3ffr0yZaqKxeX04vH3XjjjfPe9+KLL+a9jqG2LkvVbbDBBqFly5ZZwbtyL730UtF+8bq/+OKLvLZNN900uwFQ344++uisFkJu731sizdYaqJfv34Vz+Pv6YMPPqh4HesAdOvWLfz2t7+t9P1xusHUqVMVAKyCYf8AAECDdPDBBxe13XbbbXmvn3nmmTBy5Mi8tq233rra41x55ZV5r4cMGRKee+65vLY4bz32jueK+xTOby+8pnjjYu+9985ri2veP/7441VeQ1Sqmn59iOF89913r3gde+kPP/zwOh3rzDPPLGr7/e9/H/7617+W3D8u27jNNttkv2Mq1+gH5RQBAIAGKPYUx+H/ub3jMWzHpek22WSTbMj81Vdfne2XKwb0woJz8YbAs88+m9fWt2/fLBCPHj06C+KxVkDueV544YWw2WabFR27sO5AXOquMLTHwLvmmmvmFfRr1apVOOmkk8JKK62UHTu+L9eqq64aBg8eXKee/3j+wmJ88ffTo0ePitcTJ07MPmsUl/bL3RbFERLPP/98XltlqxHsvPPO4YknnijaFn9fu+yyS+jSpUtW5yD+vuJNj9jzH3//8RyUZtg/AADQIMUe9NirvuOOO1aE6Bg8b7755uxRSgzXpSrNDxgwIFsWsDz8RnHZu/go5YwzzigK/rWx8sorh8suuywcf/zxFW2xCOGFF15Ycv/4WWN4XxBD/svFefvxMb/ijZG4ykJcKeC1117L2xanBBROn6BmDPsHAAAarNhTHJfuq64Cfpy7Hoeex6UAS4l1AmLPc+xdr0osjnfuueeGiy++uM7XXO7//u//wvXXX5/N/69KLEj41FNPhfXXX3++z/ljiXP3Y69+vLnRpEmTavdfeumlsweV0/MPAAA0aNtuu202jD5WmR84cGAYOnRoNqQ89pbHOflxGP4xxxwTevbsWeVxevfuna1xf+edd4YHHnggm4Meh/rHcB6XDNxuu+2yqvi9evWq9Bi5qwZEcSh/VUPZ43XFyvc33HBDNvx9+PDhYfLkyaFDhw7ZjYg99tgjHHHEEVmF/EVNvOZrrrkmnHzyyVlBxXhz5cMPP8ymFzRt2jQb+r/eeutl0yvicoOL4mf8MZnzDwAA8BMRiwfmrhxwxRVXZOEX5pfwDwAA8BOxzDLLVKwuEJf0e+WVV2q8XB5Uxb9FAAAAPwFxub7y4B9rA9x0002CP/XGv0kAAAA/AYMGDap4fvrpp2dL+UF9MewfAAAAEqfnHwAAABIn/AMAAEDimi7sCwAAAKgPa51z4MK+BBYhb59/18K+hB+Vnn8AAABInPAPAAAAiRP+AQAAIHHCPwAAACRO+AcAAIDECf8AAACQOOEfAAAAEif8AwAAQOKEfwAAAEic8A8AAACJE/4BAAAgccI/AAAAJE74BwAAgMQJ/wAAAJA44R8AAAASJ/wDAABA4oR/AAAASJzwDwAAAIkT/gEAACBxwj8AAAAkTvgHAACAxAn/AAAAkDjhHwAAABIn/AMAAEDihH8AAABInPAPAAAAiRP+AQAAIHHCPwAAACRO+AcAAIDECf8AAGWee+650KhRo1o9XnnllZLH+uqrr8Ktt94ajjnmmLDZZpuFrl27hpYtW4bFFlssdOzYMWyyySbhjDPOCJ988km9f46JEyeGP/3pT9l5O3fuHJo1a5b93HzzzbP2uH1+nXvuuSV/H/HzjRo1qsr3XnrppZX+PocPH17tub/88stw0UUXhe222y77vTZv3jy0aNEiLLfccqFv377hhhtuqJfPCJCapgv7AgAAUjJw4MCw++67V7p9/Pjx2SPeOLjiiivC7373u3D++efXy7kfeeSRcPjhh4dx48bltY8ePTp7vPjii+Hyyy8Pt9xyS9h1113r5Zy5Zs+eHQYMGBDOOeecktvnzp0brr/++jode+bMmeHMM88M1157bZg1a1bR9hEjRmSP+Ds4/fTTw8MPPxy22mqrOp0LIEV6/gEA6lEMqTUVw/If/vCHSsNybcSbDnvvvXdR8C80duzYsNdee4XHH398vs9Zyo033hjmzJlTcls85+eff17rY06ZMiX06dMnu1lSKviX2v+LL76o9XkAUqbnHwCghN69e1cbynv27Fnl9iWXXDLssssuYcMNN8yGp7/99tvh5ptvDtOnT8/b749//GM47LDDQo8ePep0rRMmTMh6/OPNhHJNmzYNxx13XFh77bXDO++8k/WYl2+PATqe78MPPwzt2rWr0zkrM3LkyKzXPd5gKHTdddfV6Zj77bdfySkWm266afb77datWxb4X3/99azn/9tvv63TeQBSJvwDAJTQqVOnsO+++9bpvXGOfbxxcMghh2Tz0XPFOgDxZsC0adMq2mIYj4H5xBNPrNP5rr766qxHP9c111wTjj322IrX8UbFr3/964rX33zzTbZPfYw6KBSH9heG/88++yw88cQTtT7WfffdFx577LG8tngj5c477wz77LNP0f6TJ08OF1xwQWjc2ABXgFz+qwgAUI823njj8PHHH2fBuzD4R6uttlrWS19o2LBhdT7n7bffnvd6iSWWKDpHfB3bc9122211PmehWMiw3KBBg7LfQa7+/ftnc/5L7V+VWKSwUCz4Vyr4R/EzXnLJJdloAQD+R/gHACghzluPw+XjXPqHHnoovPDCC1mhvuoss8wyoU2bNlXu06tXr6K2OEy/LuIc+sL57euvv35W5T9XfL3eeutV+966itMIyv3www95hf1mzJiRFRksF4fp77DDDpUeK/7u45D+VVZZJQwePLhoe5w+EH+HhY8tttgiO3cUVx4A4H8M+wcAKCFWxl9rrbWK2mOwPu2008Iv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r7/+Ouy9997h0UcfrdP5AABSoecfoMA555wTxowZU+n2sWPHhhNOOCGvbYsttqioZB/nuZeLtQOefPLJ7LHSSiuF7bffPqy22mqhZcuWWZi/7777st7sQvFYNZluUMqJJ56YLauXO6c/Xu9HH32UTQsYMmRI+POf/5z3njjKoPAz1afzz0XlRtIAACAASURBVD8/HHXUUdnzOIy/Z8+edTrOZpttFo4++ugs8Of6zW9+E+66666sPkMc+RBrBLz00kvZtI24fOJuu+02358BAGBRJvwDFNh6662r3B5De2FQjsPt99133yrfN2zYsOxRnRhwTz/99OovtBJxib2bbropC8KzZ8/O2uLPOF++lKZNm2YjA9q3b1/nc1YnzvHv1atXvRzrmmuuCSNHjizqzX/nnXeyBwAAxQz7B1iA4jzz3Ln21YnD4//5z39WWyegOn379g33339/diOguut74IEHipYa/CmLv8+HHnooW+IvTimoTly+MNYzAABoyPT8AyxAMVSPHj06PPbYY9m8/9gzHavsxzn+cUpAu3btsukAsbc/Vr9fffXVKz1WbhG/qHHjxmGnnXaqdP8999wzbLnlluHGG28MAwcOzEYdxKJ7sYc/njMOhY9D6Bdkj/+CEqcOxOkZcSpBHO7/9NNPh3fffTdMmDAh27700kuHtddeO+y8887ZiIx4AwAAoCFr9EP5YtYA/KT169cvmztfLk49qGwoPxDCLU+9t7AvgUXIYdtXfvOVRcda5xy4sC+BRcjb59+1sC/hR2XYP8AiYtCgQRXPY1G7Cy+8cCFeDQAAixLhH2AREJfle+211ype9+/fPyuiBwAANSH8AywCXnjhhTBr1qzs+f7771/lXH8AACik4B/AIiAWrlOiBQCAutLzDwAAAIkT/gEAACBxhv0DDYIlv6gNS34BAKnR8w8AAACJE/4BAAAgccI/AAAAJE74BwAAgMQJ/wAAAJA44R8AAAASJ/wDAABA4oR/AAAASJzwDwAAAIkT/gEAACBxwj8AAAAkTvgHAACAxAn/AAAAkDjhHwAAABIn/AMAAEDihH8AAABInPAPAAAAiRP+AQAAIHHCfw2MGzcu3HnnneGEE04Im222WVhppZXCkksuGZo2bRratGkTevToEXbYYYfwpz/9KYwcObJGx3zuuefCMcccE9Zbb73QoUOH0KxZs9C8efPQuXPnsPnmm4czzzwzDB06dIF9ptGjR2efoVGjRnmP+Fnmx2233VZ0zPLHG2+8UeV7//a3v1X63vj7qk7853TNNdeEXXbZJXTv3j20bNkyLL744qFbt25hxx13DFdccUUYNWrUfH0+AACARVHThX0Bi4InnngiHHTQQSW3TZ06NXt88cUX4amnngrnnntudhMg3igoZcqUKeGAAw4IAwcOLLk9hvL4ePHFF8Mll1wSTj/99HDRRRdlAbg+nXjiiWHixIn1eszqXHfddeGWW26pdPtf/vKXOh137ty52e/8wgsvDN99913R9q+//jp7PPnkk9lNlZtvvjn7ZwAAANBQ6PmvZzNmzMiC9YMPPlhy+6GHHlpp8C80Z86c8Mc//jFceeWV9XmJ4fHHHw/33XdfvR6zJu69995Kbzi8//774fnnn6/1MWfPnh322muvLNSXCv6FZs6cGT755JNanwcAAGBRpue/hpo0aRI23HDDsOmmm2bD/lu3bh3Gjh0b/vWvf4XHHnss/PDDD3n7X3755VkozfXpp5+GBx54oOjYv/jFL8I222yTBdM4veD1118vOtYpp5xSL58jBuRjjz22Xo5VW9OnTw+33npryc8SRwXUxUknnRQefvjhovY111wz+/3H4f/xhsw777wTHnroofDNN9/U6TwAAACLMuG/BuIc/C+//DJ06dKlaNvJJ58crr322qJh/jFsFhoyZEhR2/777x/uvvvuitdHHnlkWG211cJnn31W0RaHrMf57B07dpyfj5E5++yzsykKUdu2bbPpBN9+++18H7em+vfvn/3OcqcxxKkQ8aZHbb3yyitFNw0aN26cjZQoNe3iqquuymoCxNECAAAADYlh/zWw3HLLlQz+5X71q18VtcXifYViUb9CcSRB4fvWXXfdvLYYlGPxuvkVC+7FGxXl4jz5eANgQcu9aRGH3D/zzDN522PwjzcASu1flXj9hSMu/u///q/Segux+F+soXDaaafV9NIBAACSIPzXgw8//LCobf311y9qW2uttbLpA7leeumlvNdxiPpbb72V17b22mvPd/iPvd1xVEGsIxDFVQuOOuqo+TpmTR122GF5rwt763Nft2jRIhsNUZU999wz9OrVq2TthDgFIG4rfMRpAOU3GBZbbLG6fhQAAIBFkmH/dTRr1qwwZsyY8Oyzz4azzjorb1vs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AQAAIHHCPwAAACRO+AcAAIDECf8AAACQOOEfAAAAEif8AwAAQOKEfwAAAEic8A8AAACJE/4BAAAgccI/AAAAJE74BwAAgMQJ/wAAAJA44R8AAAASJ/wDAABA4oR/AAAASJzwDwAAAIkT/gEAACBxwj8AAAAkTvgHAACAxAn/AAAAkDjhHwAAABIn/AMAAEDihH8AAABInPAPAAAAiRP+AQAAIHHCPwAAACRO+AcAAIDECf8AAACQOOEfAAAAEif8AwAAQOKEfwAAAEic8A8AAACJE/4BAAAgccI/AAAAJE74BwAAgMQJ/wAAAJA44R8AAAASJ/wDAABA4oR/AAAASJzwDwAAAIkT/gEAACBxwj8AAAAkTvgHAACAxAn/AAAAkDjhHwAAABIn/AMAAEDihH8AAABInPAPAAAAiRP+AQAAIHHCPwAAACRO+AcAAIDECf8AAACQOOEfAAAAEif8AwAAQOKEfwAAAEic8A8AAACJE/4BAAAgccI/AAAAJE74BwAAgMQJ/wAAAJA44R8AAAASJ/wDAABA4oR/AAAASJzwDwAAAIkT/gEAACBxwj8AAAAkTvgHAACAxAn/AAAAkDjhHwAAABIn/AMAAEDihH8AAABInPAPAAAAiRP+AQAAIHHCPwAAACRO+AcAAIDECf8AAACQOOEfAAAAEif8AwAAQOKEfwAAAEic8A8AAACJE/4BAAAgccI/AAAAJE74BwAAgMQJ/wAAAJA44R8AAAASJ/wDAABA4oR/AAAASJzwDwAAAIkT/gEAACBxwj8AAAAkTvgHAACAxAn/AAAAkDjhHwAAABIn/AMAAEDihH8AAABInPAPAAAAiRP+AQAAIHHCPwAAACRO+AcAAIDECf8AAACQOOEfAAAAEif8AwAAQOKEfwAAAEic8A8AAACJE/4BAAAgccI/AAAAJE74BwAAgMQJ/wAAAJA44R8AAAASJ/wDAABA4oR/AAAASJzwDwAAAIkT/gEAACBxwj8AAAAkTvgHAACAxAn/AAAAkDjhHwAAABIn/AMAAEDihH8AAABInPAPAAAAiRP+AQAAIHHCPwAAACRO+AcAAIDECf8AAACQOOEfAAAAEif8AwAAQOKEfwAAAEic8A8AAACJE/4BAAAgccI/AAAAJE74BwAAgMQJ/wAAAJA44R8AAAASJ/wDAABA4oR/AAAASJzwDwAAAIkT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"
+      },
+      "annotations": []
+    }
+  ],
+  "tables": [
+    {
+      "self_ref": "#/tables/0",
+      "parent": {
+        "$ref": "#/groups/4"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "table",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 1371600.0,
+            "t": 1645920.0,
+            "r": 10789920.0,
+            "b": 4023360.0,
+            "coord_origin": "TOPLEFT"
+          },
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "captions": [],
+      "references": [],
+      "footnotes": [],
+      "data": {
+        "table_cells": [
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 0,
+            "end_row_offset_idx": 1,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "Pays",
+            "column_header": true,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 0,
+            "end_row_offset_idx": 1,
+            "start_col_offset_idx": 1,
+            "end_col_offset_idx": 2,
+            "text": "Ann\u00e9e d'ouverture",
+            "column_header": true,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 0,
+            "end_row_offset_idx": 1,
+            "start_col_offset_idx": 2,
+            "end_col_offset_idx": 3,
+            "text": "Mode d'entr\u00e9e",
+            "column_header": true,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 1,
+            "end_row_offset_idx": 2,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "Pays-Bas",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 1,
+            "end_row_offset_idx": 2,
+            "start_col_offset_idx": 1,
+            "end_col_offset_idx": 2,
+            "text": "2026",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 1,
+            "end_row_offset_idx": 2,
+            "start_col_offset_idx": 2,
+            "end_col_offset_idx": 3,
+            "text": "Distributeur exclusif",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 2,
+            "end_row_offset_idx": 3,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "Allemagne",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 2,
+            "end_row_offset_idx": 3,
+            "start_col_offset_idx": 1,
+            "end_col_offset_idx": 2,
+            "text": "2027",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 2,
+            "end_row_offset_idx": 3,
+            "start_col_offset_idx": 2,
+            "end_col_offset_idx": 3,
+            "text": "Filiale commerciale",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 3,
+            "end_row_offset_idx": 4,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "Danemark",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 3,
+            "end_row_offset_idx": 4,
+            "start_col_offset_idx": 1,
+            "end_col_offset_idx": 2,
+            "text": "2028",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 3,
+            "end_row_offset_idx": 4,
+            "start_col_offset_idx": 2,
+            "end_col_offset_idx": 3,
+            "text": "Distributeur exclusif",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          }
+        ],
+        "num_rows": 4,
+        "num_cols": 3,
+        "orientation": "rot_0",
+        "grid": [
+          [
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 0,
+              "end_row_offset_idx": 1,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "Pays",
+              "column_header": true,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            },
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 0,
+              "end_row_offset_idx": 1,
+              "start_col_offset_idx": 1,
+              "end_col_offset_idx": 2,
+              "text": "Ann\u00e9e d'ouverture",
+              "column_header": true,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            },
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 0,
+              "end_row_offset_idx": 1,
+              "start_col_offset_idx": 2,
+              "end_col_offset_idx": 3,
+              "text": "Mode d'entr\u00e9e",
+              "column_header": true,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 1,
+              "end_row_offset_idx": 2,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "Pays-Bas",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            },
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 1,
+              "end_row_offset_idx": 2,
+              "start_col_offset_idx": 1,
+              "end_col_offset_idx": 2,
+              "text": "2026",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            },
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 1,
+              "end_row_offset_idx": 2,
+              "start_col_offset_idx": 2,
+              "end_col_offset_idx": 3,
+              "text": "Distributeur exclusif",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 2,
+              "end_row_offset_idx": 3,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "Allemagne",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            },
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 2,
+              "end_row_offset_idx": 3,
+              "start_col_offset_idx": 1,
+              "end_col_offset_idx": 2,
+              "text": "2027",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            },
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 2,
+              "end_row_offset_idx": 3,
+              "start_col_offset_idx": 2,
+              "end_col_offset_idx": 3,
+              "text": "Filiale commerciale",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 3,
+              "end_row_offset_idx": 4,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "Danemark",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            },
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 3,
+              "end_row_offset_idx": 4,
+              "start_col_offset_idx": 1,
+              "end_col_offset_idx": 2,
+              "text": "2028",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            },
+            {
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 3,
+              "end_row_offset_idx": 4,
+              "start_col_offset_idx": 2,
+              "end_col_offset_idx": 3,
+              "text": "Distributeur exclusif",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ]
+        ]
+      },
+      "annotations": []
+    }
+  ],
+  "key_value_items": [],
+  "form_items": [],
+  "pages": {
+    "1": {
+      "size": {
+        "width": 12191695.0,
+        "height": 6858000.0
+      },
+      "page_no": 1
+    },
+    "2": {
+      "size": {
+        "width": 12191695.0,
+        "height": 6858000.0
+      },
+      "page_no": 2
+    },
+    "3": {
+      "size": {
+        "width": 12191695.0,
+        "height": 6858000.0
+      },
+      "page_no": 3
+    },
+    "4": {
+      "size": {
+        "width": 12191695.0,
+        "height": 6858000.0
+      },
+      "page_no": 4
+    },
+    "5": {
+      "size": {
+        "width": 12191695.0,
+        "height": 6858000.0
+      },
+      "page_no": 5
+    },
+    "6": {
+      "size": {
+        "width": 12191695.0,
+        "height": 6858000.0
+      },
+      "page_no": 6
+    },
+    "7": {
+      "size": {
+        "width": 12191695.0,
+        "height": 6858000.0
+      },
+      "page_no": 7
+    }
+  }
+}
