@@ -4319,7 +4319,7 @@ wheels = [
 ]
 
 [[package]]
-name = "vllm"
+name = "vllm_demo"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

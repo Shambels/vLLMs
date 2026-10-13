@@ -1,5 +1,5 @@
 [project]
-name = "vllm"
+name = "vllm_demo"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -24,7 +24,7 @@ dependencies = [
 ]
 
 [project.scripts]
-vllm = "vllm:main"
+vllm_demo = "vllm_demo:main"
 
 [build-system]
 requires = ["uv_build>=0.12.9,<0.13.0"]
